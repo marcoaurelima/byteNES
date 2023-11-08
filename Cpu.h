@@ -24,11 +24,22 @@ public:
     ~Cpu();
 
 private:
+    // Registradores
     UINT16 PC{0};
     UINT8  SP{0};
     UINT8  A{0};
     UINT8  Y{0};
     UINT8  P{0};
+
+    // Implementações das instruções
+    void adc_im();
+    void adc_zp();
+    void adc_zpx();
+    void adc_abs();
+    void adc_absx();
+    void adc_absy();
+    void adc_indx();
+    void adc_indy();
 };
 
 #endif
