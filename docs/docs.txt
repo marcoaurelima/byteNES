@@ -1,0 +1,34 @@
+
+--- MODOS DE ENDEREÇAMENTOS ---
+
+O 6502 possui vários modos de endereçamento que determinam como os operandos (dados) são fornecidos para as instruções. Cada modo de endereçamento afeta como o microprocessador busca os dados, calcula os endereços e executa a instrução. Vou explicar brevemente alguns dos modos de endereçamento mais comuns do 6502:
+
+1. **Imediato (Immediate)**:
+   - Neste modo, o valor do operando é especificado diretamente na instrução.
+   - Exemplo: `LDA #10` carrega o valor 10 no acumulador.
+
+2. **Absoluto (Absolute)**:
+   - A instrução contém um endereço absoluto de 16 bits para o operando.
+   - Exemplo: `LDA $2000` carrega o valor na memória do endereço $2000 no acumulador.
+
+3. **Indireto (Indirect)**:
+   - A instrução contém um endereço que aponta para um outro endereço de 16 bits na memória, cujo valor é o endereço do operando.
+   - Exemplo: `LDA ($2000)` carrega o valor na memória do endereço contido em $2000 no acumulador.
+
+4. **Índice Indireto (Indexed Indirect)**:
+   - Similar ao modo indireto, mas usa um registro de índice (como X ou Y) para calcular o endereço.
+   - Exemplo: `LDA ($10,X)` usa o valor de X para calcular um endereço na memória e carrega o valor contido nesse endereço no acumulador.
+
+5. **Indireto Indexado (Indirect Indexed)**:
+   - Este modo é o oposto do anterior, usando um registro de índice para calcular um endereço no operando.
+   - Exemplo: `LDA ($10),Y` carrega o valor na memória do endereço contido em $10, somando o valor de Y, e coloca o resultado no acumulador.
+
+6. **Zero Page (Página Zero)**:
+   - Os operandos são endereçados em uma página zero da memória, que é uma região especial com endereços de 8 bits.
+   - Exemplo: `LDA $FF` carrega o valor na memória do endereço $00FF no acumulador.
+
+7. **Relativo (Relative)**:
+   - Este modo é usado para instruções de desvio condicional e contém um deslocamento (offset) de 8 bits, que é adicionado ao contador de programa para calcular o destino do desvio.
+   - Exemplo: `BEQ $10` faz um salto condicional para a posição atual + 16 bytes se a flag zero estiver definida.
+
+Estes são apenas alguns dos modos de endereçamento disponíveis no 6502. Cada modo oferece flexibilidade para acessar e manipular dados na memória de diferentes maneiras, permitindo que o 6502 seja usado de maneira eficiente em diversas aplicações. O conhecimento dos modos de endereçamento é fundamental para programar efetivamente para o 6502 e entender como as instruções afetam a memória e o processamento.
