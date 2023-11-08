@@ -32,3 +32,8 @@ O 6502 possui vários modos de endereçamento que determinam como os operandos (
    - Exemplo: `BEQ $10` faz um salto condicional para a posição atual + 16 bytes se a flag zero estiver definida.
 
 Estes são apenas alguns dos modos de endereçamento disponíveis no 6502. Cada modo oferece flexibilidade para acessar e manipular dados na memória de diferentes maneiras, permitindo que o 6502 seja usado de maneira eficiente em diversas aplicações. O conhecimento dos modos de endereçamento é fundamental para programar efetivamente para o 6502 e entender como as instruções afetam a memória e o processamento.
+
+-- PILHA DE EXECUÇÃO --
+A pilha no microprocessador 6502 é uma área de memória dedicada para armazenar temporariamente dados e endereços durante a execução do programa. A pilha geralmente é implementada na memória RAM do sistema, em uma área específica conhecida como "página zero" que compreende os endereços de memória de $0100 a $01FF.
+
+
