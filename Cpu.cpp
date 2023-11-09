@@ -40,6 +40,21 @@ void Cpu::setFlag(Flag flag)
 
 void Cpu::adc_im(uint8_t value)
 {
+    uint8_t result = A + value;
+
+    if(result >= 0b10000000)
+        setFlag(Flag::N);
+
+    if (result == 0)
+        setFlag(Flag::Z);
+
+    if (result <= A)
+        setFlag(Flag::C);
+
+    if(((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
+        setFlag(Flag::V);
+
+    A = result;
 }
 void Cpu::adc_zp()
 {

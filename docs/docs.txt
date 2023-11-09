@@ -18,6 +18,21 @@ O registrador de ponteiro de pilha (SP) é usado para rastrear a posição da pi
 Registrador de Program Counter (PC):
 O registrador de contador de programa (PC) mantém o endereço da próxima instrução a ser executada. Quando uma instrução é concluída, o PC é incrementado para apontar para a próxima instrução na memória.
 
+--- FLAGS ---
+Operação: A + M + C -> A, C
+
+A: Valor atual no acumulador.
+M: Valor lido da memória (ou valor imediato).
+C: Carry flag (bit de carry).
+Flags Afetadas:
+
+N (Negative Flag): Define o bit N se o resultado da soma for negativo. Isso ocorre quando o bit mais significativo do resultado é 1.
+Z (Zero Flag): Define o bit Z se o resultado da soma for igual a zero.
+C (Carry Flag): Define o bit C se ocorrer um carry a partir do bit mais significativo durante a operação de adição. Isso ocorre quando a soma dos valores ultrapassa 255 (em decimal) em uma operação de 8 bits.
+I (Interrupt Disable Flag): Não é afetada pela operação ADC.
+D (Decimal Mode Flag): Não é afetada pela operação ADC.
+V (Overflow Flag): Define o bit V se ocorrer um overflow durante a operação de adição. Isso ocorre quando o resultado é maior que 127 ou menor que -128 em representação com sinal de 8 bits.
+
 
 --- MODOS DE ENDEREÇAMENTOS ---
 

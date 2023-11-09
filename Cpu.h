@@ -6,12 +6,12 @@
 
 enum class Flag {
     N, // Negative
+    Z, // Zero
+    C,  // Carry
+    I, // Interrupt
+    D, // Decimal
     V, // Overflow
     B, // Break
-    D, // Decimal
-    I, // Interrupt
-    Z, // Zero
-    C  // Carry
 };
 
 enum {
