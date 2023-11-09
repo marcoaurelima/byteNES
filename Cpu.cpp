@@ -78,10 +78,18 @@ void Cpu::adc_im(uint8_t value)
 
     A = result;
 }
-void Cpu::adc_zp()
+
+// Busca o dado no endereço fornecido no operando, 
+// e em posse desse valor, adicionar ao acumulador.
+void Cpu::adc_zp(uint8_t address)
 {
+    
 }
-void Cpu::adc_zpx()
+
+// Soma o endereço do operando com o valor contido no registrador X.
+// O resultado é o endereço que a CPU deve buscar o dado na memória.
+// A cpu então busca esse dado e adiciona ao acomulador.
+void Cpu::adc_zpx(uint8_t address)
 {
 }
 void Cpu::adc_abs()

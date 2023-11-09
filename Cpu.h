@@ -6,6 +6,8 @@
 #include <bitset>
 #include <cstdint>
 
+#include "Memory.h"
+
 enum class Flag
 {
     N, // Negative
@@ -40,8 +42,8 @@ public:
 
     // Implementações das instruções
     void adc_im(uint8_t value);
-    void adc_zp();
-    void adc_zpx();
+    void adc_zp(uint8_t address);
+    void adc_zpx(uint8_t address);
     void adc_abs();
     void adc_absx();
     void adc_absy();
@@ -49,6 +51,9 @@ public:
     void adc_indy();
 
 private:
+    // Memoria ram (2Kb)
+    Memory memory;
+
     // Registradores
     uint16_t PC{0};
     uint8_t SP{0};
