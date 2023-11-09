@@ -23,6 +23,7 @@ void Cpu::printInternals()
     std::cout << "   A\t" << (int)A << "\t" << (int)((char)A) << "\t" << std::bitset<8>(A) << "\n";
     std::cout << "   Y\t" << (int)Y << "\t" << (int)((char)Y) << "\t" << std::bitset<8>(Y) << "\n";
     std::cout << "   P\t" << (int)P << "\t" << (int)((char)P) << "\t" << std::bitset<8>(P) << "\n";
+    std::cout << "   \t\t\tNV-BDIZC\n";
     std::cout << "-------------------------------------------\n";
 }
 
@@ -61,7 +62,7 @@ void Cpu::adc_im(uint8_t value)
 {
     uint8_t result = A + value;
 
-    if(result >= 0b10000000)
+    if(result & 0b10000000)
         setFlag(Flag::N);
 
     if (result == 0)
