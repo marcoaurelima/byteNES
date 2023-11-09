@@ -53,6 +53,7 @@ private:
     uint16_t PC{0};
     uint8_t SP{0};
     uint8_t A{0};
+    uint8_t X{0};
     uint8_t Y{0};
     uint8_t P{0};
 

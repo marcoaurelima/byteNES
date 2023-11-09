@@ -68,6 +68,65 @@ O 6502 possui vários modos de endereçamento que determinam como os operandos (
 
 Estes são apenas alguns dos modos de endereçamento disponíveis no 6502. Cada modo oferece flexibilidade para acessar e manipular dados na memória de diferentes maneiras, permitindo que o 6502 seja usado de maneira eficiente em diversas aplicações. O conhecimento dos modos de endereçamento é fundamental para programar efetivamente para o 6502 e entender como as instruções afetam a memória e o processamento.
 
+CONTINUAÇÃO...
+
+Modo de Endereçamento Immediate (immediate):
+
+Mnemônico: ADC #oper
+Código da Instrução: 69
+Tamanho da Instrução: 2 bytes
+Ciclos de Clock: 2
+Descrição: Nesse modo, o operando é um valor imediato (constante) que segue a instrução. Não é necessário buscar o valor na memória, pois ele está presente diretamente no código da instrução. A CPU simplesmente adiciona esse valor ao acumulador (A), junto com a flag de carry (C), se aplicável.
+Modo de Endereçamento Zero Page (zeropage):
+
+Mnemônico: ADC oper
+Código da Instrução: 65
+Tamanho da Instrução: 2 bytes
+Ciclos de Clock: 3
+Descrição: Nesse modo, o operando é um valor de 8 bits que representa um endereço na primeira página de memória (0x00 a 0xFF). A CPU busca esse valor na memória e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável.
+Modo de Endereçamento Zero Page com Índice X (zeropage,X):
+
+Mnemônico: ADC oper,X
+Código da Instrução: 75
+Tamanho da Instrução: 2 bytes
+Ciclos de Clock: 4
+Descrição: Nesse modo, o operando é um valor de 8 bits que representa um endereço na primeira página de memória (0x00 a 0xFF), e o índice X é somado a esse valor. A CPU busca o valor na memória no endereço resultante e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável.
+Modo de Endereçamento Absoluto (absolute):
+
+Mnemônico: ADC oper
+Código da Instrução: 6D
+Tamanho da Instrução: 3 bytes
+Ciclos de Clock: 4
+Descrição: Nesse modo, o operando é um valor de 16 bits que especifica um endereço de memória. A CPU busca o valor na memória no endereço fornecido e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável.
+Modo de Endereçamento Absoluto com Índice X (absolute,X):
+
+Mnemônico: ADC oper,X
+Código da Instrução: 7D
+Tamanho da Instrução: 3 bytes
+Ciclos de Clock: 4 (ou 5 se a página de memória mudar)
+Descrição: Nesse modo, o operando é um valor de 16 bits que especifica um endereço de memória, e o índice X é somado a esse valor. A CPU busca o valor na memória no endereço resultante e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável. Se a operação atravessar uma página de memória, um ciclo extra de clock é necessário.
+Modo de Endereçamento Absoluto com Índice Y (absolute,Y):
+
+Mnemônico: ADC oper,Y
+Código da Instrução: 79
+Tamanho da Instrução: 3 bytes
+Ciclos de Clock: 4 (ou 5 se a página de memória mudar)
+Descrição: Semelhante ao modo anterior, mas com o índice Y. O operando é um valor de 16 bits que especifica um endereço de memória, e o índice Y é somado a esse valor. A CPU busca o valor na memória no endereço resultante e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável. Se a operação atravessar uma página de memória, um ciclo extra de clock é necessário.
+Modo de Endereçamento Indireto com Índice X (indirect,X):
+
+Mnemônico: ADC (oper,X)
+Código da Instrução: 61
+Tamanho da Instrução: 2 bytes
+Ciclos de Clock: 6
+Descrição: Nesse modo, o operando é um endereço de 8 bits na primeira página de memória. A CPU usa o índice X para calcular o endereço efetivo, lê o byte de menor significado desse endereço e o byte de maior significado do endereço seguinte, e forma um endereço de 16 bits. Em seguida, a CPU busca o valor na memória no endereço calculado e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável.
+Modo de Endereçamento Indireto com Índice Y (indirect),Y:
+
+Mnemônico: ADC (oper),Y
+Código da Instrução: 71
+Tamanho da Instrução: 2 bytes
+Ciclos de Clock: 5 (ou 6 se a página de memória mudar)
+Descrição: Nesse modo, o operando é um endereço de 8 bits na primeira página de memória. A CPU usa esse endereço para ler o byte de menor significado, em seguida, lê o byte de maior significado no endereço seguinte. Ela forma um endereço de 16 bits e adiciona o índice Y a esse valor. A CPU busca o valor na memória no endereço resultante e o adiciona ao acumulador (A), juntamente com a flag de carry (C), se aplicável. Se a operação atravessar uma página de memória, um ciclo extra de clock é necessário.
+
 -- PILHA DE EXECUÇÃO --
 A pilha no microprocessador 6502 é uma área de memória dedicada para armazenar temporariamente dados e endereços durante a execução do programa. A pilha geralmente é implementada na memória RAM do sistema, em uma área específica conhecida como "página zero" que compreende os endereços de memória de $0100 a $01FF.
 

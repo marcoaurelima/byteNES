@@ -22,6 +22,7 @@ void Cpu::printInternals()
     std::cout << "   SP\t" << (int)SP << "\t" << (int)((char)SP) << "\t" << std::bitset<8>(SP) << "\n";
     std::cout << "   A\t" << (int)A << "\t" << (int)((char)A) << "\t" << std::bitset<8>(A) << "\n";
     std::cout << "   Y\t" << (int)Y << "\t" << (int)((char)Y) << "\t" << std::bitset<8>(Y) << "\n";
+    std::cout << "   Y\t" << (int)X << "\t" << (int)((char)X) << "\t" << std::bitset<8>(X) << "\n";
     std::cout << "   P\t" << (int)P << "\t" << (int)((char)P) << "\t" << std::bitset<8>(P) << "\n";
     std::cout << "   \t\t\tNV-BDIZC\n";
     std::cout << "-------------------------------------------\n";
@@ -58,6 +59,7 @@ void Cpu::setFlag(Flag flag)
     }
 }
 
+// Adiciona o valor imediato diretamente ao registrador acumulador
 void Cpu::adc_im(uint8_t value)
 {
     uint8_t result = A + value;
