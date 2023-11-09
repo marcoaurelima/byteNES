@@ -44,7 +44,7 @@ public:
     void adc_im(uint8_t value);
     void adc_zp(uint8_t address);
     void adc_zpx(uint8_t address);
-    void adc_abs();
+    void adc_abs(uint16_t address);
     void adc_absx();
     void adc_absy();
     void adc_indx();

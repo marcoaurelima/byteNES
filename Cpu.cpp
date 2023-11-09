@@ -98,9 +98,16 @@ void Cpu::adc_zpx(uint8_t address)
     adc_zp(result);
 }
 
-void Cpu::adc_abs()
+// similar ao adc_zp(), so que no caso do absolute, é um endereço de 16 bits,
+// pois ele pode acessar não apenas o zero page, mas a memoria ram inteira.
+// Busca o dado no endereço fornecido no operando (na memória total), 
+// e em posse desse valor, adicionar ao acumulador.
+void Cpu::adc_abs(uint16_t address)
 {
+    uint8_t value = ram->get(address);
+    adc_im(value);
 }
+
 void Cpu::adc_absx()
 {
 }
