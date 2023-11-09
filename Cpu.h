@@ -52,7 +52,7 @@ public:
 
 private:
     // Memoria ram (2Kb)
-    Ram ram;
+    Ram* ram;
 
     // Registradores
     uint16_t PC{0};

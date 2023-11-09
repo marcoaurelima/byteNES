@@ -2,6 +2,7 @@
 
 Cpu::Cpu()
 {
+    ram = new Ram(2048);
     PC = 0;
     SP = 0;
     A = 0xFF;
@@ -79,20 +80,24 @@ void Cpu::adc_im(uint8_t value)
     A = result;
 }
 
-// Busca o dado no endereço fornecido no operando, 
+// Busca o dado no endereço fornecido no operando (na zero page), 
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address)
 {
-    uint8_t value = ram.get(address);
+    uint8_t value = ram->get(address);
     adc_im(value);
 }
 
-// Soma o endereço do operando com o valor contido no registrador X.
+// Soma o endereço do operando (na zero page) com o valor contido no registrador X.
 // O resultado é o endereço que a CPU deve buscar o dado na memória.
 // A cpu então busca esse dado e adiciona ao acomulador.
+// Aqui, a flag carry não é afetada na aritmetica de endereços.
 void Cpu::adc_zpx(uint8_t address)
 {
+    uint8_t result = address + X;
+    adc_zp(result);
 }
+
 void Cpu::adc_abs()
 {
 }
