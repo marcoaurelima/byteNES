@@ -6,7 +6,7 @@
 #include <bitset>
 #include <cstdint>
 
-#include "Memory.h"
+#include "Ram.h"
 
 enum class Flag
 {
@@ -52,7 +52,7 @@ public:
 
 private:
     // Memoria ram (2Kb)
-    Memory memory;
+    Ram ram;
 
     // Registradores
     uint16_t PC{0};

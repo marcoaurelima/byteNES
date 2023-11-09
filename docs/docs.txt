@@ -1,3 +1,6 @@
+--- MEMORIA ---
+espelhamento foi feito para abstrair os endereços de memoria que não estariam disponíveis tendo em vista que ele oferece apenas 2kb de memoria.
+
 --- REGISTRADORES ---
 
 Accumulador (A):

@@ -83,7 +83,8 @@ void Cpu::adc_im(uint8_t value)
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address)
 {
-    
+    uint8_t value = ram.get(address);
+    adc_im(value);
 }
 
 // Soma o endereço do operando com o valor contido no registrador X.

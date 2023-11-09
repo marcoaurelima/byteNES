@@ -1,21 +1,21 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef RAM_H
+#define RAM_H
 #pragma once
 
 #include <cstdint>
 
-class Memory
+class Ram
 {
 public:
-    Memory();
-    ~Memory();
+    Ram();
+    Ram(const uint16_t size);
+    ~Ram();
 
     uint8_t get(uint16_t address);
     void set(uint16_t address, uint8_t value);
 
 private:
-    const uint16_t SIZE{2048};
-    uint8_t* ram;
+    uint8_t *data;
 };
 
 #endif
