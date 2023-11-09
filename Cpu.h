@@ -87,9 +87,9 @@ public:
     // STA (STore Accumulator)
     // Stack Instructions
     // STX (STore X register)
-    void stx_zp();
-    void stx_zpy();
-    void stx_abs();
+    void stx_zp(uint8_t address);
+    void stx_zpy(uint8_t address);
+    void stx_abs(uint8_t address);
     // STY (STore Y register)
 
 

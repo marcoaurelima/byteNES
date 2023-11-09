@@ -173,12 +173,18 @@ void Cpu::adc_indy(uint8_t address)
 
 // -------------- STX (STore X register) -------------- //
 
-void Cpu::stx_zp()
+// Armazena o valor contido no registrador X no endereço do operando (zero page).
+void Cpu::stx_zp(uint8_t address)
 {
 }
-void Cpu::stx_zpy()
+
+// Armazena o valor contido no registrador X no endereço do operando, somado com o valor contido no
+// registrador Y.
+void Cpu::stx_zpy(uint8_t address)
 {
 }
-void Cpu::stx_abs()
+
+// Armazena o valor contido no registrador X no endereço do operando de forma absoluta (toda a memória)
+void Cpu::stx_abs(uint8_t address)
 {
 }
