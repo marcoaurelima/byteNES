@@ -108,15 +108,52 @@ void Cpu::adc_abs(uint16_t address)
     adc_im(value);
 }
 
-void Cpu::adc_absx()
+// Soma o endereço do operando (na memoria total) com o valor contido no registrador X.
+// O resultado é o endereço que a CPU deve buscar o dado na memória.
+// A cpu então busca esse dado e adiciona ao acomulador.
+// Aqui, a flag carry não é afetada na aritmetica de endereços.
+void Cpu::adc_absx(uint16_t address)
 {
+    uint16_t result = address + X;
+    adc_abs(result);
 }
-void Cpu::adc_absy()
+
+// Soma o endereço do operando (na memoria total) com o valor contido no registrador X.
+// O resultado é o endereço que a CPU deve buscar o dado na memória.
+// A cpu então busca esse dado e adiciona ao acomulador.
+// Aqui, a flag carry não é afetada na aritmetica de endereços.
+void Cpu::adc_absy(uint16_t address)
 {
+    uint16_t result = address + Y;
+    adc_abs(result);
 }
-void Cpu::adc_indx()
+
+uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
 {
+    uint16_t result = 0;
+    result = (msb << 8);
+    result = (result | lsb);
+    return result;
 }
-void Cpu::adc_indy()
+
+// Junta o edereço do operando (8 bits) com o valor do registrador X (8 bits)
+// transformando-os em um endereço de 16 bits.
+// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo, e
+// o valor do operando é o menos significativo.
+// O dado é buscado nesse endereço e armazenado no acumulador.
+void Cpu::adc_indx(uint8_t address)
 {
+    uint16_t result = concat2Bytes(X, address);
+    adc_abs(result);
+}
+
+// Junta o edereço do operando (8 bits) com o valor do registrador Y (8 bits)
+// transformando-os em um endereço de 16 bits.
+// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo, e
+// o valor do operando é o menos significativo.
+// O dado é buscado nesse endereço e armazenado no acumulador.
+void Cpu::adc_indy(uint8_t address)
+{
+    uint16_t result = concat2Bytes(X, address);
+    adc_abs(result);
 }

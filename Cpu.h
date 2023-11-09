@@ -45,10 +45,10 @@ public:
     void adc_zp(uint8_t address);
     void adc_zpx(uint8_t address);
     void adc_abs(uint16_t address);
-    void adc_absx();
-    void adc_absy();
-    void adc_indx();
-    void adc_indy();
+    void adc_absx(uint16_t address);
+    void adc_absy(uint16_t address);
+    void adc_indx(uint8_t address);
+    void adc_indy(uint8_t address);
 
 private:
     // Memoria ram (2Kb)

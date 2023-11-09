@@ -1,6 +1,6 @@
 #include "Ram.h"
 
-Ram::Ram(const uint16_t size)
+Ram::Ram()
 {
 }
 
