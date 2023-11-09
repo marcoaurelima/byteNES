@@ -35,10 +35,11 @@ class Cpu
 {
 public:
     Cpu();
+    Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t Y, uint8_t P);
     ~Cpu();
 
     // Printar status interno
-    void printInternals();
+    void showStatus();
 
     // Implementações das instruções
     void adc_im(uint8_t value);

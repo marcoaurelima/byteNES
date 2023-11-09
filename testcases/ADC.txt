@@ -1,0 +1,49 @@
+Claro, aqui estão alguns exemplos de testes que utilizam a instrução ADC (Add with Carry) 
+no contexto do processador 6502, juntamente com os resultados esperados:
+
+1. **Teste básico - ADC com números positivos:**
+
+   ```
+   ; Código em Assembly 6502
+   LDA #10    ; Carrega o valor 10 no registrador A
+   ADC #5     ; Adiciona 5 a A
+   STA $01    ; Armazena o resultado em $01
+   ```
+
+   Resultado esperado:
+   - Registrador A após a execução: 15
+   - Carry Flag (C) definido
+   - Zero Flag (Z) não definido
+   - Overflow Flag (V) não definido
+
+2. **Teste com números negativos:**
+
+   ```
+   ; Código em Assembly 6502
+   LDA #10    ; Carrega o valor 10 no registrador A
+   SEC        ; Define o carry flag
+   SBC #15    ; Subtrai 15 de A (equivalente a ADC -15)
+   STA $01    ; Armazena o resultado em $01
+   ```
+
+   Resultado esperado:
+   - Registrador A após a execução: -5 (representado como complemento de 2)
+   - Carry Flag (C) não definido
+   - Zero Flag (Z) não definido
+   - Overflow Flag (V) não definido
+
+3. **Teste de overflow:**
+
+   ```
+   ; Código em Assembly 6502
+   LDA #$7F   ; Carrega o valor 127 (máximo positivo de 8 bits) no registrador A
+   ADC #1     ; Adiciona 1 a A
+   STA $01    ; Armazena o resultado em $01
+   ```
+
+   Resultado esperado:
+   - Registrador A após a execução: -128 (overflow ocorre e o valor é tratado como -128)
+   - Carry Flag (C) definido
+   - Zero Flag (Z) não definido
+   - Overflow Flag (V) definido
+

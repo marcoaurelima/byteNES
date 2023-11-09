@@ -5,16 +5,25 @@ Cpu::Cpu()
     ram = new Ram(2048);
     PC = 0;
     SP = 0;
-    A = 0xFF;
+    A = 0;
     Y = 0;
     P = 0;
+}
+
+Cpu::Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t Y, uint8_t P)
+{
+    this->PC = PC;
+    this->SP = SP;
+    this->A = A;
+    this->Y = Y;
+    this->P = P;
 }
 
 Cpu::~Cpu()
 {
 }
 
-void Cpu::printInternals()
+void Cpu::showStatus()
 {
     std::cout << "-------------------------------------------\n";
     std::cout << "   RG\tUSIG\tSIG\tBIN\n";
@@ -58,6 +67,17 @@ void Cpu::setFlag(Flag flag)
     default:
         break;
     }
+}
+
+// Concatena 2 variaveis de 8 bits em uma única de 16 bits.
+// (msb) Most Significant Byte
+// (lsb) Least Significant Byte 
+uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
+{
+    uint16_t result = 0;
+    result = (msb << 8);
+    result = (result | lsb);
+    return result;
 }
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
@@ -126,14 +146,6 @@ void Cpu::adc_absy(uint16_t address)
 {
     uint16_t result = address + Y;
     adc_abs(result);
-}
-
-uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
-{
-    uint16_t result = 0;
-    result = (msb << 8);
-    result = (result | lsb);
-    return result;
 }
 
 // Junta o edereço do operando (8 bits) com o valor do registrador X (8 bits)
