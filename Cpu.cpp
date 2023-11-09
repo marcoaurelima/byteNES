@@ -38,7 +38,6 @@ void Cpu::showStatus()
     std::cout << "-------------------------------------------\n";
 }
 
-
 void Cpu::setFlag(Flag flag)
 {
     switch (flag)
@@ -71,7 +70,7 @@ void Cpu::setFlag(Flag flag)
 
 // Concatena 2 variaveis de 8 bits em uma única de 16 bits.
 // (msb) Most Significant Byte
-// (lsb) Least Significant Byte 
+// (lsb) Least Significant Byte
 uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
 {
     uint16_t result = 0;
@@ -80,12 +79,14 @@ uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
     return result;
 }
 
+// -------------- ADC (ADd with Carry) -------------- //
+
 // Adiciona o valor imediato diretamente ao registrador acumulador
 void Cpu::adc_im(uint8_t value)
 {
     uint8_t result = A + value;
 
-    if(result & 0b10000000)
+    if (result & 0b10000000)
         setFlag(Flag::N);
 
     if (result == 0)
@@ -94,13 +95,13 @@ void Cpu::adc_im(uint8_t value)
     if (result <= A)
         setFlag(Flag::C);
 
-    if(((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
+    if (((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
         setFlag(Flag::V);
 
     A = result;
 }
 
-// Busca o dado no endereço fornecido no operando (na zero page), 
+// Busca o dado no endereço fornecido no operando (na zero page),
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address)
 {
@@ -120,7 +121,7 @@ void Cpu::adc_zpx(uint8_t address)
 
 // similar ao adc_zp(), so que no caso do absolute, é um endereço de 16 bits,
 // pois ele pode acessar não apenas o zero page, mas a memoria ram inteira.
-// Busca o dado no endereço fornecido no operando (na memória total), 
+// Busca o dado no endereço fornecido no operando (na memória total),
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_abs(uint16_t address)
 {
@@ -168,4 +169,16 @@ void Cpu::adc_indy(uint8_t address)
 {
     uint16_t result = concat2Bytes(X, address);
     adc_abs(result);
+}
+
+// -------------- STX (STore X register) -------------- //
+
+void Cpu::stx_zp()
+{
+}
+void Cpu::stx_zpy()
+{
+}
+void Cpu::stx_abs()
+{
 }
