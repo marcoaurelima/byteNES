@@ -2,29 +2,32 @@
 #define CPU_H
 #pragma once
 
+#include <iostream>
+#include <bitset>
 #include <cstdint>
 
-enum class Flag {
+enum class Flag
+{
     N, // Negative
     Z, // Zero
-    C,  // Carry
+    C, // Carry
     I, // Interrupt
     D, // Decimal
     V, // Overflow
     B, // Break
 };
 
-enum {
-    ADC_IM   = 0X69,
-    ADC_ZP   = 0X65,
-    ADC_ZPX  = 0X75,
-    ADC_ABS  = 0X6D,
+enum
+{
+    ADC_IM = 0X69,
+    ADC_ZP = 0X65,
+    ADC_ZPX = 0X75,
+    ADC_ABS = 0X6D,
     ADC_ABSX = 0X7D,
     ADC_ABSY = 0X79,
     ADC_INDX = 0X61,
     ADC_INDY = 0X71
 };
-
 
 class Cpu
 {
@@ -32,17 +35,8 @@ public:
     Cpu();
     ~Cpu();
 
-private:
-    // Registradores
-    uint16_t PC{0};
-    uint8_t  SP{0};
-    uint8_t  A{0};
-    uint8_t  Y{0};
-    uint8_t  P{0};
-
-    // Flags
-    void setFlag(Flag flag);
-
+    // Printar status interno
+    void printInternals();
 
     // Implementações das instruções
     void adc_im(uint8_t value);
@@ -53,6 +47,17 @@ private:
     void adc_absy();
     void adc_indx();
     void adc_indy();
+
+private:
+    // Registradores
+    uint16_t PC{0};
+    uint8_t SP{0};
+    uint8_t A{0};
+    uint8_t Y{0};
+    uint8_t P{0};
+
+    // Flags
+    void setFlag(Flag flag);
 };
 
 #endif

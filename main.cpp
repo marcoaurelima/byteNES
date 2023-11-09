@@ -1,13 +1,14 @@
 #include <iostream>
 #include <cstdint>
 
+#include "Cpu.h"
 
 
 int main(int argc, char *argv[])
 {
-  char i = 250;
-  char j = 10;
+  Cpu cpu;
 
-  std::cout << i + j << std::endl;
+  cpu.printInternals();
+ 
   return 0;
 }

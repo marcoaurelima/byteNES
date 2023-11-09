@@ -2,11 +2,30 @@
 
 Cpu::Cpu()
 {
+    PC = 0;
+    SP = 0;
+    A = 0xFF;
+    Y = 0;
+    P = 0;
 }
 
 Cpu::~Cpu()
 {
 }
+
+void Cpu::printInternals()
+{
+    std::cout << "-------------------------------------------\n";
+    std::cout << "   RG\tUSIG\tSIG\tBIN\n";
+    std::cout << "-------------------------------------------\n";
+    std::cout << "   PC\t" << (int)PC << "\t" << (int)((char)PC) << "\t" << std::bitset<16>(PC) << "\n";
+    std::cout << "   SP\t" << (int)SP << "\t" << (int)((char)SP) << "\t" << std::bitset<8>(SP) << "\n";
+    std::cout << "   A\t" << (int)A << "\t" << (int)((char)A) << "\t" << std::bitset<8>(A) << "\n";
+    std::cout << "   Y\t" << (int)Y << "\t" << (int)((char)Y) << "\t" << std::bitset<8>(Y) << "\n";
+    std::cout << "   P\t" << (int)P << "\t" << (int)((char)P) << "\t" << std::bitset<8>(P) << "\n";
+    std::cout << "-------------------------------------------\n";
+}
+
 
 void Cpu::setFlag(Flag flag)
 {
