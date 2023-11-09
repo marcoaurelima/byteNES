@@ -1,10 +1,18 @@
 #ifndef CPU_H
 #define CPU_H
-
 #pragma once
 
-using UINT16 = unsigned short;
-using UINT8 = unsigned char;
+#include <cstdint>
+
+enum class Flag {
+    N, // Negative
+    V, // Overflow
+    B, // Break
+    D, // Decimal
+    I, // Interrupt
+    Z, // Zero
+    C  // Carry
+};
 
 enum {
     ADC_IM   = 0X69,
@@ -17,6 +25,7 @@ enum {
     ADC_INDY = 0X71
 };
 
+
 class Cpu
 {
 public:
@@ -25,14 +34,18 @@ public:
 
 private:
     // Registradores
-    UINT16 PC{0};
-    UINT8  SP{0};
-    UINT8  A{0};
-    UINT8  Y{0};
-    UINT8  P{0};
+    uint16_t PC{0};
+    uint8_t  SP{0};
+    uint8_t  A{0};
+    uint8_t  Y{0};
+    uint8_t  P{0};
+
+    // Flags
+    void setFlag(Flag flag);
+
 
     // Implementações das instruções
-    void adc_im();
+    void adc_im(uint8_t value);
     void adc_zp();
     void adc_zpx();
     void adc_abs();

@@ -1,3 +1,23 @@
+--- REGISTRADORES ---
+
+Accumulador (A):
+O registrador de acumulador (A) é usado para realizar operações aritméticas e lógicas. Ele é o registrador principal para realizar cálculos e armazenar resultados.
+
+Registrador de Índice X:
+O registrador de índice X é usado para endereçamento de memória. Pode ser usado como um contador de loop em instruções de repetição.
+
+Registrador de Índice Y:
+O registrador de índice Y é semelhante ao registrador de índice X e também é usado para endereçamento de memória e cálculos.
+
+Registrador de Status (P):
+O registrador de status armazena informações sobre o estado atual do processador. Ele inclui sinalizadores que indicam coisas como a ocorrência de um overflow, um resultado negativo ou zero, entre outros.
+
+Registrador Stack Pointer (SP):
+O registrador de ponteiro de pilha (SP) é usado para rastrear a posição da pilha na memória. As operações de empilhamento (push) e desempilhamento (pull) usam o SP para atualizar a posição da pilha.
+
+Registrador de Program Counter (PC):
+O registrador de contador de programa (PC) mantém o endereço da próxima instrução a ser executada. Quando uma instrução é concluída, o PC é incrementado para apontar para a próxima instrução na memória.
+
 
 --- MODOS DE ENDEREÇAMENTOS ---
 
