@@ -2,7 +2,7 @@
 
 Cpu::Cpu()
 {
-    ram = new Ram(2048);
+    memory = new Memory();
     PC = 0;
     SP = 0;
     A = 0;
@@ -105,7 +105,7 @@ void Cpu::adc_im(uint8_t value)
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address)
 {
-    uint8_t value = ram->get(address);
+    uint8_t value = memory->read(address);
     adc_im(value);
 }
 
@@ -125,7 +125,7 @@ void Cpu::adc_zpx(uint8_t address)
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_abs(uint16_t address)
 {
-    uint8_t value = ram->get(address);
+    uint8_t value = memory->read(address);
     adc_im(value);
 }
 
