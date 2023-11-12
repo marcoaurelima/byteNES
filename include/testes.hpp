@@ -4,7 +4,7 @@
 #include "Cpu.hpp"
 
 // Teste básico - ADC com números positivos:
-void test_ADC1()
+inline void test_ADC1()
 {
     // Carrega o valor 10 no registrador A
     Cpu cpu(0,0,10,0,0);
