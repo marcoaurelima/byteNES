@@ -6,7 +6,7 @@
 #include <bitset>
 #include <cstdint>
 
-#include "Memory.h"
+#include "Memory.hpp"
 
 enum class Flag
 {

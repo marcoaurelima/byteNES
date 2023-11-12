@@ -1,4 +1,4 @@
-#include "Bus.h"
+#include "Bus.hpp"
 
 Bus::Bus()
 {

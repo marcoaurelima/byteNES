@@ -1,7 +1,7 @@
 #ifndef TESTES_H
 #define TESTES_H
 #include <iostream>
-#include "Cpu.h"
+#include "Cpu.hpp"
 
 // Teste básico - ADC com números positivos:
 void test_ADC1()
