@@ -11,7 +11,7 @@ OBJS =  $(OBJ)/main.o \
 		$(OBJ)/Memory.o 
 
 all: $(OBJS)
-	$(CXX) -o $(BIN)/emulator $(OBJS) -I $(INCLUDE)
+	$(CXX) -o $(BIN)/emulator $(OBJS) -I $(INCLUDE) -lsfml-graphics -lsfml-window -lsfml-system
 	@$(BIN)/emulator
 
 $(OBJ)/main.o: main.cpp
