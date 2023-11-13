@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <cstdint>
 class Gui
 {
 public:
@@ -14,15 +15,18 @@ public:
     void show();
 
 private:
-    sf::RenderWindow* window;
-    sf::Font* font;
+    sf::RenderWindow *window;
+    sf::Font *font;
 
-    sf::RectangleShape* gameScreen;
-    sf::Text* gameScreenTitle;
+    sf::RectangleShape *gameScreen;
+    sf::Text *gameScreenTitle;
 
-    sf::RectangleShape* flagsTittleBar;
-    std::array<sf::RectangleShape*, 8> flags;
-    sf::Text* flagsText;
+    uint8_t flag{0};
+    sf::RectangleShape *flagsBar;
+    std::array<sf::RectangleShape *, 8> flags;
+    sf::Text *flagsText;
+
+    void updateFlag();
 };
 
 #endif
