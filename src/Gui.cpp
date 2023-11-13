@@ -9,7 +9,7 @@ Gui::Gui()
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
   gameScreen->setPosition(50, 50);
   gameScreen->setFillColor(sf::Color::Black);
-  gameScreen->setOutlineColor(sf::Color::White);
+  gameScreen->setOutlineColor(sf::Color(80,80,80));
   gameScreen->setOutlineThickness(1);
 
   font = new sf::Font();
@@ -27,7 +27,7 @@ Gui::Gui()
   for (int i = 0; i < flagsTiles.size(); i++)
   {
     flagsTiles[i] = new sf::RectangleShape(sf::Vector2f(19.8, 19));
-    flagsTiles[i]->setFillColor(sf::Color(60, 60, 60));
+    flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     flagsTiles[i]->setOutlineColor(sf::Color::Black);
     flagsTiles[i]->setOutlineThickness(2);
     flagsTiles[i]->setPosition(130 + ((flagsTiles.size() - i - 1) * 19.8), 543);
@@ -36,7 +36,7 @@ Gui::Gui()
   flagsBar = new sf::RectangleShape(sf::Vector2f(242, 25));
   flagsBar->setPosition(50, 540);
   flagsBar->setFillColor(sf::Color(20, 20, 20));
-  flagsBar->setOutlineColor(sf::Color::White);
+  flagsBar->setOutlineColor(sf::Color(80,80,80));
   flagsBar->setOutlineThickness(1);
 
   flagsText = new sf::Text();
@@ -47,8 +47,35 @@ Gui::Gui()
   flagsText->setPosition(55, 538);
 
   // Registers monitor
+  for (int i = 0; i < registersTiles.size(); i++)
+  {
+    registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.7, 41));
+    registersTiles[i]->setFillColor(sf::Color(40, 40, 40));
+    registersTiles[i]->setOutlineColor(sf::Color(20, 20, 20));
+    registersTiles[i]->setOutlineThickness(2);
+    registersTiles[i]->setPosition(374 + ((registersTiles.size() - i - 1) * 29.7), 544);
+  }
 
+  RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
+  RegistersBar->setPosition(300, 540);
+  RegistersBar->setFillColor(sf::Color(20, 20, 20));
+  RegistersBar->setOutlineColor(sf::Color(80,80,80));
+  RegistersBar->setOutlineThickness(1);
 
+  registersLabelText = new sf::Text();
+  registersLabelText->setFont(*font);
+  registersLabelText->setFillColor(sf::Color::White);
+  registersLabelText->setString("REGS   PC SP A  X  Y  P");
+  registersLabelText->setCharacterSize(20);
+  registersLabelText->setPosition(310, 538);
+
+  registerStr = "12 34 56 78 9A BC";
+  registersText = new sf::Text();
+  registersText->setFont(*font);
+  registersText->setFillColor(sf::Color::Green);
+  registersText->setString(registerStr);
+  registersText->setCharacterSize(20);
+  registersText->setPosition(379, 558);
 }
 
 Gui::~Gui()
@@ -70,6 +97,7 @@ void Gui::updateFlag()
     }
   }
 }
+
 
 void Gui::show()
 {
@@ -95,6 +123,14 @@ void Gui::show()
       window->draw(*flag);
     }
     window->draw(*flagsText);
+
+    window->draw(*RegistersBar);
+    for (auto &reg : registersTiles)
+    {
+      window->draw(*reg);
+    }
+    window->draw(*registersText);
+    window->draw(*registersLabelText);
     window->display();
     flags++;
   }

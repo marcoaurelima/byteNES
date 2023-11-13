@@ -5,7 +5,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <cstdint>
+#include <random>
 class Gui
 {
 public:
@@ -25,8 +29,14 @@ private:
     sf::RectangleShape *flagsBar;
     std::array<sf::RectangleShape *, 8> flagsTiles;
     sf::Text *flagsText;
-
     void updateFlag();
+
+    std::string registerStr{};
+    sf::RectangleShape *RegistersBar;
+    sf::Text *registersLabelText;
+    sf::Text *registersText;
+    std::array<sf::RectangleShape *, 6> registersTiles;
+    void updateRegRadom();
 };
 
 #endif
