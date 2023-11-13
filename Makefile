@@ -9,7 +9,9 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 OBJS =  $(OBJ)/main.o \
 		$(OBJ)/Bus.o \
 		$(OBJ)/Cpu.o \
-		$(OBJ)/Memory.o 
+		$(OBJ)/Memory.o \
+		$(OBJ)/Gui.o 
+		
 
 all: $(OBJS)
 	$(CXX) -o $(BIN)/emulator $(OBJS) -I $(INCLUDE) $(SFML)
@@ -26,6 +28,10 @@ $(OBJ)/Cpu.o: $(SRC)/Cpu.cpp
 
 $(OBJ)/Memory.o: $(SRC)/Memory.cpp
 	$(CXX) -c $(SRC)/Memory.cpp -I $(INCLUDE) -o $(OBJ)/Memory.o
+
+$(OBJ)/Gui.o: $(SRC)/Gui.cpp
+	$(CXX) -c $(SRC)/Gui.cpp -I $(INCLUDE) -o $(OBJ)/Gui.o
+
 
 clean:
 	@rm -rf obj
