@@ -21,9 +21,9 @@ private:
     sf::RectangleShape *gameScreen;
     sf::Text *gameScreenTitle;
 
-    uint8_t flag{0};
+    uint8_t flags{0};
     sf::RectangleShape *flagsBar;
-    std::array<sf::RectangleShape *, 8> flags;
+    std::array<sf::RectangleShape *, 8> flagsTiles;
     sf::Text *flagsText;
 
     void updateFlag();

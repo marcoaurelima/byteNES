@@ -23,14 +23,14 @@ Gui::Gui()
   gameScreenTitle->setCharacterSize(20);
   gameScreenTitle->setPosition(50, 15);
 
-  // Flags
-  for (int i = 0; i < flags.size(); i++)
+  // Flags monitor
+  for (int i = 0; i < flagsTiles.size(); i++)
   {
-    flags[i] = new sf::RectangleShape(sf::Vector2f(19.8, 19));
-    flags[i]->setFillColor(sf::Color(60, 60, 60));
-    flags[i]->setOutlineColor(sf::Color::Black);
-    flags[i]->setOutlineThickness(2);
-    flags[i]->setPosition(130 + ((flags.size() - i - 1) * 19.8), 543);
+    flagsTiles[i] = new sf::RectangleShape(sf::Vector2f(19.8, 19));
+    flagsTiles[i]->setFillColor(sf::Color(60, 60, 60));
+    flagsTiles[i]->setOutlineColor(sf::Color::Black);
+    flagsTiles[i]->setOutlineThickness(2);
+    flagsTiles[i]->setPosition(130 + ((flagsTiles.size() - i - 1) * 19.8), 543);
   }
 
   flagsBar = new sf::RectangleShape(sf::Vector2f(242, 25));
@@ -45,6 +45,10 @@ Gui::Gui()
   flagsText->setString("FLAGS   N V   B D I Z C");
   flagsText->setCharacterSize(20);
   flagsText->setPosition(55, 538);
+
+  // Registers monitor
+
+
 }
 
 Gui::~Gui()
@@ -53,17 +57,16 @@ Gui::~Gui()
 
 void Gui::updateFlag()
 {
-  printf("%x : %x\n", flag, flag & (0x01 << 1));
 
-  for (int i = 0; i < flags.size(); i++)
+  for (int i = 0; i < flagsTiles.size(); i++)
   {
-    if (flag & (0x01 << i))
+    if (flags & (0x01 << i))
     {
-      flags[i]->setFillColor(sf::Color::Red);
+      flagsTiles[i]->setFillColor(sf::Color::Red);
     }
     else
     {
-      flags[i]->setFillColor(sf::Color(40, 40, 40));
+      flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     }
   }
 }
@@ -87,12 +90,12 @@ void Gui::show()
     updateFlag();
 
     window->draw(*flagsBar);
-    for (auto &flag : flags)
+    for (auto &flag : flagsTiles)
     {
       window->draw(*flag);
     }
     window->draw(*flagsText);
     window->display();
-    flag++;
+    flags++;
   }
 }
