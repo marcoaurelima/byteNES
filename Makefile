@@ -4,6 +4,7 @@ BIN = ./bin
 OBJ = ./obj
 
 CXX = g++ -std=c++11
+SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 OBJS =  $(OBJ)/main.o \
 		$(OBJ)/Bus.o \
@@ -11,7 +12,7 @@ OBJS =  $(OBJ)/main.o \
 		$(OBJ)/Memory.o 
 
 all: $(OBJS)
-	$(CXX) -o $(BIN)/emulator $(OBJS) -I $(INCLUDE) -lsfml-graphics -lsfml-window -lsfml-system
+	$(CXX) -o $(BIN)/emulator $(OBJS) -I $(INCLUDE) $(SFML)
 	@$(BIN)/emulator
 
 $(OBJ)/main.o: main.cpp
