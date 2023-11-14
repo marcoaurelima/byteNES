@@ -3,13 +3,13 @@
 Gui::Gui()
 {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(1280, 720), "NES Emulator");
+  window = new sf::RenderWindow(sf::VideoMode(880, 640), "NES Emulator");
   window->setFramerateLimit(2);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
   gameScreen->setPosition(50, 50);
   gameScreen->setFillColor(sf::Color::Black);
-  gameScreen->setOutlineColor(sf::Color(80,80,80));
+  gameScreen->setOutlineColor(sf::Color(80, 80, 80));
   gameScreen->setOutlineThickness(1);
 
   font = new sf::Font();
@@ -19,7 +19,7 @@ Gui::Gui()
   gameScreenTitle = new sf::Text();
   gameScreenTitle->setFont(*font);
   gameScreenTitle->setFillColor(sf::Color::White);
-  gameScreenTitle->setString("NES Game Screen - 256x240px");
+  gameScreenTitle->setString("NES Emulator");
   gameScreenTitle->setCharacterSize(20);
   gameScreenTitle->setPosition(50, 15);
 
@@ -36,7 +36,7 @@ Gui::Gui()
   flagsBar = new sf::RectangleShape(sf::Vector2f(242, 25));
   flagsBar->setPosition(50, 540);
   flagsBar->setFillColor(sf::Color(20, 20, 20));
-  flagsBar->setOutlineColor(sf::Color(80,80,80));
+  flagsBar->setOutlineColor(sf::Color(80, 80, 80));
   flagsBar->setOutlineThickness(1);
 
   flagsText = new sf::Text();
@@ -59,7 +59,7 @@ Gui::Gui()
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
   RegistersBar->setPosition(300, 540);
   RegistersBar->setFillColor(sf::Color(20, 20, 20));
-  RegistersBar->setOutlineColor(sf::Color(80,80,80));
+  RegistersBar->setOutlineColor(sf::Color(80, 80, 80));
   RegistersBar->setOutlineThickness(1);
 
   registersLabelText = new sf::Text();
@@ -76,6 +76,47 @@ Gui::Gui()
   registersText->setString(registerStr);
   registersText->setCharacterSize(20);
   registersText->setPosition(379, 558);
+
+  // Disassembler monitor
+  disassemblerScreen = new sf::RectangleShape(sf::Vector2f(226, 540));
+  disassemblerScreen->setPosition(600, 50);
+  disassemblerScreen->setFillColor(sf::Color(20, 20, 20));
+  disassemblerScreen->setOutlineColor(sf::Color(80, 80, 80));
+  disassemblerScreen->setOutlineThickness(1);
+
+  disassemblerScreenMasks[0] = new sf::RectangleShape(sf::Vector2f(226, 253));
+  disassemblerScreenMasks[0]->setPosition(600, 50);
+  disassemblerScreenMasks[0]->setFillColor(sf::Color(0, 0, 0, 180));
+
+  disassemblerScreenMasks[1] = new sf::RectangleShape(sf::Vector2f(4, 19));
+  disassemblerScreenMasks[1]->setPosition(600, 304);
+  disassemblerScreenMasks[1]->setFillColor(sf::Color::Blue);
+
+  disassemblerScreenMasks[2] = new sf::RectangleShape(sf::Vector2f(4, 19));
+  disassemblerScreenMasks[2]->setPosition(822, 304);
+  disassemblerScreenMasks[2]->setFillColor(sf::Color::Blue);
+
+  disassemblerScreenMasks[3] = new sf::RectangleShape(sf::Vector2f(226, 262));
+  disassemblerScreenMasks[3]->setPosition(600, 325);
+  disassemblerScreenMasks[3]->setFillColor(sf::Color(0, 0, 0, 180));
+
+  for (int i = 0; i < 25; i++)
+  {
+    disassemblerSequenceStr.push_back("2F3B  ORG  $80AF");
+  }
+
+  std::string temp;
+  for (int i = 0; i < 25; i++)
+  {
+    temp += disassemblerSequenceStr[i] + '\n';
+  }
+
+  disassemblerSequenceText = new sf::Text();
+  disassemblerSequenceText->setFont(*font);
+  disassemblerSequenceText->setFillColor(sf::Color::White);
+  disassemblerSequenceText->setString(temp);
+  disassemblerSequenceText->setCharacterSize(20);
+  disassemblerSequenceText->setPosition(620, 60);
 }
 
 Gui::~Gui()
@@ -97,7 +138,6 @@ void Gui::updateFlag()
     }
   }
 }
-
 
 void Gui::show()
 {
@@ -131,6 +171,14 @@ void Gui::show()
     }
     window->draw(*registersText);
     window->draw(*registersLabelText);
+
+    window->draw(*disassemblerScreen);
+    window->draw(*disassemblerSequenceText);
+    window->draw(*disassemblerScreenMasks[0]);
+    window->draw(*disassemblerScreenMasks[1]);
+    window->draw(*disassemblerScreenMasks[2]);
+    window->draw(*disassemblerScreenMasks[3]);
+
     window->display();
     flags++;
   }

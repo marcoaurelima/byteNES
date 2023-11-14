@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <deque>
 #include <sstream>
 #include <iostream>
 #include <iomanip>
@@ -37,6 +38,11 @@ private:
     sf::Text *registersText;
     std::array<sf::RectangleShape *, 6> registersTiles;
     void updateRegRadom();
+
+    sf::RectangleShape *disassemblerScreen;
+    std::array<sf::RectangleShape *, 4> disassemblerScreenMasks;
+    std::deque<std::string> disassemblerSequenceStr;
+    sf::Text *disassemblerSequenceText;
 };
 
 #endif
