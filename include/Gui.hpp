@@ -39,10 +39,12 @@ private:
     std::array<sf::RectangleShape *, 6> registersTiles;
     void updateRegRadom();
 
-    sf::RectangleShape *disassemblerScreen;
-    std::array<sf::RectangleShape *, 4> disassemblerScreenMasks;
-    std::deque<std::string> disassemblerSequenceStr;
-    sf::Text *disassemblerSequenceText;
+    sf::Text *zeroPageScreenTitle;
+    sf::RectangleShape *zeropageScreen;
+    std::string zeroPageColumnsLabel{};
+    std::string zeroPageLinesLabel{};
+    sf::Text *zeroPageColumnsLabelText;
+    sf::Text *zeroPageLinesLabelText;
 };
 
 #endif

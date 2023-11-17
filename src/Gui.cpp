@@ -3,7 +3,7 @@
 Gui::Gui()
 {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(880, 640), "NES Emulator");
+  window = new sf::RenderWindow(sf::VideoMode(1280, 640), "NES Emulator");
   window->setFramerateLimit(2);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
@@ -77,46 +77,41 @@ Gui::Gui()
   registersText->setCharacterSize(20);
   registersText->setPosition(379, 558);
 
-  // Disassembler monitor
-  disassemblerScreen = new sf::RectangleShape(sf::Vector2f(226, 540));
-  disassemblerScreen->setPosition(600, 50);
-  disassemblerScreen->setFillColor(sf::Color(20, 20, 20));
-  disassemblerScreen->setOutlineColor(sf::Color(80, 80, 80));
-  disassemblerScreen->setOutlineThickness(1);
+  // Zero Page monitor
+  zeroPageScreenTitle = new sf::Text();
+  zeroPageScreenTitle->setFont(*font);
+  zeroPageScreenTitle->setFillColor(sf::Color::White);
+  zeroPageScreenTitle->setString("ZERO PAGE");
+  zeroPageScreenTitle->setCharacterSize(20);
+  zeroPageScreenTitle->setPosition(600, 15);
 
-  disassemblerScreenMasks[0] = new sf::RectangleShape(sf::Vector2f(226, 253));
-  disassemblerScreenMasks[0]->setPosition(600, 50);
-  disassemblerScreenMasks[0]->setFillColor(sf::Color(0, 0, 0, 180));
+  zeropageScreen = new sf::RectangleShape(sf::Vector2f(526, 540));
+  zeropageScreen->setPosition(600, 50);
+  zeropageScreen->setFillColor(sf::Color(20, 20, 20));
+  zeropageScreen->setOutlineColor(sf::Color(80, 80, 80));
+  zeropageScreen->setOutlineThickness(1);
 
-  disassemblerScreenMasks[1] = new sf::RectangleShape(sf::Vector2f(4, 19));
-  disassemblerScreenMasks[1]->setPosition(600, 304);
-  disassemblerScreenMasks[1]->setFillColor(sf::Color::Blue);
+  zeroPageColumnsLabel = "0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F";
+  zeroPageColumnsLabelText = new sf::Text();
+  zeroPageColumnsLabelText->setFont(*font);
+  zeroPageColumnsLabelText->setFillColor(sf::Color::Red);
+  zeroPageColumnsLabelText->setString(zeroPageColumnsLabel);
+  zeroPageColumnsLabelText->setCharacterSize(20);
+  zeroPageColumnsLabelText->setPosition(635, 55);
+  zeroPageColumnsLabelText->setOutlineThickness(0.4);
+  zeroPageColumnsLabelText->setOutlineColor(sf::Color::Red);
 
-  disassemblerScreenMasks[2] = new sf::RectangleShape(sf::Vector2f(4, 19));
-  disassemblerScreenMasks[2]->setPosition(822, 304);
-  disassemblerScreenMasks[2]->setFillColor(sf::Color::Blue);
+  zeroPageLinesLabel = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA\nB\nC\nD\nE\nF\n";
+  zeroPageLinesLabelText = new sf::Text();
+  zeroPageLinesLabelText->setFont(*font);
+  zeroPageLinesLabelText->setFillColor(sf::Color::Red);
+  zeroPageLinesLabelText->setString(zeroPageLinesLabel);
+  zeroPageLinesLabelText->setCharacterSize(20);
+  zeroPageLinesLabelText->setPosition(615, 80);
+  zeroPageLinesLabelText->setOutlineThickness(0.4);
+  zeroPageLinesLabelText->setOutlineColor(sf::Color::Red);
+  zeroPageLinesLabelText->setLineSpacing(1.5);
 
-  disassemblerScreenMasks[3] = new sf::RectangleShape(sf::Vector2f(226, 262));
-  disassemblerScreenMasks[3]->setPosition(600, 325);
-  disassemblerScreenMasks[3]->setFillColor(sf::Color(0, 0, 0, 180));
-
-  for (int i = 0; i < 25; i++)
-  {
-    disassemblerSequenceStr.push_back("2F3B  ORG  $80AF");
-  }
-
-  std::string temp;
-  for (int i = 0; i < 25; i++)
-  {
-    temp += disassemblerSequenceStr[i] + '\n';
-  }
-
-  disassemblerSequenceText = new sf::Text();
-  disassemblerSequenceText->setFont(*font);
-  disassemblerSequenceText->setFillColor(sf::Color::White);
-  disassemblerSequenceText->setString(temp);
-  disassemblerSequenceText->setCharacterSize(20);
-  disassemblerSequenceText->setPosition(620, 60);
 }
 
 Gui::~Gui()
@@ -172,12 +167,12 @@ void Gui::show()
     window->draw(*registersText);
     window->draw(*registersLabelText);
 
-    window->draw(*disassemblerScreen);
-    window->draw(*disassemblerSequenceText);
-    window->draw(*disassemblerScreenMasks[0]);
-    window->draw(*disassemblerScreenMasks[1]);
-    window->draw(*disassemblerScreenMasks[2]);
-    window->draw(*disassemblerScreenMasks[3]);
+    window->draw(*zeroPageScreenTitle);
+    window->draw(*zeropageScreen);
+
+    window->draw(*zeroPageColumnsLabelText);
+    window->draw(*zeroPageLinesLabelText);
+
 
     window->display();
     flags++;
