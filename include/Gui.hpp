@@ -1,7 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
-
 #pragma once
+
+#include "Cpu.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <array>
@@ -14,7 +15,7 @@
 class Gui
 {
 public:
-    Gui();
+    Gui(Cpu& cpu);
     ~Gui();
 
     void show();
@@ -48,6 +49,8 @@ private:
 
     std::string zeroPageDataStr{};
     sf::Text *zeroPageDataText;
+
+    Cpu& cpu;
 };
 
 #endif

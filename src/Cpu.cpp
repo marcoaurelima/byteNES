@@ -3,24 +3,51 @@
 Cpu::Cpu()
 {
     memory = new Memory();
-    PC = 0;
-    SP = 0;
-    A = 0;
-    Y = 0;
-    P = 0;
+    PC = 1;
+    SP = 2;
+    A = 3;
+    X = 4;
+    Y = 5;
+    SR = 9;
 }
 
-Cpu::Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t Y, uint8_t P)
+Cpu::Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR)
 {
     this->PC = PC;
     this->SP = SP;
     this->A = A;
+    this->X = X;
     this->Y = Y;
-    this->P = P;
+    this->SR = SR;
 }
 
 Cpu::~Cpu()
 {
+}
+
+uint16_t Cpu::getPC()
+{
+    return PC;
+}
+
+uint8_t Cpu::getSP()
+{
+    return PC;
+}
+
+uint8_t Cpu::getA()
+{
+    return A;
+}
+
+uint8_t Cpu::getY()
+{
+    return Y;
+}
+
+uint8_t Cpu::getSR()
+{
+    return SR;
 }
 
 void Cpu::showStatus()
@@ -33,7 +60,7 @@ void Cpu::showStatus()
     std::cout << "   A\t" << (int)A << "\t" << (int)((char)A) << "\t" << std::bitset<8>(A) << "\n";
     std::cout << "   Y\t" << (int)Y << "\t" << (int)((char)Y) << "\t" << std::bitset<8>(Y) << "\n";
     std::cout << "   Y\t" << (int)X << "\t" << (int)((char)X) << "\t" << std::bitset<8>(X) << "\n";
-    std::cout << "   P\t" << (int)P << "\t" << (int)((char)P) << "\t" << std::bitset<8>(P) << "\n";
+    std::cout << "   P\t" << (int)SR << "\t" << (int)((char)SR) << "\t" << std::bitset<8>(SR) << "\n";
     std::cout << "   \t\t\tNV-BDIZC\n";
     std::cout << "-------------------------------------------\n";
 }
@@ -43,25 +70,25 @@ void Cpu::setFlag(Flag flag)
     switch (flag)
     {
     case Flag::N:
-        P = P | 0b10000000;
+        SR = SR | 0b10000000;
         break;
     case Flag::V:
-        P = P | 0b01000000;
+        SR = SR | 0b01000000;
         break;
     case Flag::B:
-        P = P | 0b00010000;
+        SR = SR | 0b00010000;
         break;
     case Flag::D:
-        P = P | 0b00001000;
+        SR = SR | 0b00001000;
         break;
     case Flag::I:
-        P = P | 0b00000100;
+        SR = SR | 0b00000100;
         break;
     case Flag::Z:
-        P = P | 0b00000010;
+        SR = SR | 0b00000010;
         break;
     case Flag::C:
-        P = P | 0b00000001;
+        SR = SR | 0b00000001;
         break;
     default:
         break;

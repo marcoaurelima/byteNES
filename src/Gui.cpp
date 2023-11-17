@@ -1,14 +1,14 @@
 #include "Gui.hpp"
 
-Gui::Gui()
+Gui::Gui(Cpu &cpu) : cpu(cpu)
 {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 640), "NES Emulator");
-  window->setFramerateLimit(2);
+  window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
   gameScreen->setPosition(50, 50);
-  gameScreen->setFillColor(sf::Color(30,30,30));
+  gameScreen->setFillColor(sf::Color(30, 30, 30));
   gameScreen->setOutlineColor(sf::Color(80, 80, 80));
   gameScreen->setOutlineThickness(1);
 
@@ -108,10 +108,10 @@ Gui::Gui()
   zeroPageLinesLabelText->setPosition(615, 90);
   zeroPageLinesLabelText->setLineSpacing(1.5);
 
-  for(int i=1;i<=256;i++)
+  for (int i = 1; i <= 256; i++)
   {
     zeroPageDataStr += "00 ";
-    if(i%16==0)
+    if (i % 16 == 0)
     {
       zeroPageDataStr += "\n";
     }
@@ -124,7 +124,6 @@ Gui::Gui()
   zeroPageDataText->setCharacterSize(20);
   zeroPageDataText->setPosition(635, 90);
   zeroPageDataText->setLineSpacing(1.5);
-
 }
 
 Gui::~Gui()
@@ -133,10 +132,9 @@ Gui::~Gui()
 
 void Gui::updateFlag()
 {
-
   for (int i = 0; i < flagsTiles.size(); i++)
   {
-    if (flags & (0x01 << i))
+    if (cpu.getSR() & (0x01 << i))
     {
       flagsTiles[i]->setFillColor(sf::Color::Red);
     }

@@ -21,7 +21,7 @@ enum class Flag
 
 enum
 {
-    // ADC (ADd with Carry) 
+    // ADC (ADd with Carry)
     ADC_IM = 0X69,
     ADC_ZP = 0X65,
     ADC_ZPX = 0X75,
@@ -41,14 +41,20 @@ class Cpu
 {
 public:
     Cpu();
-    Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t Y, uint8_t P);
+    Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t P);
     ~Cpu();
 
     // Printar status interno
     void showStatus();
 
+    uint16_t getPC();
+    uint8_t getSP();
+    uint8_t getA();
+    uint8_t getY();
+    uint8_t getSR();
+
     // Implementações das instruções
-    // ADC (ADd with Carry)  
+    // ADC (ADd with Carry)
     void adc_im(uint8_t value);
     void adc_zp(uint8_t address);
     void adc_zpx(uint8_t address);
@@ -66,7 +72,7 @@ public:
     // CMP (CoMPare accumulator)
     // CPX (ComPare X register)
     // CPY (ComPare Y register)
-    // DEC (DECrement memory) 
+    // DEC (DECrement memory)
     // EOR (bitwise Exclusive OR)
     // Flag (Processor Status) Instructions
     // INC (INCrement memory)
@@ -92,21 +98,17 @@ public:
     void stx_abs(uint8_t address);
     // STY (STore Y register)
 
-
-     
-
-
 private:
     // Memoria ram (2Kb)
-    Memory* memory;
+    Memory *memory;
 
     // Registradores
-    uint16_t PC{0};
-    uint8_t SP{0};
-    uint8_t A{0};
-    uint8_t X{0};
-    uint8_t Y{0};
-    uint8_t P{0};
+    uint16_t PC;
+    uint8_t SP;
+    uint8_t A;
+    uint8_t X;
+    uint8_t Y;
+    uint8_t SR;
 
     // Flags
     void setFlag(Flag flag);
