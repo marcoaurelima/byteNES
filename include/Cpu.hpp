@@ -6,6 +6,7 @@
 #include <bitset>
 #include <cstdint>
 
+
 #include "Memory.hpp"
 
 enum class Flag
@@ -49,9 +50,10 @@ public:
 
     uint16_t getPC();
     uint8_t getSP();
-    uint8_t getA();
-    uint8_t getY();
     uint8_t getSR();
+    uint8_t getA();
+    uint8_t getX();
+    uint8_t getY();
 
     // Implementações das instruções
     // ADC (ADd with Carry)

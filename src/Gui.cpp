@@ -49,11 +49,11 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   // Registers monitor
   for (int i = 0; i < registersTiles.size(); i++)
   {
-    registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.7, 41));
+    registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.8, 41));
     registersTiles[i]->setFillColor(sf::Color(40, 40, 40));
     registersTiles[i]->setOutlineColor(sf::Color(20, 20, 20));
     registersTiles[i]->setOutlineThickness(2);
-    registersTiles[i]->setPosition(374 + ((registersTiles.size() - i - 1) * 29.7), 544);
+    registersTiles[i]->setPosition(374 + ((registersTiles.size() - i - 1) * 29.8), 544);
   }
 
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
@@ -65,15 +65,14 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   registersLabelText = new sf::Text();
   registersLabelText->setFont(*font);
   registersLabelText->setFillColor(sf::Color::White);
-  registersLabelText->setString("REGS   PC SP A  X  Y  P");
+  registersLabelText->setString("REGS   PC SP A  X  Y  SR");
   registersLabelText->setCharacterSize(20);
   registersLabelText->setPosition(310, 538);
 
-  registerStr = "12 34 56 78 9A BC";
   registersText = new sf::Text();
   registersText->setFont(*font);
   registersText->setFillColor(sf::Color::Green);
-  registersText->setString(registerStr);
+  registersText->setString(registerSStr.str());
   registersText->setCharacterSize(20);
   registersText->setPosition(379, 558);
 
@@ -145,6 +144,27 @@ void Gui::updateFlag()
   }
 }
 
+std::string intTohex(uint16_t value)
+{
+  std::stringstream ss;
+  ss << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << value;
+  return ss.str();
+}
+
+void Gui::updateRegisters()
+{
+  registerSStr.str("");
+  registerSStr << intTohex(cpu.getPC()) << " "
+               << intTohex(cpu.getSP()) << " "
+               << intTohex(cpu.getA()) << " "
+               << intTohex(cpu.getX()) << " "
+               << intTohex(cpu.getY()) << " "
+               << intTohex(cpu.getSR()) << " ";
+
+
+  registersText->setString(registerSStr.str());
+}
+
 void Gui::show()
 {
 
@@ -162,6 +182,7 @@ void Gui::show()
     window->draw(*gameScreen);
 
     updateFlag();
+    updateRegisters();
 
     window->draw(*flagsBar);
     for (auto &flag : flagsTiles)

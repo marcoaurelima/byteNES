@@ -32,12 +32,17 @@ uint16_t Cpu::getPC()
 
 uint8_t Cpu::getSP()
 {
-    return PC;
+    return SP;
 }
 
 uint8_t Cpu::getA()
 {
     return A;
+}
+
+uint8_t Cpu::getX()
+{
+    return X;
 }
 
 uint8_t Cpu::getY()

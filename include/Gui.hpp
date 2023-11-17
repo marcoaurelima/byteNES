@@ -33,12 +33,12 @@ private:
     sf::Text *flagsText;
     void updateFlag();
 
-    std::string registerStr{};
+    std::stringstream registerSStr{};
     sf::RectangleShape *RegistersBar;
     sf::Text *registersLabelText;
     sf::Text *registersText;
     std::array<sf::RectangleShape *, 6> registersTiles;
-    void updateRegRadom();
+    void updateRegisters();
 
     sf::Text *zeroPageScreenTitle;
     sf::RectangleShape *zeropageScreen;
