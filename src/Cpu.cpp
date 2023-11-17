@@ -1,24 +1,9 @@
 #include "Cpu.hpp"
 
-Cpu::Cpu()
-{
-    memory = new Memory();
-    PC = 1;
-    SP = 2;
-    A = 3;
-    X = 4;
-    Y = 5;
-    SR = 9;
-}
 
-Cpu::Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR)
+Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR) 
+        : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR)
 {
-    this->PC = PC;
-    this->SP = SP;
-    this->A = A;
-    this->X = X;
-    this->Y = Y;
-    this->SR = SR;
 }
 
 Cpu::~Cpu()
@@ -53,21 +38,6 @@ uint8_t Cpu::getY()
 uint8_t Cpu::getSR()
 {
     return SR;
-}
-
-void Cpu::showStatus()
-{
-    std::cout << "-------------------------------------------\n";
-    std::cout << "   RG\tUSIG\tSIG\tBIN\n";
-    std::cout << "-------------------------------------------\n";
-    std::cout << "   PC\t" << (int)PC << "\t" << (int)((char)PC) << "\t" << std::bitset<16>(PC) << "\n";
-    std::cout << "   SP\t" << (int)SP << "\t" << (int)((char)SP) << "\t" << std::bitset<8>(SP) << "\n";
-    std::cout << "   A\t" << (int)A << "\t" << (int)((char)A) << "\t" << std::bitset<8>(A) << "\n";
-    std::cout << "   Y\t" << (int)Y << "\t" << (int)((char)Y) << "\t" << std::bitset<8>(Y) << "\n";
-    std::cout << "   Y\t" << (int)X << "\t" << (int)((char)X) << "\t" << std::bitset<8>(X) << "\n";
-    std::cout << "   P\t" << (int)SR << "\t" << (int)((char)SR) << "\t" << std::bitset<8>(SR) << "\n";
-    std::cout << "   \t\t\tNV-BDIZC\n";
-    std::cout << "-------------------------------------------\n";
 }
 
 void Cpu::setFlag(Flag flag)
@@ -137,7 +107,7 @@ void Cpu::adc_im(uint8_t value)
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address)
 {
-    uint8_t value = memory->read(address);
+    uint8_t value = memory.read(address);
     adc_im(value);
 }
 
@@ -157,7 +127,7 @@ void Cpu::adc_zpx(uint8_t address)
 // e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_abs(uint16_t address)
 {
-    uint8_t value = memory->read(address);
+    uint8_t value = memory.read(address);
     adc_im(value);
 }
 

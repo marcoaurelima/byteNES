@@ -41,12 +41,8 @@ enum
 class Cpu
 {
 public:
-    Cpu();
-    Cpu(uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t P);
+    Cpu(Memory& memory, uint16_t PC = 1, uint8_t SP = 2, uint8_t A = 3, uint8_t X = 4, uint8_t Y = 5, uint8_t SR = 6);
     ~Cpu();
-
-    // Printar status interno
-    void showStatus();
 
     uint16_t getPC();
     uint8_t getSP();
@@ -102,7 +98,7 @@ public:
 
 private:
     // Memoria ram (2Kb)
-    Memory *memory;
+    Memory& memory;
 
     // Registradores
     uint16_t PC;
