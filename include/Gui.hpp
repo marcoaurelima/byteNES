@@ -45,6 +45,9 @@ private:
     std::string zeroPageLinesLabel{};
     sf::Text *zeroPageColumnsLabelText;
     sf::Text *zeroPageLinesLabelText;
+
+    std::string zeroPageDataStr{};
+    sf::Text *zeroPageDataText;
 };
 
 #endif

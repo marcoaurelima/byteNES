@@ -3,12 +3,12 @@
 Gui::Gui()
 {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(1280, 640), "NES Emulator");
+  window = new sf::RenderWindow(sf::VideoMode(1170, 640), "NES Emulator");
   window->setFramerateLimit(2);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
   gameScreen->setPosition(50, 50);
-  gameScreen->setFillColor(sf::Color::Black);
+  gameScreen->setFillColor(sf::Color(30,30,30));
   gameScreen->setOutlineColor(sf::Color(80, 80, 80));
   gameScreen->setOutlineThickness(1);
 
@@ -94,23 +94,36 @@ Gui::Gui()
   zeroPageColumnsLabel = "0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F";
   zeroPageColumnsLabelText = new sf::Text();
   zeroPageColumnsLabelText->setFont(*font);
-  zeroPageColumnsLabelText->setFillColor(sf::Color::Red);
+  zeroPageColumnsLabelText->setFillColor(sf::Color::White);
   zeroPageColumnsLabelText->setString(zeroPageColumnsLabel);
   zeroPageColumnsLabelText->setCharacterSize(20);
-  zeroPageColumnsLabelText->setPosition(635, 55);
-  zeroPageColumnsLabelText->setOutlineThickness(0.4);
-  zeroPageColumnsLabelText->setOutlineColor(sf::Color::Red);
+  zeroPageColumnsLabelText->setPosition(635, 65);
 
   zeroPageLinesLabel = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA\nB\nC\nD\nE\nF\n";
   zeroPageLinesLabelText = new sf::Text();
   zeroPageLinesLabelText->setFont(*font);
-  zeroPageLinesLabelText->setFillColor(sf::Color::Red);
+  zeroPageLinesLabelText->setFillColor(sf::Color::White);
   zeroPageLinesLabelText->setString(zeroPageLinesLabel);
   zeroPageLinesLabelText->setCharacterSize(20);
-  zeroPageLinesLabelText->setPosition(615, 80);
-  zeroPageLinesLabelText->setOutlineThickness(0.4);
-  zeroPageLinesLabelText->setOutlineColor(sf::Color::Red);
+  zeroPageLinesLabelText->setPosition(615, 90);
   zeroPageLinesLabelText->setLineSpacing(1.5);
+
+  for(int i=1;i<=256;i++)
+  {
+    zeroPageDataStr += "00 ";
+    if(i%16==0)
+    {
+      zeroPageDataStr += "\n";
+    }
+  }
+
+  zeroPageDataText = new sf::Text();
+  zeroPageDataText->setFont(*font);
+  zeroPageDataText->setFillColor(sf::Color::Green);
+  zeroPageDataText->setString(zeroPageDataStr);
+  zeroPageDataText->setCharacterSize(20);
+  zeroPageDataText->setPosition(635, 90);
+  zeroPageDataText->setLineSpacing(1.5);
 
 }
 
@@ -173,6 +186,7 @@ void Gui::show()
     window->draw(*zeroPageColumnsLabelText);
     window->draw(*zeroPageLinesLabelText);
 
+    window->draw(*zeroPageDataText);
 
     window->display();
     flags++;
