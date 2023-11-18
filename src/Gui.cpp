@@ -161,8 +161,22 @@ void Gui::updateRegisters()
                << intTohex(cpu.getY()) << " "
                << intTohex(cpu.getSR()) << " ";
 
-
   registersText->setString(registerSStr.str());
+}
+
+void Gui::updateZeroPageMemory()
+{
+  zeroPageDataStr = "";
+
+  for (int i = 1; i <= 256; i++)
+  {
+    zeroPageDataStr += intTohex(cpu.getMemory().read(i - 1)) + " ";
+    if (i % 16 == 0)
+    {
+      zeroPageDataStr += "\n";
+    }
+  }
+  zeroPageDataText->setString(zeroPageDataStr);
 }
 
 void Gui::show()
@@ -183,6 +197,7 @@ void Gui::show()
 
     updateFlag();
     updateRegisters();
+    updateZeroPageMemory();
 
     window->draw(*flagsBar);
     for (auto &flag : flagsTiles)

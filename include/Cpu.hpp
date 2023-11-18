@@ -50,6 +50,7 @@ public:
     uint8_t getA();
     uint8_t getX();
     uint8_t getY();
+    Memory& getMemory();
 
     // Implementações das instruções
     // ADC (ADd with Carry)

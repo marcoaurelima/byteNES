@@ -40,6 +40,12 @@ uint8_t Cpu::getSR()
     return SR;
 }
 
+Memory& Cpu::getMemory()
+{
+    return memory;
+}
+
+
 void Cpu::setFlag(Flag flag)
 {
     switch (flag)

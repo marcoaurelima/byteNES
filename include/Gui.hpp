@@ -49,6 +49,7 @@ private:
 
     std::string zeroPageDataStr{};
     sf::Text *zeroPageDataText;
+    void updateZeroPageMemory();
 
     Cpu& cpu;
 };

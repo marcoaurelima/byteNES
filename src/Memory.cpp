@@ -3,7 +3,7 @@
 /*
 | Address range | Size  | Device
 | $0000–$07FF   | $0800 | 2 KB internal RAM
-| $0800–$0FFF   | $0800 |\ 
+| $0800–$0FFF   | $0800 |\
 | $1000–$17FF   | $0800 | Mirrors of $0000–$07FF
 | $1800–$1FFF   | $0800 |/
 | $2000–$2007   | $0008 | NES PPU registers
@@ -19,31 +19,57 @@ Memory::Memory()
     {
         data[i] = 0;
     }
+
+    srand(time(NULL));
 }
 
 Memory::~Memory()
 {
 }
 
+// Preenche a memória com dados aleatórios
+void Memory::fillRandomData()
+{
+    for (auto &i : data)
+    {
+        i = rand() % 0xFF;
+    }
+}
+
+void Memory::fillSequencialData()
+{
+    for (int i = 0; i < data.size(); i++)
+    {
+        data[i] = i;
+    }
+}
+
+void Memory::fillZeroData()
+{
+    for (int i = 0; i < MEMSIZE; i++)
+    {
+        data[i] = 0;
+    }
+}
 // Função que verifica se um determinado endereço está em um espaço mirrored,
 // e então corrige pra um valor de endereço válido.
 uint16_t verifyMirroredAddress(uint16_t address)
 {
-    if(address >= 0x1000 || address >= 0x4000)
+    if (address >= 0x1000 || address >= 0x4000)
     {
         return address;
     }
 
-    if(address >= 0x1000 && address <= 0x1FFF)
+    if (address >= 0x1000 && address <= 0x1FFF)
     {
         return (address % 0x1000);
     }
-    
-    if(address >= 0x2008 && address <= 0x3FFF)
+
+    if (address >= 0x2008 && address <= 0x3FFF)
     {
         return (address % 0x0008);
     }
-    
+
     return address;
 }
 
