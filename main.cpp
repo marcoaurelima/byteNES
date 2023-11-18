@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   Cpu cpu(mem);
 
   Bus bus;
-  bus.loadROMToMemory(mem, "rom/rom.bin", 0x00);
+  bus.loadROMToMemory(mem, "asm/program.bin", 0x00);
 
   Gui gui(cpu);
   gui.show();
