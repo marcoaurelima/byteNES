@@ -6,10 +6,7 @@
 
 int main(int argc, char *argv[]) {
   
-
-
   Memory mem;
-  // mem.write(0x00, 11);
 
   Cpu cpu(mem);
 

@@ -2,3 +2,4 @@ main
 bin
 obj
 .vscode
+asm/program.bin
