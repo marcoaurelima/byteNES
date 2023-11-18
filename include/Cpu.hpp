@@ -41,7 +41,7 @@ enum
 class Cpu
 {
 public:
-    Cpu(Memory& memory, uint16_t PC = 1, uint8_t SP = 2, uint8_t A = 3, uint8_t X = 4, uint8_t Y = 5, uint8_t SR = 6);
+    Cpu(Memory& memory, uint16_t PC = 0x00, uint8_t SP = 0x00, uint8_t A = 0x00, uint8_t X = 0x00, uint8_t Y = 0x00, uint8_t SR = 0x00);
     ~Cpu();
 
     uint16_t getPC();
