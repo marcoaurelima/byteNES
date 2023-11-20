@@ -1,6 +1,6 @@
 #include "Bus.hpp"
 
-Bus::Bus()
+Bus::Bus(Cpu& cpu, Memory& memory) : cpu(cpu), memory(memory)
 {
 }
 
@@ -8,7 +8,7 @@ Bus::~Bus()
 {
 }
 
-void Bus::loadROMToMemory(Memory &memory, std::string path, uint16_t addrBegin)
+void Bus::loadROMToMemory(std::string path, uint16_t addrBegin)
 {
     std::ifstream file(path, std::ios::binary);
 
