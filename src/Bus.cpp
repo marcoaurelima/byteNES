@@ -8,7 +8,7 @@ Bus::~Bus()
 {
 }
 
-void Bus::loadROMToMemory(std::string path, uint16_t addrBegin)
+void Bus::loadMemoryFromFile(std::string path, uint16_t addrBegin)
 {
     std::ifstream file(path, std::ios::binary);
 
