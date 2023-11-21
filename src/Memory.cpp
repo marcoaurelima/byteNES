@@ -46,6 +46,7 @@ void Memory::fillZeroData()
         data[i] = 0;
     }
 }
+
 // Função que verifica se um determinado endereço está em um espaço mirrored,
 // e então corrige pra um valor de endereço válido.
 uint16_t verifyMirroredAddress(uint16_t address)
@@ -73,8 +74,35 @@ uint8_t Memory::read(uint16_t address)
     uint16_t veriAddr = verifyMirroredAddress(address);
     return data[veriAddr];
 }
+
 void Memory::write(uint16_t address, uint8_t value)
 {
     uint16_t veriAddr = verifyMirroredAddress(address);
     data[veriAddr] = value;
+}
+
+void Memory::loadMemoryFromFile(std::string path, uint16_t addrBegin)
+{
+    std::ifstream file(path, std::ios::binary);
+
+    if (!file.is_open())
+    {
+        std::cerr << "Error in open file \"" << path << "\"\n";
+        exit(1);
+    }
+
+    char byte{};
+    uint16_t i = 0;
+    while (file.read(&byte, sizeof(char)))
+    {
+        write((i+addrBegin), byte);
+        ++i;
+    }
+
+    filePath = path;
+}
+
+std::string Memory::getFilePath()
+{
+    return filePath;
 }

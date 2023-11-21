@@ -7,7 +7,6 @@ CXX = g++ -std=c++11
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 OBJS =  $(OBJ)/main.o \
-		$(OBJ)/Bus.o \
 		$(OBJ)/Cpu.o \
 		$(OBJ)/Memory.o \
 		$(OBJ)/Gui.o 
@@ -19,9 +18,6 @@ all: $(OBJS)
 
 $(OBJ)/main.o: main.cpp
 	$(CXX) -c main.cpp -I $(INCLUDE) -o $(OBJ)/main.o
-
-$(OBJ)/Bus.o: $(SRC)/Bus.cpp
-	$(CXX) -c $(SRC)/Bus.cpp -I $(INCLUDE) -o $(OBJ)/Bus.o
 
 $(OBJ)/Cpu.o: $(SRC)/Cpu.cpp
 	$(CXX) -c $(SRC)/Cpu.cpp -I $(INCLUDE) -o $(OBJ)/Cpu.o

@@ -2,7 +2,7 @@
 #define GUI_H
 #pragma once
 
-#include "Bus.hpp"
+#include "Cpu.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <array>
@@ -15,7 +15,7 @@
 class Gui
 {
 public:
-    Gui(Bus& bus);
+    Gui(Cpu& cpu);
     ~Gui();
 
     void show();
@@ -54,7 +54,7 @@ private:
     sf::Text *filePathText;
     sf::Text *keyMappingText;
 
-    Bus& bus;
+    Cpu& cpu;
 };
 
 #endif

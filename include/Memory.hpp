@@ -6,6 +6,7 @@
 #include <array>
 #include <cstdint>
 #include <cstdlib>
+#include <fstream>
 
 #define MEMSIZE 0xFFFF
 
@@ -22,8 +23,12 @@ public:
     void fillSequencialData();
     void fillZeroData();
 
+    void loadMemoryFromFile(std::string path, uint16_t addrBegin = 0x00);
+    std::string getFilePath();
+
 private:
     std::array<uint8_t, MEMSIZE> data;
+    std::string filePath;
 };
 
 #endif
