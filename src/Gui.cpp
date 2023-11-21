@@ -1,6 +1,6 @@
 #include "Gui.hpp"
 
-Gui::Gui(Cpu &cpu) : cpu(cpu)
+Gui::Gui(Bus& bus) : bus(bus)
 {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "NES Emulator");
@@ -151,7 +151,7 @@ void Gui::updateFlag()
 {
   for (int i = 0; i < flagsTiles.size(); i++)
   {
-    if (cpu.getSR() & (0x01 << i))
+    if (bus.cpu.getSR() & (0x01 << i))
     {
       flagsTiles[i]->setFillColor(sf::Color::Red);
     }
@@ -172,12 +172,12 @@ std::string intTohex(uint16_t value)
 void Gui::updateRegisters()
 {
   registerSStr.str("");
-  registerSStr << intTohex(cpu.getPC()) << " "
-               << intTohex(cpu.getSP()) << " "
-               << intTohex(cpu.getA()) << " "
-               << intTohex(cpu.getX()) << " "
-               << intTohex(cpu.getY()) << " "
-               << intTohex(cpu.getSR()) << " ";
+  registerSStr << intTohex(bus.cpu.getPC()) << " "
+               << intTohex(bus.cpu.getSP()) << " "
+               << intTohex(bus.cpu.getA()) << " "
+               << intTohex(bus.cpu.getX()) << " "
+               << intTohex(bus.cpu.getY()) << " "
+               << intTohex(bus.cpu.getSR()) << " ";
 
   registersText->setString(registerSStr.str());
 }
@@ -188,7 +188,7 @@ void Gui::updateZeroPageMemory()
 
   for (int i = 1; i <= 256; i++)
   {
-    zeroPageDataStr += intTohex(cpu.getMemory().read(i - 1)) + " ";
+    zeroPageDataStr += intTohex(bus.cpu.getMemory().read(i - 1)) + " ";
     if (i % 16 == 0)
     {
       zeroPageDataStr += "\n";

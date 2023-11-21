@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   Bus bus(cpu, mem);
   bus.loadMemoryFromFile("asm/program.bin");
 
-  Gui gui(cpu);
+  Gui gui(bus);
   gui.show();
 
   return 0;
