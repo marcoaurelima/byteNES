@@ -51,6 +51,9 @@ private:
     sf::Text *zeroPageDataText;
     void updateZeroPageMemory();
 
+    sf::Text *filePathText;
+    sf::Text *keyMappingText;
+
     Cpu& cpu;
 };
 

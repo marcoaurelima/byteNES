@@ -25,4 +25,11 @@ void Bus::loadMemoryFromFile(std::string path, uint16_t addrBegin)
         memory.write((i+addrBegin), byte);
         ++i;
     }
+
+    filePath = path;
+}
+
+std::string Bus::getFilePath()
+{
+    return filePath;
 }

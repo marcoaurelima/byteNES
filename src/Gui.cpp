@@ -3,7 +3,7 @@
 Gui::Gui(Cpu &cpu) : cpu(cpu)
 {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(1170, 640), "NES Emulator");
+  window = new sf::RenderWindow(sf::VideoMode(1170, 660), "NES Emulator");
   window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
@@ -123,6 +123,24 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   zeroPageDataText->setCharacterSize(20);
   zeroPageDataText->setPosition(635, 90);
   zeroPageDataText->setLineSpacing(1.5);
+
+  std::string keyMappingStr = "KEYS:  [R]eset   [N]ext instruction   R[E]sume";
+  keyMappingText = new sf::Text();
+  keyMappingText->setFont(*font);
+  keyMappingText->setFillColor(sf::Color::Blue);
+  keyMappingText->setString(keyMappingStr);
+  keyMappingText->setCharacterSize(20);
+  keyMappingText->setPosition(635, 600);
+  keyMappingText->setLineSpacing(1.5);
+
+  std::string filePathstr = "FILE:  asm/program.bin";
+  filePathText = new sf::Text();
+  filePathText->setFont(*font);
+  filePathText->setFillColor(sf::Color(120,120,120));
+  filePathText->setString(filePathstr);
+  filePathText->setCharacterSize(20);
+  filePathText->setPosition(55, 600);
+  filePathText->setLineSpacing(1.5);
 }
 
 Gui::~Gui()
@@ -221,6 +239,10 @@ void Gui::show()
     window->draw(*zeroPageLinesLabelText);
 
     window->draw(*zeroPageDataText);
+
+    window->draw(*keyMappingText);
+
+    window->draw(*filePathText);
 
     window->display();
     flags++;
