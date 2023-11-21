@@ -16,7 +16,7 @@ public:
 
     // Carrega dados presentes em um arquivo (path) diretamente em Memory&, comoeçando 
     // pelo endereço especificadop em addrBegin.
-    void loadMemoryFromFile(std::string path, uint16_t addrBegin);
+    void loadMemoryFromFile(std::string path, uint16_t addrBegin = 0x00);
     std::string getFilePath();
 private:
     Cpu& cpu;

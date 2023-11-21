@@ -136,7 +136,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   std::string filePathstr = "FILE:  asm/program.bin";
   filePathText = new sf::Text();
   filePathText->setFont(*font);
-  filePathText->setFillColor(sf::Color(120,120,120));
+  filePathText->setFillColor(sf::Color(190,190,190));
   filePathText->setString(filePathstr);
   filePathText->setCharacterSize(20);
   filePathText->setPosition(55, 600);

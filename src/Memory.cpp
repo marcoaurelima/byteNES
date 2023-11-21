@@ -15,12 +15,6 @@
 
 Memory::Memory()
 {
-    for (int i = 0; i < MEMSIZE; i++)
-    {
-        data[i] = 0;
-    }
-
-    srand(time(NULL));
 }
 
 Memory::~Memory()
@@ -30,6 +24,7 @@ Memory::~Memory()
 // Preenche a memória com dados aleatórios
 void Memory::fillRandomData()
 {
+    srand(time(NULL));
     for (auto &i : data)
     {
         i = rand() % 0xFF;
