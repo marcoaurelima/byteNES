@@ -1,8 +1,7 @@
 #include "Cpu.hpp"
 
-
-Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR) 
-        : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR)
+Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR)
+    : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR)
 {
 }
 
@@ -40,11 +39,10 @@ uint8_t Cpu::getSR()
     return SR;
 }
 
-Memory& Cpu::getMemory()
+Memory &Cpu::getMemory()
 {
     return memory;
 }
-
 
 void Cpu::setFlag(Flag flag)
 {
@@ -87,6 +85,22 @@ uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
     return result;
 }
 
+void Cpu::next()
+{
+    adc_im(0x08);
+    adc_zp(0);
+}
+
+void Cpu::reset()
+{
+    memory.loadMemoryFromFile(memory.getFilePath());
+    PC = 0X00;
+    SP = 0X00;
+    A = 0X00;
+    X = 0X00;
+    Y = 0X00;
+    SR = 0X00;
+}
 // -------------- ADC (ADd with Carry) -------------- //
 
 // Adiciona o valor imediato diretamente ao registrador acumulador

@@ -52,6 +52,12 @@ public:
     uint8_t getY();
     Memory& getMemory();
 
+    // Executa a próxima instrução do programa
+    void next();
+
+    // Reseta a execução
+    void reset();
+
     // Implementações das instruções
     // ADC (ADd with Carry)
     void adc_im(uint8_t value);
