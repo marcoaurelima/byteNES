@@ -124,23 +124,41 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   zeroPageDataText->setPosition(635, 90);
   zeroPageDataText->setLineSpacing(1.5);
 
-  std::string keyMappingStr = "KEYS:  [R]eset   [N]ext instruction   R[E]sume";
+  std::string keyMappingStr = "(R)eset   (N)ext instruction   R(E)sume";
   keyMappingText = new sf::Text();
   keyMappingText->setFont(*font);
-  keyMappingText->setFillColor(sf::Color::Blue);
+  keyMappingText->setFillColor(sf::Color::White);
   keyMappingText->setString(keyMappingStr);
   keyMappingText->setCharacterSize(20);
-  keyMappingText->setPosition(635, 600);
+  keyMappingText->setPosition(655, 600);
   keyMappingText->setLineSpacing(1.5);
 
   std::string filePathstr = cpu.getMemory().getFilePath();
   filePathText = new sf::Text();
   filePathText->setFont(*font);
-  filePathText->setFillColor(sf::Color(190,190,190));
+  filePathText->setFillColor(sf::Color(190, 190, 190));
   filePathText->setString(filePathstr);
   filePathText->setCharacterSize(20);
   filePathText->setPosition(55, 600);
   filePathText->setLineSpacing(1.5);
+
+  buttonsPress[0] = new sf::RectangleShape(sf::Vector2f(80, 22));
+  buttonsPress[0]->setFillColor(sf::Color(0, 0, 120));
+  buttonsPress[0]->setOutlineColor(sf::Color::Blue);
+  buttonsPress[0]->setOutlineThickness(1);
+  buttonsPress[0]->setPosition(654, 604);
+
+  buttonsPress[1] = new sf::RectangleShape(sf::Vector2f(190, 22));
+  buttonsPress[1]->setFillColor(sf::Color(0, 0, 120));
+  buttonsPress[1]->setOutlineColor(sf::Color::Blue);
+  buttonsPress[1]->setOutlineThickness(1);
+  buttonsPress[1]->setPosition(754, 604);
+
+  buttonsPress[2] = new sf::RectangleShape(sf::Vector2f(95, 22));
+  buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
+  buttonsPress[2]->setOutlineColor(sf::Color::Blue);
+  buttonsPress[2]->setOutlineThickness(1);
+  buttonsPress[2]->setPosition(960, 604);
 }
 
 Gui::~Gui()
@@ -239,6 +257,11 @@ void Gui::show()
     window->draw(*zeroPageLinesLabelText);
 
     window->draw(*zeroPageDataText);
+
+    for (auto &button : buttonsPress)
+    {
+      window->draw(*button);
+    }
 
     window->draw(*keyMappingText);
 

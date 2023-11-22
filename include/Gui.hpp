@@ -54,6 +54,8 @@ private:
     sf::Text *filePathText;
     sf::Text *keyMappingText;
 
+    std::array<sf::RectangleShape *, 3> buttonsPress;
+
     Cpu& cpu;
 };
 
