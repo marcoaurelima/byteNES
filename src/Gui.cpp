@@ -225,6 +225,40 @@ void Gui::show()
     {
       if (event.type == sf::Event::Closed)
         window->close();
+      
+      if(sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !buttonsLock[0])
+      {
+        buttonsLock[0] = true;
+        buttonsPress[0]->setFillColor(sf::Color::Blue);
+        cpu.adc_abs(0);
+        
+      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::R) && buttonsLock[0])
+      {
+        buttonsLock[0] = false;
+        buttonsPress[0]->setFillColor(sf::Color(0,0,120));
+      }
+
+      if(sf::Keyboard::isKeyPressed(sf::Keyboard::N) && !buttonsLock[1])
+      {
+        buttonsLock[1] = true;
+        buttonsPress[1]->setFillColor(sf::Color::Blue);
+        cpu.adc_absx(0);
+      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::N) && buttonsLock[1])
+      {
+        buttonsLock[1] = false;
+        buttonsPress[1]->setFillColor(sf::Color(0,0,120));
+      }
+
+      if(sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2])
+      {
+        cpu.adc_absy(0);
+        buttonsLock[2] = true;
+        buttonsPress[2]->setFillColor(sf::Color::Blue);
+      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::E) && buttonsLock[2])
+      {
+        buttonsLock[2] = false;
+        buttonsPress[2]->setFillColor(sf::Color(0,0,120));
+      }
     }
 
     window->clear();
