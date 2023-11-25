@@ -65,7 +65,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   registersLabelText = new sf::Text();
   registersLabelText->setFont(*font);
   registersLabelText->setFillColor(sf::Color::White);
-  registersLabelText->setString("REGS   PC SP A  X  Y  SR");
+  registersLabelText->setString("REGS   PC SP AC X  Y  SR");
   registersLabelText->setCharacterSize(20);
   registersLabelText->setPosition(310, 538);
 
