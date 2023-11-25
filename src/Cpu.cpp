@@ -1,212 +1,219 @@
 #include "Cpu.hpp"
+#include <cstdint>
 
-Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X, uint8_t Y, uint8_t SR)
-    : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR)
-{
-}
+Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X,
+         uint8_t Y, uint8_t SR)
+    : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR) {}
 
-Cpu::~Cpu()
-{
-}
+Cpu::~Cpu() {}
 
-uint16_t Cpu::getPC()
-{
-    return PC;
-}
+uint16_t Cpu::getPC() { return PC; }
 
-uint8_t Cpu::getSP()
-{
-    return SP;
-}
+uint8_t Cpu::getSP() { return SP; }
 
-uint8_t Cpu::getA()
-{
-    return A;
-}
+uint8_t Cpu::getA() { return A; }
 
-uint8_t Cpu::getX()
-{
-    return X;
-}
+uint8_t Cpu::getX() { return X; }
 
-uint8_t Cpu::getY()
-{
-    return Y;
-}
+uint8_t Cpu::getY() { return Y; }
 
-uint8_t Cpu::getSR()
-{
-    return SR;
-}
+uint8_t Cpu::getSR() { return SR; }
 
-Memory &Cpu::getMemory()
-{
-    return memory;
-}
+Memory &Cpu::getMemory() { return memory; }
 
-void Cpu::setFlag(Flag flag)
-{
-    switch (flag)
-    {
-    case Flag::N:
-        SR = SR | 0b10000000;
-        break;
-    case Flag::V:
-        SR = SR | 0b01000000;
-        break;
-    case Flag::B:
-        SR = SR | 0b00010000;
-        break;
-    case Flag::D:
-        SR = SR | 0b00001000;
-        break;
-    case Flag::I:
-        SR = SR | 0b00000100;
-        break;
-    case Flag::Z:
-        SR = SR | 0b00000010;
-        break;
-    case Flag::C:
-        SR = SR | 0b00000001;
-        break;
-    default:
-        break;
-    }
+void Cpu::setFlag(Flag flag) {
+  switch (flag) {
+  case Flag::N:
+    SR = SR | 0b10000000;
+    break;
+  case Flag::V:
+    SR = SR | 0b01000000;
+    break;
+  case Flag::B:
+    SR = SR | 0b00010000;
+    break;
+  case Flag::D:
+    SR = SR | 0b00001000;
+    break;
+  case Flag::I:
+    SR = SR | 0b00000100;
+    break;
+  case Flag::Z:
+    SR = SR | 0b00000010;
+    break;
+  case Flag::C:
+    SR = SR | 0b00000001;
+    break;
+  default:
+    break;
+  }
 }
 
 // Concatena 2 variaveis de 8 bits em uma única de 16 bits.
 // (msb) Most Significant Byte
 // (lsb) Least Significant Byte
-uint16_t concat2Bytes(uint8_t msb, uint8_t lsb)
-{
-    uint16_t result = 0;
-    result = (msb << 8);
-    result = (result | lsb);
-    return result;
+uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) {
+  uint16_t result = 0;
+  result = (msb << 8);
+  result = (result | lsb);
+  return result;
 }
 
-void Cpu::next()
-{
-    adc_im(0x08);
-    adc_zp(0);
+void Cpu::next() {
+
+  // adc_im(0x07);
+  // adc_zp(0x01);
+  // adc_zpx(0x02);
+  // adc_abs(0x03);
+  // adc_absx(0x04);
+  // adc_absy(0x05);
+  // adc_indx(0x06);
+  adc_indy(0x07);
 }
 
-void Cpu::reset()
-{
-    memory.loadMemoryFromFile(memory.getFilePath());
-    PC = 0X00;
-    SP = 0X00;
-    A = 0X00;
-    X = 0X00;
-    Y = 0X00;
-    SR = 0X00;
+void Cpu::reset() {
+  memory.loadMemoryFromFile(memory.getFilePath());
+  PC = 0X00;
+  SP = 0X00;
+  A = 0X00;
+  X = 0X00;
+  Y = 0X00;
+  SR = 0X00;
 }
+
+void Cpu::incrementPC(uint8_t value) { PC += value; }
+
+// Modos de endereçamento
+uint8_t Cpu::immediate(uint8_t &value) { return value; }
+
+uint8_t Cpu::zeropage(uint8_t address) { return memory.read(address); }
+
+uint8_t Cpu::zeropageX(uint8_t address) { return address + X; }
+
+uint8_t Cpu::zeropageY(uint8_t address) { return address + Y; }
+
+uint8_t Cpu::absolute(uint16_t address) { return memory.read(address); }
+
+uint8_t Cpu::absoluteX(uint16_t address) { return address + X; }
+
+uint8_t Cpu::absoluteY(uint16_t address) { return address + Y; }
+
+uint8_t Cpu::indirectX(uint8_t address) {
+  uint8_t byte0 = memory.read(address + X);
+  uint8_t byte1 = memory.read(address + X + 0x01);
+  uint16_t addr = concat2Bytes(byte1, byte0);
+
+  return memory.read(addr);
+}
+
+uint8_t Cpu::indirectY(uint8_t address) {
+  uint8_t byte0 = memory.read(address);
+  uint8_t byte1 = memory.read(address + 0x01);
+  uint16_t addr = concat2Bytes(byte1, byte0);
+
+  return memory.read(addr + Y);
+}
+
 // -------------- ADC (ADd with Carry) -------------- //
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
-void Cpu::adc_im(uint8_t value)
-{
-    uint8_t result = A + value;
+void Cpu::adc_im(uint8_t value) {
+  uint8_t result = A + value;
 
-    if (result & 0b10000000)
-        setFlag(Flag::N);
+  if (result & 0b10000000)
+    setFlag(Flag::N);
 
-    if (result == 0)
-        setFlag(Flag::Z);
+  if (result == 0)
+    setFlag(Flag::Z);
 
-    if (result <= A)
-        setFlag(Flag::C);
+  if (result <= A)
+    setFlag(Flag::C);
 
-    if (((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
-        setFlag(Flag::V);
+  if (((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
+    setFlag(Flag::V);
 
-    A = result;
+  A = result;
+
+  uint8_t instructionSize = sizeof(value) + sizeof(result);
+  incrementPC(instructionSize);
 }
 
 // Busca o dado no endereço fornecido no operando (na zero page),
 // e em posse desse valor, adicionar ao acumulador.
-void Cpu::adc_zp(uint8_t address)
-{
-    uint8_t value = memory.read(address);
-    adc_im(value);
+void Cpu::adc_zp(uint8_t address) {
+  uint8_t value = memory.read(address);
+  adc_im(value);
 }
 
-// Soma o endereço do operando (na zero page) com o valor contido no registrador X.
-// O resultado é o endereço que a CPU deve buscar o dado na memória.
-// A cpu então busca esse dado e adiciona ao acomulador.
-// Aqui, a flag carry não é afetada na aritmetica de endereços.
-void Cpu::adc_zpx(uint8_t address)
-{
-    uint8_t result = address + X;
-    adc_zp(result);
+// Soma o endereço do operando (na zero page) com o valor contido no registrador
+// X. O resultado é o endereço que a CPU deve buscar o dado na memória. A cpu
+// então busca esse dado e adiciona ao acomulador. Aqui, a flag carry não é
+// afetada na aritmetica de endereços.
+void Cpu::adc_zpx(uint8_t address) {
+  uint8_t result = address + X;
+  adc_zp(result);
 }
 
 // similar ao adc_zp(), so que no caso do absolute, é um endereço de 16 bits,
 // pois ele pode acessar não apenas o zero page, mas a memoria ram inteira.
 // Busca o dado no endereço fornecido no operando (na memória total),
 // e em posse desse valor, adicionar ao acumulador.
-void Cpu::adc_abs(uint16_t address)
-{
-    uint8_t value = memory.read(address);
-    adc_im(value);
+void Cpu::adc_abs(uint16_t address) {
+  uint8_t value = memory.read(address);
+  adc_im(value);
+
+  // 1 byte a mais deve ser incrementado pois o endereço é de 16 bits
+  incrementPC(sizeof(uint8_t));
 }
 
-// Soma o endereço do operando (na memoria total) com o valor contido no registrador X.
-// O resultado é o endereço que a CPU deve buscar o dado na memória.
-// A cpu então busca esse dado e adiciona ao acomulador.
-// Aqui, a flag carry não é afetada na aritmetica de endereços.
-void Cpu::adc_absx(uint16_t address)
-{
-    uint16_t result = address + X;
-    adc_abs(result);
+// Soma o endereço do operando (na memoria total) com o valor contido no
+// registrador X. O resultado é o endereço que a CPU deve buscar o dado na
+// memória. A cpu então busca esse dado e adiciona ao acomulador. Aqui, a flag
+// carry não é afetada na aritmetica de endereços.
+void Cpu::adc_absx(uint16_t address) {
+  uint16_t result = address + X;
+  adc_abs(result);
 }
 
-// Soma o endereço do operando (na memoria total) com o valor contido no registrador X.
-// O resultado é o endereço que a CPU deve buscar o dado na memória.
-// A cpu então busca esse dado e adiciona ao acomulador.
-// Aqui, a flag carry não é afetada na aritmetica de endereços.
-void Cpu::adc_absy(uint16_t address)
-{
-    uint16_t result = address + Y;
-    adc_abs(result);
+// Soma o endereço do operando (na memoria total) com o valor contido no
+// registrador X. O resultado é o endereço que a CPU deve buscar o dado na
+// memória. A cpu então busca esse dado e adiciona ao acomulador. Aqui, a flag
+// carry não é afetada na aritmetica de endereços.
+void Cpu::adc_absy(uint16_t address) {
+  uint16_t result = address + Y;
+  adc_abs(result);
 }
 
 // Junta o edereço do operando (8 bits) com o valor do registrador X (8 bits)
 // transformando-os em um endereço de 16 bits.
-// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo, e
-// o valor do operando é o menos significativo.
-// O dado é buscado nesse endereço e armazenado no acumulador.
-void Cpu::adc_indx(uint8_t address)
-{
-    uint16_t result = concat2Bytes(X, address);
-    adc_abs(result);
+// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo,
+// e o valor do operando é o menos significativo. O dado é buscado nesse
+// endereço e armazenado no acumulador.
+void Cpu::adc_indx(uint8_t address) {
+  uint16_t result = concat2Bytes(X, address);
+  adc_abs(result);
 }
 
 // Junta o edereço do operando (8 bits) com o valor do registrador Y (8 bits)
 // transformando-os em um endereço de 16 bits.
-// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo, e
-// o valor do operando é o menos significativo.
-// O dado é buscado nesse endereço e armazenado no acumulador.
-void Cpu::adc_indy(uint8_t address)
-{
-    uint16_t result = concat2Bytes(X, address);
-    adc_abs(result);
+// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo,
+// e o valor do operando é o menos significativo. O dado é buscado nesse
+// endereço e armazenado no acumulador.
+void Cpu::adc_indy(uint8_t address) {
+  uint16_t result = concat2Bytes(X, address);
+  adc_abs(result);
 }
 
 // -------------- STX (STore X register) -------------- //
 
-// Armazena o valor contido no registrador X no endereço do operando (zero page).
-void Cpu::stx_zp(uint8_t address)
-{
-}
+// Armazena o valor contido no registrador X no endereço do operando (zero
+// page).
+void Cpu::stx_zp(uint8_t address) {}
 
-// Armazena o valor contido no registrador X no endereço do operando, somado com o valor contido no
-// registrador Y.
-void Cpu::stx_zpy(uint8_t address)
-{
-}
+// Armazena o valor contido no registrador X no endereço do operando, somado com
+// o valor contido no registrador Y.
+void Cpu::stx_zpy(uint8_t address) {}
 
-// Armazena o valor contido no registrador X no endereço do operando de forma absoluta (toda a memória)
-void Cpu::stx_abs(uint8_t address)
-{
-}
+// Armazena o valor contido no registrador X no endereço do operando de forma
+// absoluta (toda a memória)
+void Cpu::stx_abs(uint8_t address) {}
