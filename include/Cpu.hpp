@@ -64,7 +64,7 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void adc_im(uint8_t value, uint8_t instructionSize );
+  void adc_im(uint8_t value, uint8_t instructionSize);
   void adc_zp(uint8_t address);
   void adc_zpx(uint8_t address);
   void adc_abs(uint16_t address);
@@ -80,7 +80,7 @@ public:
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
   // CPX (ComPare X register)
-  // CPY (ComPare Y register)
+  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
   // DEC (DECrement memory)
   // EOR (bitwise Exclusive OR)
   // Flag (Processor Status) Instructions
@@ -106,6 +106,9 @@ public:
   void stx_zpy(uint8_t address);
   void stx_abs(uint8_t address);
   // STY (STore Y register)
+  void sty_zp(uint8_t address);
+  void sty_zpx(uint8_t address);
+  void sty_abs(uint8_t address);
 
 private:
   // Memoria ram (2Kb)

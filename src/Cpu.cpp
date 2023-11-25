@@ -176,3 +176,23 @@ void Cpu::stx_abs(uint8_t address) {
   memory.write(address, X);
   incrementPC(3);
 }
+
+// -- STX (STore X register) ------------------------------------ //
+
+// Armazena o valor contido no registrador X no endereço do operando (zeropage).
+void Cpu::sty_zp(uint8_t address) {
+  memory.write(address, Y);
+  incrementPC(2);
+}
+
+// Armazena o valor contido no registrador X no endereço do operando + Y.
+void Cpu::sty_zpx(uint8_t address) {
+  memory.write(address + X, Y);
+  incrementPC(2);
+}
+
+// Armazena o valor contido no registrador X no endereço absoluto do operando.
+void Cpu::sty_abs(uint8_t address) {
+  memory.write(address, Y);
+  incrementPC(3);
+}
