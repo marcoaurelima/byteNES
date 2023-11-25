@@ -62,6 +62,8 @@ void Cpu::next() {
   // adc_absy(0x05);
   // adc_indx(0x06);
   // adc_indy(0x07);
+  //
+  stx_zp(0x00);
 }
 
 void Cpu::reset() {
@@ -98,7 +100,7 @@ uint8_t Cpu::indirectY(uint8_t address) {
 // --ADC (ADd with Carry) ------------------------------------ //
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
-void Cpu::adc_im(uint8_t value, uint8_t instructionSize = 2) {
+void Cpu::adc_im(uint8_t value, uint8_t instructionSize = 0x02) {
   uint8_t result = AC + immediate(value);
 
   if (result & 0b10000000) {
@@ -124,37 +126,37 @@ void Cpu::adc_im(uint8_t value, uint8_t instructionSize = 2) {
 
 void Cpu::adc_zp(uint8_t address) {
   uint8_t value = zeropage(address);
-  adc_im(value, 2);
+  adc_im(value, 0x02);
 }
 
 void Cpu::adc_zpx(uint8_t address) {
   uint8_t value = zeropage(address + X);
-  adc_im(value, 2);
+  adc_im(value, 0x02);
 }
 
 void Cpu::adc_abs(uint16_t address) {
   uint8_t value = absolute(address);
-  adc_im(value, 3);
+  adc_im(value, 0x03);
 }
 
 void Cpu::adc_absx(uint16_t address) {
   uint16_t value = absolute(address + X);
-  adc_im(value, 3);
+  adc_im(value, 0x03);
 }
 
 void Cpu::adc_absy(uint16_t address) {
   uint16_t value = absolute(address + Y);
-  adc_im(value, 3);
+  adc_im(value, 0x03);
 }
 
 void Cpu::adc_indx(uint8_t address) {
   uint16_t value = indirectX(address);
-  adc_im(value, 2);
+  adc_im(value, 0x02);
 }
 
 void Cpu::adc_indy(uint8_t address) {
   uint16_t value = indirectY(address);
-  adc_im(value, 2);
+  adc_im(value, 0x02);
 }
 
 // -- STX (STore X register) ------------------------------------ //
@@ -162,37 +164,37 @@ void Cpu::adc_indy(uint8_t address) {
 // Armazena o valor contido no registrador X no endereço do operando (zeropage).
 void Cpu::stx_zp(uint8_t address) {
   memory.write(address, X);
-  incrementPC(2);
+  incrementPC(0x02);
 }
 
 // Armazena o valor contido no registrador X no endereço do operando + Y.
 void Cpu::stx_zpy(uint8_t address) {
   memory.write(address + Y, X);
-  incrementPC(2);
+  incrementPC(0x02);
 }
 
 // Armazena o valor contido no registrador X no endereço absoluto do operando.
 void Cpu::stx_abs(uint8_t address) {
   memory.write(address, X);
-  incrementPC(3);
+  incrementPC(0x03);
 }
 
-// -- STX (STore X register) ------------------------------------ //
+// -- STY (STore X register) ------------------------------------ //
 
-// Armazena o valor contido no registrador X no endereço do operando (zeropage).
+// Armazena o valor contido no registrador Y no endereço do operando (zeropage).
 void Cpu::sty_zp(uint8_t address) {
   memory.write(address, Y);
-  incrementPC(2);
+  incrementPC(0x02);
 }
 
-// Armazena o valor contido no registrador X no endereço do operando + Y.
+// Armazena o valor contido no registrador Y no endereço do operando + X.
 void Cpu::sty_zpx(uint8_t address) {
   memory.write(address + X, Y);
-  incrementPC(2);
+  incrementPC(0x02);
 }
 
-// Armazena o valor contido no registrador X no endereço absoluto do operando.
+// Armazena o valor contido no registrador Y no endereço absoluto do operando.
 void Cpu::sty_abs(uint8_t address) {
   memory.write(address, Y);
-  incrementPC(3);
+  incrementPC(0x03);
 }
