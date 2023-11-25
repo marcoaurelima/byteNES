@@ -25,7 +25,7 @@ public:
 
     void loadMemoryFromFile(std::string path, uint16_t addrBegin = 0x00);
     std::string getFilePath();
-
+    void reset();
 private:
     std::array<uint8_t, MEMSIZE> data;
     std::string filePath;

@@ -192,7 +192,7 @@ void Gui::updateRegisters()
   registerSStr.str("");
   registerSStr << intTohex(cpu.getPC()) << " "
                << intTohex(cpu.getSP()) << " "
-               << intTohex(cpu.getA()) << " "
+               << intTohex(cpu.getAC()) << " "
                << intTohex(cpu.getX()) << " "
                << intTohex(cpu.getY()) << " "
                << intTohex(cpu.getSR()) << " ";

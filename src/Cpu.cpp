@@ -1,9 +1,10 @@
 #include "Cpu.hpp"
 #include <cstdint>
+#include <ios>
 
-Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t A, uint8_t X,
+Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
          uint8_t Y, uint8_t SR)
-    : memory(memory), PC(PC), SP(SP), A(A), X(X), Y(Y), SR(SR) {}
+    : memory(memory), PC(PC), SP(SP), AC(AC), X(X), Y(Y), SR(SR) {}
 
 Cpu::~Cpu() {}
 
@@ -11,7 +12,7 @@ uint16_t Cpu::getPC() { return PC; }
 
 uint8_t Cpu::getSP() { return SP; }
 
-uint8_t Cpu::getA() { return A; }
+uint8_t Cpu::getAC() { return AC; }
 
 uint8_t Cpu::getX() { return X; }
 
@@ -49,16 +50,6 @@ void Cpu::setFlag(Flag flag) {
   }
 }
 
-// Concatena 2 variaveis de 8 bits em uma única de 16 bits.
-// (msb) Most Significant Byte
-// (lsb) Least Significant Byte
-uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) {
-  uint16_t result = 0;
-  result = (msb << 8);
-  result = (result | lsb);
-  return result;
-}
-
 void Cpu::next() {
 
   // adc_im(0x07);
@@ -72,14 +63,14 @@ void Cpu::next() {
 }
 
 void Cpu::reset() {
-  memory.loadMemoryFromFile(memory.getFilePath());
-  PC = 0X00;
-  SP = 0X00;
-  A = 0X00;
-  X = 0X00;
-  Y = 0X00;
-  SR = 0X00;
+  memory.reset();
+  PC = SP = AC = X = Y = SR = 0X00;
 }
+
+// Concatena 2 variaveis de 8 bits em uma única de 16 bits.
+// (msb) Most Significant Byte
+// (lsb) Least Significant Byte
+uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) { return (msb << 8) | lsb; }
 
 void Cpu::incrementPC(uint8_t value) { PC += value; }
 
@@ -118,7 +109,7 @@ uint8_t Cpu::indirectY(uint8_t address) {
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
 void Cpu::adc_im(uint8_t value) {
-  uint8_t result = A + value;
+  uint8_t result = AC + value;
 
   if (result & 0b10000000)
     setFlag(Flag::N);
@@ -126,13 +117,13 @@ void Cpu::adc_im(uint8_t value) {
   if (result == 0)
     setFlag(Flag::Z);
 
-  if (result <= A)
+  if (result <= AC)
     setFlag(Flag::C);
 
-  if (((A ^ value) & 0b10000000) && ((A ^ result) & 0b10000000))
+  if (((AC ^ value) & 0b10000000) && ((AC ^ result) & 0b10000000))
     setFlag(Flag::V);
 
-  A = result;
+  AC = result;
 
   uint8_t instructionSize = sizeof(value) + sizeof(result);
   incrementPC(instructionSize);

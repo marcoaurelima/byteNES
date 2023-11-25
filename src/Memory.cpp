@@ -102,6 +102,12 @@ void Memory::loadMemoryFromFile(std::string path, uint16_t addrBegin)
     filePath = path;
 }
 
+void Memory::reset()
+{
+  loadMemoryFromFile(filePath);
+}
+
+
 std::string Memory::getFilePath()
 {
     return filePath;
