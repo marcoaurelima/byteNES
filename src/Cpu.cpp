@@ -70,8 +70,6 @@ void Cpu::reset() {
 }
 
 // Concatena 2 variaveis de 8 bits em uma única de 16 bits.
-// (msb) Most Significant Byte
-// (lsb) Least Significant Byte
 uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) { return (msb << 8) | lsb; }
 
 // Modos de endereçamento
@@ -79,15 +77,7 @@ uint8_t Cpu::immediate(uint8_t &value) { return value; }
 
 uint8_t Cpu::zeropage(uint8_t address) { return memory.read(address); }
 
-// uint8_t Cpu::zeropageX(uint8_t address) { return address + X; }
-
-// uint8_t Cpu::zeropageY(uint8_t address) { return address + Y; }
-
 uint8_t Cpu::absolute(uint16_t address) { return memory.read(address); }
-
-// uint8_t Cpu::absoluteX(uint16_t address) { return address + X; }
-
-// uint8_t Cpu::absoluteY(uint16_t address) { return address + Y; }
 
 uint8_t Cpu::indirectX(uint8_t address) {
   uint8_t byte0 = memory.read(address + X);
@@ -105,23 +95,27 @@ uint8_t Cpu::indirectY(uint8_t address) {
   return memory.read(addr + Y);
 }
 
-// --------------------- ADC (ADd with Carry) --------------------- //
+// --ADC (ADd with Carry) ------------------------------------ //
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
-void Cpu::adc_im(uint8_t value, uint8_t instructionSize) {
+void Cpu::adc_im(uint8_t value, uint8_t instructionSize = 2) {
   uint8_t result = AC + immediate(value);
 
-  if (result & 0b10000000)
+  if (result & 0b10000000) {
     setFlag(Flag::N);
+  }
 
-  if (result == 0)
+  if (result == 0) {
     setFlag(Flag::Z);
+  }
 
-  if (result <= AC)
+  if (result <= AC) {
     setFlag(Flag::C);
+  }
 
-  if (((AC ^ value) & 0b10000000) && ((AC ^ result) & 0b10000000))
+  if (((AC ^ value) & 0b10000000) && ((AC ^ result) & 0b10000000)) {
     setFlag(Flag::V);
+  }
 
   AC = result;
 
@@ -163,16 +157,13 @@ void Cpu::adc_indy(uint8_t address) {
   adc_im(value, 2);
 }
 
-// -------------- STX (STore X register) -------------- //
+// -- STX (STore X register) ------------------------------------ //
 
-// Armazena o valor contido no registrador X no endereço do operando (zero
-// page).
+// Armazena o valor contido no registrador X no endereço do operando (zero page).
 void Cpu::stx_zp(uint8_t address) {}
 
-// Armazena o valor contido no registrador X no endereço do operando, somado com
-// o valor contido no registrador Y.
+// Armazena o valor contido no registrador X no endereço do operando, somado com o valor contido no registrador Y.
 void Cpu::stx_zpy(uint8_t address) {}
 
-// Armazena o valor contido no registrador X no endereço do operando de forma
-// absoluta (toda a memória)
+// Armazena o valor contido no registrador X no endereço do operando de forma absoluta (toda a memória)
 void Cpu::stx_abs(uint8_t address) {}

@@ -1,7 +1,6 @@
 #include "Gui.hpp"
 
-Gui::Gui(Cpu &cpu) : cpu(cpu)
-{
+Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "NES Emulator");
   window->setVerticalSyncEnabled(true);
@@ -24,8 +23,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   gameScreenTitle->setPosition(50, 15);
 
   // Flags monitor
-  for (int i = 0; i < flagsTiles.size(); i++)
-  {
+  for (int i = 0; i < flagsTiles.size(); i++) {
     flagsTiles[i] = new sf::RectangleShape(sf::Vector2f(19.8, 19));
     flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     flagsTiles[i]->setOutlineColor(sf::Color::Black);
@@ -47,13 +45,13 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   flagsText->setPosition(55, 538);
 
   // Registers monitor
-  for (int i = 0; i < registersTiles.size(); i++)
-  {
+  for (int i = 0; i < registersTiles.size(); i++) {
     registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.8, 41));
     registersTiles[i]->setFillColor(sf::Color(40, 40, 40));
     registersTiles[i]->setOutlineColor(sf::Color(20, 20, 20));
     registersTiles[i]->setOutlineThickness(2);
-    registersTiles[i]->setPosition(374 + ((registersTiles.size() - i - 1) * 29.8), 544);
+    registersTiles[i]->setPosition(
+        374 + ((registersTiles.size() - i - 1) * 29.8), 544);
   }
 
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
@@ -107,11 +105,9 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   zeroPageLinesLabelText->setPosition(615, 90);
   zeroPageLinesLabelText->setLineSpacing(1.5);
 
-  for (int i = 1; i <= 256; i++)
-  {
+  for (int i = 1; i <= 256; i++) {
     zeroPageDataStr += "00 ";
-    if (i % 16 == 0)
-    {
+    if (i % 16 == 0) {
       zeroPageDataStr += "\n";
     }
   }
@@ -161,102 +157,82 @@ Gui::Gui(Cpu &cpu) : cpu(cpu)
   buttonsPress[2]->setPosition(960, 604);
 }
 
-Gui::~Gui()
-{
-}
+Gui::~Gui() {}
 
-void Gui::updateFlag()
-{
-  for (int i = 0; i < flagsTiles.size(); i++)
-  {
-    if (cpu.getSR() & (0x01 << i))
-    {
+void Gui::updateFlag() {
+  for (int i = 0; i < flagsTiles.size(); i++) {
+    if (cpu.getSR() & (0x01 << i)) {
       flagsTiles[i]->setFillColor(sf::Color::Red);
-    }
-    else
-    {
+    } else {
       flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     }
   }
 }
 
-std::string intTohex(uint16_t value)
-{
+std::string intTohex(uint16_t value) {
   std::stringstream ss;
-  ss << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << value;
+  ss << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
+     << value;
   return ss.str();
 }
 
-void Gui::updateRegisters()
-{
+void Gui::updateRegisters() {
   registerSStr.str("");
-  registerSStr << intTohex(cpu.getPC()) << " "
-               << intTohex(cpu.getSP()) << " "
-               << intTohex(cpu.getAC()) << " "
-               << intTohex(cpu.getX()) << " "
-               << intTohex(cpu.getY()) << " "
-               << intTohex(cpu.getSR()) << " ";
+  registerSStr << intTohex(cpu.getPC()) << " " << intTohex(cpu.getSP()) << " "
+               << intTohex(cpu.getAC()) << " " << intTohex(cpu.getX()) << " "
+               << intTohex(cpu.getY()) << " " << intTohex(cpu.getSR()) << " ";
 
   registersText->setString(registerSStr.str());
 }
 
-void Gui::updateZeroPageMemory()
-{
+void Gui::updateZeroPageMemory() {
   zeroPageDataStr = "";
 
-  for (int i = 1; i <= 256; i++)
-  {
+  for (int i = 1; i <= 256; i++) {
     zeroPageDataStr += intTohex(cpu.getMemory().read(i - 1)) + " ";
-    if (i % 16 == 0)
-    {
+    if (i % 16 == 0) {
       zeroPageDataStr += "\n";
     }
   }
   zeroPageDataText->setString(zeroPageDataStr);
 }
 
-void Gui::show()
-{
+void Gui::show() {
 
-  while (window->isOpen())
-  {
+  while (window->isOpen()) {
     sf::Event event;
-    while (window->pollEvent(event))
-    {
+    while (window->pollEvent(event)) {
       if (event.type == sf::Event::Closed)
         window->close();
-      
-      if(sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !buttonsLock[0])
-      {
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !buttonsLock[0]) {
         buttonsLock[0] = true;
         buttonsPress[0]->setFillColor(sf::Color::Blue);
         cpu.reset();
- 
-      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::R) && buttonsLock[0])
-      {
+
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::R) &&
+                 buttonsLock[0]) {
         buttonsLock[0] = false;
-        buttonsPress[0]->setFillColor(sf::Color(0,0,120));
+        buttonsPress[0]->setFillColor(sf::Color(0, 0, 120));
       }
 
-      if(sf::Keyboard::isKeyPressed(sf::Keyboard::N) && !buttonsLock[1])
-      {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) && !buttonsLock[1]) {
         buttonsLock[1] = true;
         buttonsPress[1]->setFillColor(sf::Color::Blue);
         cpu.next();
-      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::N) && buttonsLock[1])
-      {
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::N) &&
+                 buttonsLock[1]) {
         buttonsLock[1] = false;
-        buttonsPress[1]->setFillColor(sf::Color(0,0,120));
+        buttonsPress[1]->setFillColor(sf::Color(0, 0, 120));
       }
 
-      if(sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2])
-      {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2]) {
         buttonsLock[2] = true;
         buttonsPress[2]->setFillColor(sf::Color::Blue);
-      } else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::E) && buttonsLock[2])
-      {
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::E) &&
+                 buttonsLock[2]) {
         buttonsLock[2] = false;
-        buttonsPress[2]->setFillColor(sf::Color(0,0,120));
+        buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
       }
     }
 
@@ -269,15 +245,13 @@ void Gui::show()
     updateZeroPageMemory();
 
     window->draw(*flagsBar);
-    for (auto &flag : flagsTiles)
-    {
+    for (auto &flag : flagsTiles) {
       window->draw(*flag);
     }
     window->draw(*flagsText);
 
     window->draw(*RegistersBar);
-    for (auto &reg : registersTiles)
-    {
+    for (auto &reg : registersTiles) {
       window->draw(*reg);
     }
     window->draw(*registersText);
@@ -291,8 +265,7 @@ void Gui::show()
 
     window->draw(*zeroPageDataText);
 
-    for (auto &button : buttonsPress)
-    {
+    for (auto &button : buttonsPress) {
       window->draw(*button);
     }
 

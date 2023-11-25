@@ -1,10 +1,10 @@
 
-#include "Memory.hpp"
 #include "Cpu.hpp"
 #include "Gui.hpp"
+#include "Memory.hpp"
 
 int main(int argc, char *argv[]) {
-  
+
   Memory mem;
   mem.fillZeroData();
   mem.loadMemoryFromFile("asm/program.bin");
