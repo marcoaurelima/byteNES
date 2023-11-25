@@ -58,17 +58,17 @@ public:
   // Modos de endereçamento
   uint8_t immediate(uint8_t &value);
   uint8_t zeropage(uint8_t address);
-  uint8_t zeropageX(uint8_t address);
-  uint8_t zeropageY(uint8_t address);
+  // uint8_t zeropageX(uint8_t address);
+  // uint8_t zeropageY(uint8_t address);
   uint8_t absolute(uint16_t address);
-  uint8_t absoluteX(uint16_t address);
-  uint8_t absoluteY(uint16_t address);
+  // uint8_t absoluteX(uint16_t address);
+  // uint8_t absoluteY(uint16_t address);
   uint8_t indirectX(uint8_t address);
   uint8_t indirectY(uint8_t address);
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void adc_im(uint8_t value);
+  void adc_im(uint8_t value, uint8_t instructionSize );
   void adc_zp(uint8_t address);
   void adc_zpx(uint8_t address);
   void adc_abs(uint16_t address);

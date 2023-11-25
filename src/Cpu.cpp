@@ -50,16 +50,18 @@ void Cpu::setFlag(Flag flag) {
   }
 }
 
+void Cpu::incrementPC(uint8_t value) { PC += value; }
+
 void Cpu::next() {
 
-  // adc_im(0x07);
+  // adc_im(0x07, 2);
   // adc_zp(0x01);
   // adc_zpx(0x02);
   // adc_abs(0x03);
   // adc_absx(0x04);
   // adc_absy(0x05);
   // adc_indx(0x06);
-  adc_indy(0x07);
+  // adc_indy(0x07);
 }
 
 void Cpu::reset() {
@@ -72,22 +74,20 @@ void Cpu::reset() {
 // (lsb) Least Significant Byte
 uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) { return (msb << 8) | lsb; }
 
-void Cpu::incrementPC(uint8_t value) { PC += value; }
-
 // Modos de endereçamento
 uint8_t Cpu::immediate(uint8_t &value) { return value; }
 
 uint8_t Cpu::zeropage(uint8_t address) { return memory.read(address); }
 
-uint8_t Cpu::zeropageX(uint8_t address) { return address + X; }
+// uint8_t Cpu::zeropageX(uint8_t address) { return address + X; }
 
-uint8_t Cpu::zeropageY(uint8_t address) { return address + Y; }
+// uint8_t Cpu::zeropageY(uint8_t address) { return address + Y; }
 
 uint8_t Cpu::absolute(uint16_t address) { return memory.read(address); }
 
-uint8_t Cpu::absoluteX(uint16_t address) { return address + X; }
+// uint8_t Cpu::absoluteX(uint16_t address) { return address + X; }
 
-uint8_t Cpu::absoluteY(uint16_t address) { return address + Y; }
+// uint8_t Cpu::absoluteY(uint16_t address) { return address + Y; }
 
 uint8_t Cpu::indirectX(uint8_t address) {
   uint8_t byte0 = memory.read(address + X);
@@ -105,11 +105,11 @@ uint8_t Cpu::indirectY(uint8_t address) {
   return memory.read(addr + Y);
 }
 
-// -------------- ADC (ADd with Carry) -------------- //
+// --------------------- ADC (ADd with Carry) --------------------- //
 
 // Adiciona o valor imediato diretamente ao registrador acumulador
-void Cpu::adc_im(uint8_t value) {
-  uint8_t result = AC + value;
+void Cpu::adc_im(uint8_t value, uint8_t instructionSize) {
+  uint8_t result = AC + immediate(value);
 
   if (result & 0b10000000)
     setFlag(Flag::N);
@@ -125,74 +125,42 @@ void Cpu::adc_im(uint8_t value) {
 
   AC = result;
 
-  uint8_t instructionSize = sizeof(value) + sizeof(result);
   incrementPC(instructionSize);
 }
 
-// Busca o dado no endereço fornecido no operando (na zero page),
-// e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_zp(uint8_t address) {
-  uint8_t value = memory.read(address);
-  adc_im(value);
+  uint8_t value = zeropage(address);
+  adc_im(value, 2);
 }
 
-// Soma o endereço do operando (na zero page) com o valor contido no registrador
-// X. O resultado é o endereço que a CPU deve buscar o dado na memória. A cpu
-// então busca esse dado e adiciona ao acomulador. Aqui, a flag carry não é
-// afetada na aritmetica de endereços.
 void Cpu::adc_zpx(uint8_t address) {
-  uint8_t result = address + X;
-  adc_zp(result);
+  uint8_t value = zeropage(address + X);
+  adc_im(value, 2);
 }
 
-// similar ao adc_zp(), so que no caso do absolute, é um endereço de 16 bits,
-// pois ele pode acessar não apenas o zero page, mas a memoria ram inteira.
-// Busca o dado no endereço fornecido no operando (na memória total),
-// e em posse desse valor, adicionar ao acumulador.
 void Cpu::adc_abs(uint16_t address) {
-  uint8_t value = memory.read(address);
-  adc_im(value);
-
-  // 1 byte a mais deve ser incrementado pois o endereço é de 16 bits
-  incrementPC(sizeof(uint8_t));
+  uint8_t value = absolute(address);
+  adc_im(value, 3);
 }
 
-// Soma o endereço do operando (na memoria total) com o valor contido no
-// registrador X. O resultado é o endereço que a CPU deve buscar o dado na
-// memória. A cpu então busca esse dado e adiciona ao acomulador. Aqui, a flag
-// carry não é afetada na aritmetica de endereços.
 void Cpu::adc_absx(uint16_t address) {
-  uint16_t result = address + X;
-  adc_abs(result);
+  uint16_t value = absolute(address + X);
+  adc_im(value, 3);
 }
 
-// Soma o endereço do operando (na memoria total) com o valor contido no
-// registrador X. O resultado é o endereço que a CPU deve buscar o dado na
-// memória. A cpu então busca esse dado e adiciona ao acomulador. Aqui, a flag
-// carry não é afetada na aritmetica de endereços.
 void Cpu::adc_absy(uint16_t address) {
-  uint16_t result = address + Y;
-  adc_abs(result);
+  uint16_t value = absolute(address + Y);
+  adc_im(value, 3);
 }
 
-// Junta o edereço do operando (8 bits) com o valor do registrador X (8 bits)
-// transformando-os em um endereço de 16 bits.
-// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo,
-// e o valor do operando é o menos significativo. O dado é buscado nesse
-// endereço e armazenado no acumulador.
 void Cpu::adc_indx(uint8_t address) {
-  uint16_t result = concat2Bytes(X, address);
-  adc_abs(result);
+  uint16_t value = indirectX(address);
+  adc_im(value, 2);
 }
 
-// Junta o edereço do operando (8 bits) com o valor do registrador Y (8 bits)
-// transformando-os em um endereço de 16 bits.
-// Esta junção é bit a bit, sendo que o valor de X é o byte mais significativo,
-// e o valor do operando é o menos significativo. O dado é buscado nesse
-// endereço e armazenado no acumulador.
 void Cpu::adc_indy(uint8_t address) {
-  uint16_t result = concat2Bytes(X, address);
-  adc_abs(result);
+  uint16_t value = indirectY(address);
+  adc_im(value, 2);
 }
 
 // -------------- STX (STore X register) -------------- //
