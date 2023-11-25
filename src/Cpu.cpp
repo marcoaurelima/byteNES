@@ -174,7 +174,7 @@ void Cpu::stx_zpy(uint8_t address) {
 }
 
 // Armazena o valor contido no registrador X no endereço absoluto do operando.
-void Cpu::stx_abs(uint8_t address) {
+void Cpu::stx_abs(uint16_t address) {
   memory.write(address, X);
   incrementPC(0x03);
 }
@@ -194,7 +194,7 @@ void Cpu::sty_zpx(uint8_t address) {
 }
 
 // Armazena o valor contido no registrador Y no endereço absoluto do operando.
-void Cpu::sty_abs(uint8_t address) {
+void Cpu::sty_abs(uint16_t address) {
   memory.write(address, Y);
   incrementPC(0x03);
 }

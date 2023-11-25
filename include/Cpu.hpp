@@ -104,11 +104,11 @@ public:
   // STX (STore X register)
   void stx_zp(uint8_t address);
   void stx_zpy(uint8_t address);
-  void stx_abs(uint8_t address);
+  void stx_abs(uint16_t address);
   // STY (STore Y register)
   void sty_zp(uint8_t address);
   void sty_zpx(uint8_t address);
-  void sty_abs(uint8_t address);
+  void sty_abs(uint16_t address);
 
 private:
   // Memoria ram (2Kb)
