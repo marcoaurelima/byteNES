@@ -1,5 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
+#include <array>
+#include <functional>
 #pragma once
 
 #include <bitset>
@@ -125,6 +127,10 @@ private:
   // Flags
   void setFlag(Flag flag);
   void incrementPC(uint8_t value);
+
+  // Opcodes Mapping
+  std::array<std::function<void(uint16_t)>, 0xFF> opcodeMapping{};
+  void fillOpcodeMapping();
 };
 
 #endif

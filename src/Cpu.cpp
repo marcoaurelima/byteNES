@@ -4,22 +4,68 @@
 
 Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
          uint8_t Y, uint8_t SR)
-    : memory(memory), PC(PC), SP(SP), AC(AC), X(X), Y(Y), SR(SR) {}
+    : memory(memory), PC(PC), SP(SP), AC(AC), X(X), Y(Y), SR(SR) {
+  fillOpcodeMapping();
+}
 
 Cpu::~Cpu() {}
 
+void Cpu::fillOpcodeMapping() {
+
+  // ADC (ADd with Carry)
+  opcodeMapping[0x69] = [this](uint16_t v) { this->adc_im(v, 0x02); };
+  opcodeMapping[0x65] = [this](uint16_t v) { this->adc_zp(v); };
+  opcodeMapping[0x75] = [this](uint16_t v) { this->adc_zpx(v); };
+  opcodeMapping[0x6D] = [this](uint16_t v) { this->adc_abs(v); };
+  opcodeMapping[0x7D] = [this](uint16_t v) { this->adc_absx(v); };
+  opcodeMapping[0x79] = [this](uint16_t v) { this->adc_absy(v); };
+  opcodeMapping[0x61] = [this](uint16_t v) { this->adc_indx(v); };
+  opcodeMapping[0x71] = [this](uint16_t v) { this->adc_indy(v); };
+
+  // AND (bitwise AND with accumulator)
+  // ASL (Arithmetic Shift Left)
+  // BIT (test BITs)
+  // Branch Instructions
+  // BRK (BReaK)
+  // CMP (CoMPare accumulator)
+  // CPX (ComPare X register)
+  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+  // DEC (DECrement memory)
+  // EOR (bitwise Exclusive OR)
+  // Flag (Processor Status) Instructions
+  // INC (INCrement memory)
+  // JMP (JuMP)
+  // JSR (Jump to SubRoutine)
+  // LDA (LoaD Accumulator)
+  // LDX (LoaD X register)
+  // LDY (LoaD Y register)
+  // LSR (Logical Shift Right)
+  // NOP (No OPeration)
+  // ORA (bitwise OR with Accumulator)
+  // Register Instructions
+  // ROL (ROtate Left)
+  // ROR (ROtate Right)
+  // RTI (ReTurn from Interrupt)
+  // RTS (ReTurn from Subroutine)
+  // SBC (SuBtract with Carry)
+  // STA (STore Accumulator)
+  // Stack Instructions
+  // STX (STore X register)
+  opcodeMapping[0x00] = [this](uint16_t v) { this->stx_zp(v); };
+  opcodeMapping[0x00] = [this](uint16_t v) { this->stx_zpy(v); };
+  opcodeMapping[0x00] = [this](uint16_t v) { this->stx_abs(v); };
+  // STY (STore Y register)
+  opcodeMapping[0x00] = [this](uint16_t v) { this->sty_zp(v); };
+  opcodeMapping[0x00] = [this](uint16_t v) { this->sty_zpx(v); };
+  opcodeMapping[0x00] = [this](uint16_t v) { this->sty_abs(v); };
+}
+
 uint16_t Cpu::getPC() { return PC; }
-
 uint8_t Cpu::getSP() { return SP; }
-
 uint8_t Cpu::getAC() { return AC; }
-
 uint8_t Cpu::getX() { return X; }
-
 uint8_t Cpu::getY() { return Y; }
-
 uint8_t Cpu::getSR() { return SR; }
-
 Memory &Cpu::getMemory() { return memory; }
 
 void Cpu::setFlag(Flag flag) {
@@ -53,17 +99,6 @@ void Cpu::setFlag(Flag flag) {
 void Cpu::incrementPC(uint8_t value) { PC += value; }
 
 void Cpu::next() {
-
-  // adc_im(0x07, 2);
-  // adc_zp(0x01);
-  // adc_zpx(0x02);
-  // adc_abs(0x03);
-  // adc_absx(0x04);
-  // adc_absy(0x05);
-  // adc_indx(0x06);
-  // adc_indy(0x07);
-  //
-  stx_zp(0x00);
 }
 
 void Cpu::reset() {
