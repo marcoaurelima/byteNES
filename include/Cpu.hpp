@@ -66,14 +66,14 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void adc_im(uint8_t value, uint8_t instructionSize);
-  void adc_zp(uint8_t address);
-  void adc_zpx(uint8_t address);
-  void adc_abs(uint16_t address);
-  void adc_absx(uint16_t address);
-  void adc_absy(uint16_t address);
-  void adc_indx(uint8_t address);
-  void adc_indy(uint8_t address);
+  void adc_im(uint8_t value);
+  void adc_zp();
+  void adc_zpx();
+  void adc_abs();
+  void adc_absx();
+  void adc_absy();
+  void adc_indx();
+  void adc_indy();
 
   // AND (bitwise AND with accumulator)
   // ASL (Arithmetic Shift Left)
@@ -104,13 +104,13 @@ public:
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
-  void stx_zp(uint8_t address);
-  void stx_zpy(uint8_t address);
-  void stx_abs(uint16_t address);
+  void stx_zp();
+  void stx_zpy();
+  void stx_abs();
   // STY (STore Y register)
-  void sty_zp(uint8_t address);
-  void sty_zpx(uint8_t address);
-  void sty_abs(uint16_t address);
+  void sty_zp();
+  void sty_zpx();
+  void sty_abs();
 
 private:
   // Memoria ram (2Kb)
