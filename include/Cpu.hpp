@@ -66,7 +66,8 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void adc_im(uint8_t value);
+  void adc_flags_handler(uint8_t value_orig, uint8_t value_new);
+  void adc_im();
   void adc_zp();
   void adc_zpx();
   void adc_abs();
@@ -129,7 +130,7 @@ private:
   void incrementPC(uint8_t value);
 
   // Opcodes Mapping
-  std::array<std::function<void(uint16_t)>, 0xFF> opcodeMapping{};
+  std::array<std::function<void()>, 0xFF> opcodeMapping{};
   void fillOpcodeMapping();
 };
 

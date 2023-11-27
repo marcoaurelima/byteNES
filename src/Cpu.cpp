@@ -13,18 +13,16 @@ Cpu::~Cpu() {}
 void Cpu::fillOpcodeMapping() {
   // - Usando funções lambda para evitar complexidade relativo a
   // endereços de memória de funções membro.
-  // - As funções lambda tem a mesma assinatura por causa do array de
-  // funções, mesmo que as funçoes internas não usem o parametro 'v'
 
   // ADC (ADd with Carry)
-  opcodeMapping[0x69] = [this](uint16_t v) { this->adc_im(v); };
-  opcodeMapping[0x65] = [this](uint16_t v) { this->adc_zp(); };
-  opcodeMapping[0x75] = [this](uint16_t v) { this->adc_zpx(); };
-  opcodeMapping[0x6D] = [this](uint16_t v) { this->adc_abs(); };
-  opcodeMapping[0x7D] = [this](uint16_t v) { this->adc_absx(); };
-  opcodeMapping[0x79] = [this](uint16_t v) { this->adc_absy(); };
-  opcodeMapping[0x61] = [this](uint16_t v) { this->adc_indx(); };
-  opcodeMapping[0x71] = [this](uint16_t v) { this->adc_indy(); };
+  opcodeMapping[0x69] = [this]() { this->adc_im(); };
+  opcodeMapping[0x65] = [this]() { this->adc_zp(); };
+  opcodeMapping[0x75] = [this]() { this->adc_zpx(); };
+  opcodeMapping[0x6D] = [this]() { this->adc_abs(); };
+  opcodeMapping[0x7D] = [this]() { this->adc_absx(); };
+  opcodeMapping[0x79] = [this]() { this->adc_absy(); };
+  opcodeMapping[0x61] = [this]() { this->adc_indx(); };
+  opcodeMapping[0x71] = [this]() { this->adc_indy(); };
 
   // AND (bitwise AND with accumulator)
   // ASL (Arithmetic Shift Left)
@@ -55,13 +53,13 @@ void Cpu::fillOpcodeMapping() {
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
-  opcodeMapping[0x86] = [this](uint16_t v) { this->stx_zp(); };
-  opcodeMapping[0x96] = [this](uint16_t v) { this->stx_zpy(); };
-  opcodeMapping[0x8E] = [this](uint16_t v) { this->stx_abs(); };
+  opcodeMapping[0x86] = [this]() { this->stx_zp(); };
+  opcodeMapping[0x96] = [this]() { this->stx_zpy(); };
+  opcodeMapping[0x8E] = [this]() { this->stx_abs(); };
   // STY (STore Y register)
-  opcodeMapping[0x84] = [this](uint16_t v) { this->sty_zp(); };
-  opcodeMapping[0x94] = [this](uint16_t v) { this->sty_zpx(); };
-  opcodeMapping[0x8C] = [this](uint16_t v) { this->sty_abs(); };
+  opcodeMapping[0x84] = [this]() { this->sty_zp(); };
+  opcodeMapping[0x94] = [this]() { this->sty_zpx(); };
+  opcodeMapping[0x8C] = [this]() { this->sty_abs(); };
 }
 
 uint16_t Cpu::getPC() { return PC; }
@@ -102,7 +100,10 @@ void Cpu::setFlag(Flag flag) {
 
 void Cpu::incrementPC(uint8_t value) { PC += value; }
 
-void Cpu::next() {}
+void Cpu::next() {
+  uint8_t index = memory.read(PC);
+  opcodeMapping[index]();
+}
 
 void Cpu::reset() {
   memory.reset();
@@ -137,41 +138,45 @@ uint8_t Cpu::indirectY(uint8_t address) {
 
 // --ADC (ADd with Carry) ------------------------------------ //
 
-// Adiciona o valor imediato diretamente ao registrador acumulador
-void Cpu::adc_im(uint8_t value) {
-  uint8_t result = AC + immediate(value);
-
-  if (result & 0b10000000) {
+void Cpu::adc_flags_handler(uint8_t value_orig, uint8_t value_new){
+  if (value_new & 0b10000000) {
     setFlag(Flag::N);
   }
 
-  if (result == 0) {
+  if (value_new == 0) {
     setFlag(Flag::Z);
   }
 
-  if (result <= AC) {
+  if (value_new <= AC) {
     setFlag(Flag::C);
   }
 
-  if (((AC ^ value) & 0b10000000) && ((AC ^ result) & 0b10000000)) {
+  if (((AC ^ value_orig) & 0b10000000) && ((AC ^ value_new) & 0b10000000)) {
     setFlag(Flag::V);
   }
+}
 
+// Adiciona o valor imediato diretamente ao registrador acumulador
+void Cpu::adc_im() {
+  uint8_t value = memory.read(PC + 1);
+  uint8_t result = AC + immediate(value);
+  adc_flags_handler(value, result);
   AC = result;
-
   incrementPC(0x02);
 }
 
 void Cpu::adc_zp() {
   uint8_t address = memory.read(PC + 1);
   uint8_t value = zeropage(address);
-  adc_im(value);
+  memory.write(address, value);
+  incrementPC(0x02);
 }
 
 void Cpu::adc_zpx() {
   uint8_t address = memory.read(PC + 1);
   uint8_t value = zeropage(address + X);
-  adc_im(value);
+  memory.write(address, value);
+  incrementPC(0x02);
 }
 
 void Cpu::adc_abs() {
@@ -179,8 +184,8 @@ void Cpu::adc_abs() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = concat2Bytes(msb, lsb);
   uint8_t value = absolute(address);
-  adc_im(value);
-  incrementPC(0x01);
+  memory.write(address, value);
+  incrementPC(0x03);
 }
 
 void Cpu::adc_absx() {
@@ -188,8 +193,8 @@ void Cpu::adc_absx() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = concat2Bytes(msb, lsb);
   uint8_t value = memory.read(address + X);
-  adc_im(value);
-  incrementPC(0x01);
+  memory.write(address, value);
+  incrementPC(0x03);
 }
 
 void Cpu::adc_absy() {
@@ -197,20 +202,23 @@ void Cpu::adc_absy() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = concat2Bytes(msb, lsb);
   uint8_t value = memory.read(address + Y);
-  adc_im(value);
-  incrementPC(0x01);
+  memory.write(address, value);
+  incrementPC(0x03);
 }
 
 void Cpu::adc_indx() {
   uint8_t address = memory.read(PC + 1);
   uint16_t value = indirectX(address);
-  adc_im(value);
+  memory.write(address, value);
+  incrementPC(0x02);
 }
 
 void Cpu::adc_indy() {
   uint8_t address = memory.read(PC + 1);
   uint16_t value = indirectY(address);
-  adc_im(value);
+  memory.write(address, value);
+
+  incrementPC(0x02);
 }
 
 // -- STX (STore X register) ------------------------------------ //
@@ -231,7 +239,9 @@ void Cpu::stx_zpy() {
 
 // Armazena o valor contido no registrador X no endereço absoluto do operando.
 void Cpu::stx_abs() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
   memory.write(address, X);
   incrementPC(0x03);
 }
@@ -254,7 +264,9 @@ void Cpu::sty_zpx() {
 
 // Armazena o valor contido no registrador Y no endereço absoluto do operando.
 void Cpu::sty_abs() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
   memory.write(address, Y);
   incrementPC(0x03);
 }
