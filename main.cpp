@@ -2,9 +2,6 @@
 #include "Cpu.hpp"
 #include "Gui.hpp"
 #include "Memory.hpp"
-#include <array>
-#include <cstdint>
-#include <functional>
 
 int main(int argc, char *argv[]) {
 

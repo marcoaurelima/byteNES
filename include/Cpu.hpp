@@ -77,6 +77,16 @@ public:
   void adc_indy();
 
   // AND (bitwise AND with accumulator)
+  void and_flags_handler(uint8_t value_orig, uint8_t value_new);
+  void and_im();
+  void and_zp();
+  void and_zpx();
+  void and_abs();
+  void and_absx();
+  void and_absy();
+  void and_indx();
+  void and_indy();
+
   // ASL (Arithmetic Shift Left)
   // BIT (test BITs)
   // Branch Instructions
@@ -127,7 +137,7 @@ private:
 
   // Flags
   void setFlag(Flag flag);
-  void incrementPC(uint8_t value);
+  void incrementPC(uint16_t value);
 
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
