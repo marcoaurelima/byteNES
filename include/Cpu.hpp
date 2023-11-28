@@ -1,12 +1,9 @@
 #ifndef CPU_H
 #define CPU_H
-#include <array>
-#include <functional>
-#pragma once
 
-#include <bitset>
+#include <array>
 #include <cstdint>
-#include <iostream>
+#include <functional>
 
 #include "Memory.hpp"
 

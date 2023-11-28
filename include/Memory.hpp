@@ -1,12 +1,9 @@
 #ifndef MEMORY_H
 #define MEMORY_H
-#pragma once
 
 #include <array>
 #include <cstdint>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
+#include <string>
 
 #define MEMSIZE 0xFFFF
 

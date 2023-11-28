@@ -1,16 +1,10 @@
 #ifndef GUI_H
 #define GUI_H
-#pragma once
 
 #include "Cpu.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <cstdint>
-#include <deque>
-#include <iomanip>
-#include <iostream>
-#include <random>
 #include <sstream>
 
 class Gui {

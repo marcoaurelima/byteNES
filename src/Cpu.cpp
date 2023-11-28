@@ -1,7 +1,4 @@
 #include "Cpu.hpp"
-#include <algorithm>
-#include <cstdint>
-#include <ios>
 
 Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
          uint8_t Y, uint8_t SR)

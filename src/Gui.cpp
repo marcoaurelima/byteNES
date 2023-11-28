@@ -1,4 +1,5 @@
 #include "Gui.hpp"
+#include <iomanip>
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen

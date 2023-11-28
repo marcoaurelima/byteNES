@@ -1,4 +1,7 @@
 #include "Memory.hpp"
+#include <ctime>
+#include <fstream>
+#include <iostream>
 
 /*
 | Address range | Size  | Device
