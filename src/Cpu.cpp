@@ -308,7 +308,8 @@ void Cpu::sty_abs() {
   incrementPC(0x03);
 }
 
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+// ++++++++++++++++++++++++ AND Memory with Accumulator
+// +++++++++++++++++++++++++++++++ //
 
 void Cpu::and_flags_handler(uint8_t value_orig, uint8_t value_new) {
   if (value_new & 0b10000000) {
@@ -328,10 +329,78 @@ void Cpu::and_im() {
   incrementPC(0x02);
 }
 
-void Cpu::and_zp() {}
-void Cpu::and_zpx() {}
-void Cpu::and_abs() {}
-void Cpu::and_absx() {}
-void Cpu::and_absy() {}
-void Cpu::and_indx() {}
-void Cpu::and_indy() {}
+void Cpu::and_zp() {
+  uint8_t value = memory.read(PC + 1);
+  uint8_t result = zeropage(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x02);
+}
+
+void Cpu::and_zpx() {
+  uint8_t value = memory.read(PC + 1);
+  uint8_t result = zeropage(value + X) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x02);
+}
+
+void Cpu::and_abs() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address);
+  uint8_t result = absolute(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x03);
+}
+
+void Cpu::and_absx() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + X);
+  uint8_t result = absolute(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x03);
+}
+
+void Cpu::and_absy() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + Y);
+  uint8_t result = absolute(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x03);
+}
+
+void Cpu::and_indx() {
+  uint8_t msb = memory.read(PC + X + 2);
+  uint8_t lsb = memory.read(PC + X + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address);
+  uint8_t result = absolute(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x02);
+}
+
+void Cpu::and_indy() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + Y);
+  uint8_t result = absolute(value) & AC;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x02);
+}
