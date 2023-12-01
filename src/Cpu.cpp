@@ -50,6 +50,14 @@ void Cpu::fillOpcodeMapping() {
   // DEC (DECrement memory)
   // EOR (bitwise Exclusive OR)
   // Flag (Processor Status) Instructions
+  opcodeMapping[0x18] = [this]() { this->clc(); };
+  opcodeMapping[0x38] = [this]() { this->sec(); };
+  opcodeMapping[0x58] = [this]() { this->cli(); };
+  opcodeMapping[0x78] = [this]() { this->sei(); };
+  opcodeMapping[0xB8] = [this]() { this->clv(); };
+  opcodeMapping[0xD8] = [this]() { this->cld(); };
+  opcodeMapping[0xF8] = [this]() { this->sed(); };
+
   // INC (INCrement memory)
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)
@@ -506,4 +514,47 @@ void Cpu::asl_absx() {
   adc_flags_handler(value, result);
   AC = result;
   incrementPC(0x03);
+}
+
+// Flag (Processor Status) Instructions
+// CLC (CLear Carry)
+void Cpu::clc() {
+  remFlag(Flag::C);
+  incrementPC(0x01);
+}
+
+// SEC (SEt Carry)
+void Cpu::sec() {
+  setFlag(Flag::C);
+  incrementPC(0x01);
+}
+
+// CLI (CLear Interrupt)
+void Cpu::cli() {
+  remFlag(Flag::I);
+  incrementPC(0x01);
+}
+
+// SEI (SEt Interrupt)
+void Cpu::sei() {
+  setFlag(Flag::I);
+  incrementPC(0x01);
+}
+
+// CLV (CLear oVerflow)
+void Cpu::clv() {
+  remFlag(Flag::V);
+  incrementPC(0x01);
+}
+
+// CLD (CLear Decimal)
+void Cpu::cld() {
+  remFlag(Flag::D);
+  incrementPC(0x01);
+}
+
+// SED (SEt Decimal)
+void Cpu::sed() {
+  setFlag(Flag::D);
+  incrementPC(0x01);
 }

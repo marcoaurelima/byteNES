@@ -101,6 +101,14 @@ public:
   // DEC (DECrement memory)
   // EOR (bitwise Exclusive OR)
   // Flag (Processor Status) Instructions
+  void clc();
+  void sec();
+  void cli();
+  void sei();
+  void clv();
+  void cld();
+  void sed();
+
   // INC (INCrement memory)
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)

@@ -1,2 +1,3 @@
+SEC
 ADC #05
 ADC $00
