@@ -1,4 +1,6 @@
 #include "Cpu.hpp"
+#include <cstdint>
+#include <sys/types.h>
 
 Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
          uint8_t Y, uint8_t SR)
@@ -33,6 +35,12 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x31] = [this]() { this->and_indy(); };
 
   // ASL (Arithmetic Shift Left)
+  opcodeMapping[0x0A] = [this]() { this->asl_acc(); };
+  opcodeMapping[0x06] = [this]() { this->asl_zp(); };
+  opcodeMapping[0x16] = [this]() { this->asl_zpx(); };
+  opcodeMapping[0x0E] = [this]() { this->asl_abs(); };
+  opcodeMapping[0x1E] = [this]() { this->asl_absx(); };
+
   // BIT (test BITs)
   // Branch Instructions
   // BRK (BReaK)
@@ -403,4 +411,71 @@ void Cpu::and_indy() {
   adc_flags_handler(value, result);
   AC = result;
   incrementPC(0x02);
+}
+
+// -------------- ASL Shift Left One Bit (Memory or Accumulator) ---------------
+// com excessão de asl_acc, que ocorre no acumulador, as operações acontecem
+// diretamente no valor contido no end. de memória e o resultado obtido
+// é devolvido ao mesmo endereço.
+void Cpu::asl_flags_handler(uint8_t value_orig, uint8_t value_new) {
+  if (value_new & 0b10000000) {
+    setFlag(Flag::N);
+  }
+
+  if (value_new == 0) {
+    setFlag(Flag::Z);
+  }
+
+  if (value_new <= AC) {
+    setFlag(Flag::C);
+  }
+}
+
+void Cpu::asl_acc() {
+  uint8_t value = AC;
+  uint8_t result = AC << 0x01;
+  asl_flags_handler(value, result);
+  incrementPC(0x01);
+}
+
+void Cpu::asl_zp() {
+  uint8_t value = memory.read(PC + 1);
+  uint8_t result = zeropage(value) << 0x01;
+  memory.write(PC + 1, result);
+  asl_flags_handler(value, result);
+  incrementPC(0x02);
+}
+
+void Cpu::asl_zpx() {
+  uint8_t value = memory.read(PC + 1);
+  uint8_t result = zeropage(value + X) << 0x01;
+  memory.write(PC + 1, result);
+  asl_flags_handler(value, result);
+  incrementPC(0x02);
+}
+
+void Cpu::asl_abs() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address);
+  uint8_t result = absolute(value) << 0x01;
+  memory.write(address, result);
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x03);
+}
+
+void Cpu::asl_absx() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + X);
+  uint8_t result = absolute(value) << 0x01;
+  memory.write(address + X, result);
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x03);
 }

@@ -17,22 +17,22 @@ enum class Flag {
   B, // Break
 };
 
-enum {
-  // ADC (ADd with Carry)
-  ADC_IM = 0X69,
-  ADC_ZP = 0X65,
-  ADC_ZPX = 0X75,
-  ADC_ABS = 0X6D,
-  ADC_ABSX = 0X7D,
-  ADC_ABSY = 0X79,
-  ADC_INDX = 0X61,
-  ADC_INDY = 0X71,
-
-  // STX (STore X register)
-  STX_ZP = 0X86,
-  STX_ZPY = 0X96,
-  STX_ABS = 0X8E,
-};
+// enum {
+//   // ADC (ADd with Carry)
+//   ADC_IM = 0X69,
+//   ADC_ZP = 0X65,
+//   ADC_ZPX = 0X75,
+//   ADC_ABS = 0X6D,
+//   ADC_ABSX = 0X7D,
+//   ADC_ABSY = 0X79,
+//   ADC_INDX = 0X61,
+//   ADC_INDY = 0X71,
+//
+//   // STX (STore X register)
+//   STX_ZP = 0X86,
+//   STX_ZPY = 0X96,
+//   STX_ABS = 0X8E,
+// };
 
 class Cpu {
 public:
@@ -85,6 +85,13 @@ public:
   void and_indy();
 
   // ASL (Arithmetic Shift Left)
+  void asl_flags_handler(uint8_t value_orig, uint8_t value_new);
+  void asl_acc();
+  void asl_zp();
+  void asl_zpx();
+  void asl_abs();
+  void asl_absx();
+
   // BIT (test BITs)
   // Branch Instructions
   // BRK (BReaK)
