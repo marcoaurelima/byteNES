@@ -88,25 +88,53 @@ Memory &Cpu::getMemory() { return memory; }
 void Cpu::setFlag(Flag flag) {
   switch (flag) {
   case Flag::N:
-    SR = SR | 0b10000000;
+    SR = SR | (0x01 << 7); // 0b10000000;
     break;
   case Flag::V:
-    SR = SR | 0b01000000;
+    SR = SR | (0x01 << 6); // 0b01000000;
     break;
   case Flag::B:
-    SR = SR | 0b00010000;
+    SR = SR | (0x01 << 4); // 0b00010000;
     break;
   case Flag::D:
-    SR = SR | 0b00001000;
+    SR = SR | (0x01 << 3); // 0b00001000;
     break;
   case Flag::I:
-    SR = SR | 0b00000100;
+    SR = SR | (0x01 << 2); // 0b00000100;
     break;
   case Flag::Z:
-    SR = SR | 0b00000010;
+    SR = SR | (0x01 << 1); // 0b00000010;
     break;
   case Flag::C:
-    SR = SR | 0b00000001;
+    SR = SR | (0x01 << 0); // 0b00000001;
+    break;
+  default:
+    break;
+  }
+}
+
+void Cpu::remFlag(Flag flag) {
+  switch (flag) {
+  case Flag::N:
+    SR = SR & ~(0x01 << 7); // 0b10000000;
+    break;
+  case Flag::V:
+    SR = SR & ~(0x01 << 6); // 0b01000000;
+    break;
+  case Flag::B:
+    SR = SR & ~(0x01 << 4); // 0b00010000;
+    break;
+  case Flag::D:
+    SR = SR & ~(0x01 << 3); // 0b00001000;
+    break;
+  case Flag::I:
+    SR = SR & ~(0x01 << 2); // 0b00000100;
+    break;
+  case Flag::Z:
+    SR = SR & ~(0x01 << 1); // 0b00000010;
+    break;
+  case Flag::C:
+    SR = SR & ~(0x01 << 0); // 0b00000001;
     break;
   default:
     break;

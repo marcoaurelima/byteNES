@@ -141,6 +141,7 @@ private:
 
   // Flags
   void setFlag(Flag flag);
+  void remFlag(Flag flag);
   void incrementPC(uint16_t value);
 
   // Opcodes Mapping
