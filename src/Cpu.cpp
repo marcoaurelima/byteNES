@@ -218,7 +218,6 @@ uint8_t Cpu::indirectY() {
 
 uint8_t Cpu::accumulator() { return AC; }
 
-
 // -- verificadores de flags
 // Nwgative
 void Cpu::flagActivationN(uint8_t value) {
@@ -293,43 +292,49 @@ void Cpu::ASL(uint8_t (Cpu::*Addressingmode)()) {
 // Flag (Processor Status) Instructions
 // CLC (CLear Carry)
 void Cpu::CLC(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   remFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // SEC (SEt Carry)
 void Cpu::SEC(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // CLI (CLear Interrupt)
 void Cpu::CLI(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // SEI (SEt Interrupt)
 void Cpu::SEI(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // CLV (CLear oVerflow)
 void Cpu::CLV(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
 }
 
 // CLD (CLear Decimal)
 void Cpu::CLD(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
 }
 
 // SED (SEt Decimal)
 void Cpu::SED(uint8_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
 }
-

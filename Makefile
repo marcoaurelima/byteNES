@@ -3,7 +3,7 @@ SRC = ./src
 BIN = ./bin
 OBJ = ./obj
 
-CXX = g++ -std=c++11 -Wall -Wextra -Wpedantic
+CXX = g++ -std=c++11 -Wall -Wextra -Wpedantic -Werror
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 OBJS =  $(OBJ)/main.o \
