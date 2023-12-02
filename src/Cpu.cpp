@@ -146,77 +146,70 @@ void Cpu::reset() {
 }
 
 // Modos de endereçamento
-uint8_t Cpu::immediate() {
-  uint8_t value = memory.read(PC + 1);
+uint16_t Cpu::immediate() {
+  uint8_t address = (PC + 1);
   incrementPC(0x01);
-  return value;
+  return address;
 }
 
-uint8_t Cpu::zeropage() {
+uint16_t Cpu::zeropage() {
   uint8_t address = memory.read(PC + 1);
-  uint8_t value = memory.read(address);
   incrementPC(0x01);
-  return value;
+  return address;
 }
 
-uint8_t Cpu::zeropageX() {
+uint16_t Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1);
-  uint8_t value = memory.read(address + X);
   incrementPC(0x01);
-  return value;
+  return (address + X);
 }
 
-uint8_t Cpu::absolute() {
+uint16_t Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  uint8_t value = memory.read(address);
   incrementPC(0x02);
-  return value;
+  return address;
 }
 
-uint8_t Cpu::absoluteX() {
+uint16_t Cpu::absoluteX() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  uint8_t value = memory.read(address + X);
   incrementPC(0x02);
-  return value;
+  return (address + X);
 }
 
-uint8_t Cpu::absoluteY() {
+uint16_t Cpu::absoluteY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  uint8_t value = memory.read(address + Y);
   incrementPC(0x02);
-  return value;
+  return (address + Y);
 }
 
-uint8_t Cpu::indirectX() {
+uint16_t Cpu::indirectX() {
   uint8_t msb = memory.read(PC + X + 2);
   uint8_t lsb = memory.read(PC + X + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  uint8_t value = memory.read(address);
   incrementPC(0x01);
-  return value;
+  return address;
 }
 
-uint8_t Cpu::indirectY() {
+uint16_t Cpu::indirectY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  uint8_t value = memory.read(address + Y);
   incrementPC(0x01);
-  return value;
+  return (address + Y);
 }
 
-uint8_t Cpu::accumulator() { return AC; }
+uint16_t Cpu::accumulator() { return AC; }
 
 // -- verificadores de flags
 // Nwgative
@@ -257,8 +250,9 @@ void Cpu::flagActivationC(uint16_t value) {
 }
 
 // --ADC (ADd with Carry) ------------------------------------ //
-void Cpu::ADC(uint8_t (Cpu::*Addressingmode)()) {
-  uint8_t value = (this->*Addressingmode)();
+void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
   uint8_t result = AC + value;
   flagActivationC(AC + value);
   flagActivationN(result);
@@ -268,8 +262,9 @@ void Cpu::ADC(uint8_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 
-void Cpu::AND(uint8_t (Cpu::*Addressingmode)()) {
-  uint8_t value = (this->*Addressingmode)();
+void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
   uint8_t result = value & AC;
   flagActivationN(result);
   flagActivationC(value & AC);
@@ -279,8 +274,9 @@ void Cpu::AND(uint8_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 
-void Cpu::ASL(uint8_t (Cpu::*Addressingmode)()) {
-  uint8_t value = (this->*Addressingmode)();
+void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
   uint8_t result = value << 0x01;
   flagActivationN(result);
   flagActivationC(value << 0x01);
@@ -291,49 +287,49 @@ void Cpu::ASL(uint8_t (Cpu::*Addressingmode)()) {
 
 // Flag (Processor Status) Instructions
 // CLC (CLear Carry)
-void Cpu::CLC(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::CLC(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // SEC (SEt Carry)
-void Cpu::SEC(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::SEC(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // CLI (CLear Interrupt)
-void Cpu::CLI(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::CLI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // SEI (SEt Interrupt)
-void Cpu::SEI(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::SEI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // CLV (CLear oVerflow)
-void Cpu::CLV(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::CLV(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
 }
 
 // CLD (CLear Decimal)
-void Cpu::CLD(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::CLD(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
 }
 
 // SED (SEt Decimal)
-void Cpu::SED(uint8_t (Cpu::*AddressingMode)()) {
+void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
