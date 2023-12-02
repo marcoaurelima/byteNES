@@ -12,7 +12,18 @@ Cpu::~Cpu() {}
 
 void Cpu::fillOpcodeMapping() {
   // - Usando funções lambda para evitar complexidade relativo a
-  // endereços de memória de funções membro.
+  //   endereços de memória de funções membro.
+
+  opcodeMapping[0x69] = [this]() { this->adc(&Cpu::immediate); };
+  opcodeMapping[0x65] = [this]() { this->adc(&Cpu::zeropage); };
+  opcodeMapping[0x75] = [this]() { this->adc(&Cpu::zeropageX); };
+  opcodeMapping[0x6D] = [this]() { this->adc(&Cpu::absolute); };
+  opcodeMapping[0x7D] = [this]() { this->adc(&Cpu::absoluteX); };
+  opcodeMapping[0x79] = [this]() { this->adc(&Cpu::absoluteY); };
+  opcodeMapping[0x61] = [this]() { this->adc(&Cpu::indirectX); };
+  opcodeMapping[0x71] = [this]() { this->adc(&Cpu::indirectY); };
+
+  /*
 
   // ADC (ADd with Carry)
   opcodeMapping[0x69] = [this]() { this->adc_im(); };
@@ -83,6 +94,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x84] = [this]() { this->sty_zp(); };
   opcodeMapping[0x94] = [this]() { this->sty_zpx(); };
   opcodeMapping[0x8C] = [this]() { this->sty_abs(); };
+  */
 }
 
 uint16_t Cpu::getPC() { return PC; }
@@ -165,26 +177,74 @@ void Cpu::reset() {
 uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) { return (msb << 8) | lsb; }
 
 // Modos de endereçamento
-uint8_t Cpu::immediate(uint8_t &value) { return value; }
-
-uint8_t Cpu::zeropage(uint8_t address) { return memory.read(address); }
-
-uint8_t Cpu::absolute(uint16_t address) { return memory.read(address); }
-
-uint8_t Cpu::indirectX(uint8_t address) {
-  uint8_t byte0 = memory.read(address + X);
-  uint8_t byte1 = memory.read(address + X + 0x01);
-  uint16_t addr = concat2Bytes(byte1, byte0);
-
-  return memory.read(addr);
+uint8_t Cpu::immediate() {
+  uint8_t value = memory.read(PC + 1);
+  incrementPC(0x01);
+  return value;
 }
 
-uint8_t Cpu::indirectY(uint8_t address) {
-  uint8_t byte0 = memory.read(address);
-  uint8_t byte1 = memory.read(address + 0x01);
-  uint16_t addr = concat2Bytes(byte1, byte0);
+uint8_t Cpu::zeropage() {
+  uint8_t address = memory.read(PC + 1);
+  uint8_t value = memory.read(address);
+  incrementPC(0x01);
+  return value;
+}
 
-  return memory.read(addr + Y);
+uint8_t Cpu::zeropageX() {
+  uint8_t address = memory.read(PC + 1);
+  uint8_t value = memory.read(address + X);
+  incrementPC(0x01);
+  return value;
+}
+
+uint8_t Cpu::absolute() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address);
+  incrementPC(0x02);
+  return value;
+}
+
+uint8_t Cpu::absoluteX() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + X);
+  incrementPC(0x02);
+  return value;
+}
+
+uint8_t Cpu::absoluteY() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + Y);
+  incrementPC(0x02);
+  return value;
+}
+
+uint8_t Cpu::indirectX() {
+  uint8_t msb = memory.read(PC + X + 2);
+  uint8_t lsb = memory.read(PC + X + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address);
+  incrementPC(0x01);
+  return value;
+}
+
+uint8_t Cpu::indirectY() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = concat2Bytes(msb, lsb);
+
+  uint8_t value = memory.read(address + Y);
+  incrementPC(0x01);
+  return value;
 }
 
 // --ADC (ADd with Carry) ------------------------------------ //
@@ -207,101 +267,93 @@ void Cpu::adc_flags_handler(uint8_t value_orig, uint8_t value_new) {
   }
 }
 
-// Soma o valor imediato diretamente no valor contido no registrador acumulador
-void Cpu::adc_im() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = AC + immediate(value);
+void Cpu::adc(uint8_t (Cpu::*Addressingmode)()) {
+  uint8_t value = (this->*Addressingmode)();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x02);
+  incrementPC(0x01);
+}
+
+// Soma o valor imediato diretamente no valor contido no registrador acumulador
+void Cpu::adc_im() {
+
+  adc(&Cpu::immediate);
+
+  uint8_t value = immediate();
+  uint8_t result = AC + value;
+  adc_flags_handler(value, result);
+  AC = result;
+  incrementPC(0x01);
 }
 
 // Soma o valor contido em endereço de zero page diretamente no valor contido no
 // registrador acumulador
 void Cpu::adc_zp() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = AC + zeropage(value);
+  uint8_t value = zeropage();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x02);
+  incrementPC(0x01);
 }
 
 // Soma o valor contido em endereço de zero page + X, diretamente no valor
 // contido no registrador acumulador
 void Cpu::adc_zpx() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = AC + zeropage(value + X);
+  uint8_t value = zeropageX();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x02);
+  incrementPC(0x01);
 }
 
 // Soma o valor contido em endereço de 16 bits, diretamente no valor contido no
 // registrador acumulador
 void Cpu::adc_abs() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address);
-  uint8_t result = AC + absolute(value);
+  uint8_t value = absolute();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x03);
+  incrementPC(0x01);
 }
 
 // Soma o valor contido em endereço de 16 bits + X, diretamente no valor contido
 // no registrador acumulador
 void Cpu::adc_absx() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + X);
-  uint8_t result = AC + absolute(value);
+  uint8_t value = absoluteX();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x03);
+  incrementPC(0x01);
 }
 
 // Soma o valor contido em endereço de 16 bits + Y, diretamente no valor contido
 // no registrador acumulador
 void Cpu::adc_absy() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + Y);
-  uint8_t result = AC + absolute(value);
+  uint8_t value = absoluteY();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x03);
+  incrementPC(0x01);
 }
 
 void Cpu::adc_indx() {
-  uint8_t msb = memory.read(PC + X + 2);
-  uint8_t lsb = memory.read(PC + X + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address);
-  uint8_t result = AC + absolute(value);
+  uint8_t value = indirectX();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x02);
+  incrementPC(0x01);
 }
 
 void Cpu::adc_indy() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + Y);
-  uint8_t result = AC + absolute(value);
+  uint8_t value = indirectY();
+  uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
-  incrementPC(0x02);
+  incrementPC(0x01);
 }
 
+/*
 // -- STX (STore X register) ------------------------------------ //
 
 // Armazena o valor contido no registrador X no endereço do operando (zeropage).
@@ -558,3 +610,4 @@ void Cpu::sed() {
   setFlag(Flag::D);
   incrementPC(0x01);
 }
+*/

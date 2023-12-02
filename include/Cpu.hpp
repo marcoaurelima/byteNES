@@ -34,6 +34,8 @@ enum class Flag {
 //   STX_ABS = 0X8E,
 // };
 
+// using AdressingMode = (uint8_t (Cpu::*AddressingMode)());
+
 class Cpu {
 public:
   Cpu(Memory &memory, uint16_t PC = 0x00, uint8_t SP = 0x00, uint8_t AC = 0x00,
@@ -55,15 +57,19 @@ public:
   void reset();
 
   // Modos de endereçamento
-  uint8_t immediate(uint8_t &value);
-  uint8_t zeropage(uint8_t address);
-  uint8_t absolute(uint16_t address);
-  uint8_t indirectX(uint8_t address);
-  uint8_t indirectY(uint8_t address);
+  uint8_t immediate();
+  uint8_t zeropage();
+  uint8_t zeropageX();
+  uint8_t absolute();
+  uint8_t absoluteX();
+  uint8_t absoluteY();
+  uint8_t indirectX();
+  uint8_t indirectY();
 
   // Implementações das instruções
   // ADC (ADd with Carry)
   void adc_flags_handler(uint8_t value_orig, uint8_t value_new);
+  void adc(uint8_t (Cpu::*AddressingMode)());
   void adc_im();
   void adc_zp();
   void adc_zpx();
