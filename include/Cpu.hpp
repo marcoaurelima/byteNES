@@ -55,7 +55,7 @@ public:
   void flagActivationD(uint8_t value_orig, uint8_t value_new);
   void flagActivationI(uint8_t value_orig, uint8_t value_new);
   void flagActivationZ(uint8_t value);
-  void flagActivationC(uint8_t value);
+  void flagActivationC(uint16_t value);
 
   // Implementações das instruções
   // ADC (ADd with Carry)

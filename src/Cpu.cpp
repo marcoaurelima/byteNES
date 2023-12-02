@@ -118,9 +118,6 @@ void Cpu::reset() {
   PC = SP = AC = X = Y = SR = 0X00;
 }
 
-// Concatena 2 variaveis de 8 bits em uma única de 16 bits.
-uint16_t concat2Bytes(uint8_t msb, uint8_t lsb) { return (msb << 8) | lsb; }
-
 // Modos de endereçamento
 uint8_t Cpu::immediate() {
   uint8_t value = memory.read(PC + 1);
@@ -145,7 +142,7 @@ uint8_t Cpu::zeropageX() {
 uint8_t Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
+  uint16_t address = (msb << 8) | lsb;
 
   uint8_t value = memory.read(address);
   incrementPC(0x02);
@@ -155,7 +152,7 @@ uint8_t Cpu::absolute() {
 uint8_t Cpu::absoluteX() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
+  uint16_t address = (msb << 8) | lsb;
 
   uint8_t value = memory.read(address + X);
   incrementPC(0x02);
@@ -165,7 +162,7 @@ uint8_t Cpu::absoluteX() {
 uint8_t Cpu::absoluteY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
+  uint16_t address = (msb << 8) | lsb;
 
   uint8_t value = memory.read(address + Y);
   incrementPC(0x02);
@@ -175,7 +172,7 @@ uint8_t Cpu::absoluteY() {
 uint8_t Cpu::indirectX() {
   uint8_t msb = memory.read(PC + X + 2);
   uint8_t lsb = memory.read(PC + X + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
+  uint16_t address = (msb << 8) | lsb;
 
   uint8_t value = memory.read(address);
   incrementPC(0x01);
@@ -185,7 +182,7 @@ uint8_t Cpu::indirectX() {
 uint8_t Cpu::indirectY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
+  uint16_t address = (msb << 8) | lsb;
 
   uint8_t value = memory.read(address + Y);
   incrementPC(0x01);
@@ -224,36 +221,20 @@ void Cpu::flagActivationZ(uint8_t value) {
 }
 
 // Carry
-void Cpu::flagActivationC(uint8_t value) {
-  if (value <= AC) {
+void Cpu::flagActivationC(uint16_t value) {
+  if (value > 0xFF) {
     setFlag(Flag::C);
   }
 }
 
 // --ADC (ADd with Carry) ------------------------------------ //
-
-void Cpu::adc_flags_handler(uint8_t value_orig, uint8_t value_new) {
-  if (value_new & (0x01 << 7)) {
-    setFlag(Flag::N);
-  }
-
-  if (value_new == 0) {
-    setFlag(Flag::Z);
-  }
-
-  if (value_new <= AC) {
-    setFlag(Flag::C);
-  }
-
-  if (((AC ^ value_orig) & (0x01 << 7)) && ((AC ^ value_new) & (0x01 << 7))) {
-    setFlag(Flag::V);
-  }
-}
-
 void Cpu::adc(uint8_t (Cpu::*Addressingmode)()) {
   uint8_t value = (this->*Addressingmode)();
   uint8_t result = AC + value;
-  adc_flags_handler(value, result);
+  flagActivationC(AC + value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  flagActivationV(value, result);
   AC = result;
   incrementPC(0x01);
 }
