@@ -42,6 +42,7 @@ public:
   uint16_t immediate();
   uint16_t zeropage();
   uint16_t zeropageX();
+  uint16_t zeropageY();
   uint16_t absolute();
   uint16_t absoluteX();
   uint16_t absoluteY();
@@ -92,8 +93,8 @@ public:
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
   void LDA(uint16_t (Cpu::*AddressingMode)());
-
   // LDX (LoaD X register)
+  void LDX(uint16_t (Cpu::*AddressingMode)());
   // LDY (LoaD Y register)
   // LSR (Logical Shift Right)
   // NOP (No OPeration)

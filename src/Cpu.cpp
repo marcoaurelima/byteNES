@@ -71,6 +71,12 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY); };
 
   // LDX (LoaD X register)
+  opcodeMapping[0xA2] = [this]() { this->LDX(&Cpu::immediate); };
+  opcodeMapping[0xA6] = [this]() { this->LDX(&Cpu::zeropage); };
+  opcodeMapping[0xB6] = [this]() { this->LDX(&Cpu::zeropageY); };
+  opcodeMapping[0xAE] = [this]() { this->LDX(&Cpu::absolute); };
+  opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY); };
+
   // LDY (LoaD Y register)
   // LSR (Logical Shift Right)
   // NOP (No OPeration)
@@ -129,6 +135,11 @@ uint16_t Cpu::zeropageX() {
   return (address + X);
 }
 
+uint16_t Cpu::zeropageY() {
+  uint8_t address = memory.read(PC + 1);
+  incrementPC(0x01);
+  return (address + Y);
+}
 uint16_t Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
@@ -334,6 +345,14 @@ void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // LDX (LoaD X register)
+void Cpu::LDX(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  X = value;
+  incrementPC(0x01);
+}
 // LDY (LoaD Y register)
 // LSR (Logical Shift Right)
 // NOP (No OPeration)
