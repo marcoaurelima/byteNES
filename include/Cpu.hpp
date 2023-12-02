@@ -96,6 +96,7 @@ public:
   // LDX (LoaD X register)
   void LDX(uint16_t (Cpu::*AddressingMode)());
   // LDY (LoaD Y register)
+  void LDY(uint16_t (Cpu::*AddressingMode)());
   // LSR (Logical Shift Right)
   // NOP (No OPeration)
   // ORA (bitwise OR with Accumulator)

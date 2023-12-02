@@ -78,6 +78,11 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY); };
 
   // LDY (LoaD Y register)
+  opcodeMapping[0xA0] = [this]() { this->LDY(&Cpu::immediate); };
+  opcodeMapping[0xA4] = [this]() { this->LDY(&Cpu::zeropage); };
+  opcodeMapping[0xB4] = [this]() { this->LDY(&Cpu::zeropageX); };
+  opcodeMapping[0xAC] = [this]() { this->LDY(&Cpu::absolute); };
+  opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX); };
   // LSR (Logical Shift Right)
   // NOP (No OPeration)
   // ORA (bitwise OR with Accumulator)
@@ -354,6 +359,14 @@ void Cpu::LDX(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // LDY (LoaD Y register)
+void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  Y = value;
+  incrementPC(0x01);
+}
 // LSR (Logical Shift Right)
 // NOP (No OPeration)
 // ORA (bitwise OR with Accumulator)
