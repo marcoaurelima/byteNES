@@ -91,6 +91,8 @@ public:
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
+  void LDA(uint16_t (Cpu::*AddressingMode)());
+
   // LDX (LoaD X register)
   // LDY (LoaD Y register)
   // LSR (Logical Shift Right)

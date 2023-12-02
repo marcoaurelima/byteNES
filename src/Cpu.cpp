@@ -39,6 +39,15 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX); };
   opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr); };
 
+  // BIT (test BITs)
+  // Branch Instructions
+  // BRK (BReaK)
+  // CMP (CoMPare accumulator)
+  // CPX (ComPare X register)
+  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+  // DEC (DECrement memory)
+  // EOR (bitwise Exclusive OR)
+
   // Flag (Processor Status) Instructions
   opcodeMapping[0x18] = [this]() { this->CLC(nullptr); };
   opcodeMapping[0x38] = [this]() { this->SEC(nullptr); };
@@ -48,56 +57,19 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xD8] = [this]() { this->CLD(nullptr); };
   opcodeMapping[0xF8] = [this]() { this->SED(nullptr); };
 
-  /*
-
-  // ADC (ADd with Carry)
-  opcodeMapping[0x69] = [this]() { this->adc_im(); };
-  opcodeMapping[0x65] = [this]() { this->adc_zp(); };
-  opcodeMapping[0x75] = [this]() { this->adc_zpx(); };
-  opcodeMapping[0x6D] = [this]() { this->adc_abs(); };
-  opcodeMapping[0x7D] = [this]() { this->adc_absx(); };
-  opcodeMapping[0x79] = [this]() { this->adc_absy(); };
-  opcodeMapping[0x61] = [this]() { this->adc_indx(); };
-  opcodeMapping[0x71] = [this]() { this->adc_indy(); };
-
-  // AND (bitwise AND with accumulator)
-  opcodeMapping[0x29] = [this]() { this->and_im(); };
-  opcodeMapping[0x25] = [this]() { this->and_zp(); };
-  opcodeMapping[0x35] = [this]() { this->and_zpx(); };
-  opcodeMapping[0x2D] = [this]() { this->and_abs(); };
-  opcodeMapping[0x3D] = [this]() { this->and_absx(); };
-  opcodeMapping[0x39] = [this]() { this->and_absy(); };
-  opcodeMapping[0x21] = [this]() { this->and_indx(); };
-  opcodeMapping[0x31] = [this]() { this->and_indy(); };
-
-  // ASL (Arithmetic Shift Left)
-  opcodeMapping[0x0A] = [this]() { this->asl_acc(); };
-  opcodeMapping[0x06] = [this]() { this->asl_zp(); };
-  opcodeMapping[0x16] = [this]() { this->asl_zpx(); };
-  opcodeMapping[0x0E] = [this]() { this->asl_abs(); };
-  opcodeMapping[0x1E] = [this]() { this->asl_absx(); };
-
-  // BIT (test BITs)
-  // Branch Instructions
-  // BRK (BReaK)
-  // CMP (CoMPare accumulator)
-  // CPX (ComPare X register)
-  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
-  // DEC (DECrement memory)
-  // EOR (bitwise Exclusive OR)
-  // Flag (Processor Status) Instructions
-  opcodeMapping[0x18] = [this]() { this->clc(); };
-  opcodeMapping[0x38] = [this]() { this->sec(); };
-  opcodeMapping[0x58] = [this]() { this->cli(); };
-  opcodeMapping[0x78] = [this]() { this->sei(); };
-  opcodeMapping[0xB8] = [this]() { this->clv(); };
-  opcodeMapping[0xD8] = [this]() { this->cld(); };
-  opcodeMapping[0xF8] = [this]() { this->sed(); };
-
   // INC (INCrement memory)
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
+  opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate); };
+  opcodeMapping[0xA5] = [this]() { this->LDA(&Cpu::zeropage); };
+  opcodeMapping[0xB5] = [this]() { this->LDA(&Cpu::zeropageX); };
+  opcodeMapping[0xAD] = [this]() { this->LDA(&Cpu::absolute); };
+  opcodeMapping[0xBD] = [this]() { this->LDA(&Cpu::absoluteX); };
+  opcodeMapping[0xB9] = [this]() { this->LDA(&Cpu::absoluteY); };
+  opcodeMapping[0xA1] = [this]() { this->LDA(&Cpu::indirectX); };
+  opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY); };
+
   // LDX (LoaD X register)
   // LDY (LoaD Y register)
   // LSR (Logical Shift Right)
@@ -112,14 +84,7 @@ void Cpu::fillOpcodeMapping() {
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
-  opcodeMapping[0x86] = [this]() { this->stx_zp(); };
-  opcodeMapping[0x96] = [this]() { this->stx_zpy(); };
-  opcodeMapping[0x8E] = [this]() { this->stx_abs(); };
   // STY (STore Y register)
-  opcodeMapping[0x84] = [this]() { this->sty_zp(); };
-  opcodeMapping[0x94] = [this]() { this->sty_zpx(); };
-  opcodeMapping[0x8C] = [this]() { this->sty_abs(); };
-  */
 }
 
 Memory &Cpu::getMemory() { return memory; }
@@ -360,6 +325,14 @@ void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
 // JMP (JuMP)
 // JSR (Jump to SubRoutine)
 // LDA (LoaD Accumulator)
+void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  AC = value;
+  incrementPC(0x01);
+}
 // LDX (LoaD X register)
 // LDY (LoaD Y register)
 // LSR (Logical Shift Right)
