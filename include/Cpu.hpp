@@ -8,33 +8,15 @@
 #include "Memory.hpp"
 
 enum class Flag {
-  N, // Negative
-  Z, // Zero
-  C, // Carry
-  I, // Interrupt
-  D, // Decimal
-  V, // Overflow
-  B, // Break
+  N = (0x01 << 7), // Negative
+  V = (0x01 << 6), // Overflow
+  _ = (0x01 << 5), // Ignored
+  B = (0x01 << 4), // Break
+  D = (0x01 << 3), // Decimal
+  I = (0x01 << 2), // Interrupt
+  Z = (0x01 << 1), // Zero
+  C = (0x01 << 0), // Carry
 };
-
-// enum {
-//   // ADC (ADd with Carry)
-//   ADC_IM = 0X69,
-//   ADC_ZP = 0X65,
-//   ADC_ZPX = 0X75,
-//   ADC_ABS = 0X6D,
-//   ADC_ABSX = 0X7D,
-//   ADC_ABSY = 0X79,
-//   ADC_INDX = 0X61,
-//   ADC_INDY = 0X71,
-//
-//   // STX (STore X register)
-//   STX_ZP = 0X86,
-//   STX_ZPY = 0X96,
-//   STX_ABS = 0X8E,
-// };
-
-// using AdressingMode = (uint8_t (Cpu::*AddressingMode)());
 
 class Cpu {
 public:
@@ -65,6 +47,15 @@ public:
   uint8_t absoluteY();
   uint8_t indirectX();
   uint8_t indirectY();
+
+  // Funções de verificação de ativação de Flags após a operação
+  void flagActivationN(uint8_t value);
+  void flagActivationV(uint8_t value_orig, uint8_t value_new);
+  void flagActivationB(uint8_t value_orig, uint8_t value_new);
+  void flagActivationD(uint8_t value_orig, uint8_t value_new);
+  void flagActivationI(uint8_t value_orig, uint8_t value_new);
+  void flagActivationZ(uint8_t value);
+  void flagActivationC(uint8_t value);
 
   // Implementações das instruções
   // ADC (ADd with Carry)

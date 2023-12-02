@@ -11,8 +11,6 @@ Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
 Cpu::~Cpu() {}
 
 void Cpu::fillOpcodeMapping() {
-  // - Usando funções lambda para evitar complexidade relativo a
-  //   endereços de memória de funções membro.
 
   opcodeMapping[0x69] = [this]() { this->adc(&Cpu::immediate); };
   opcodeMapping[0x65] = [this]() { this->adc(&Cpu::zeropage); };
@@ -97,69 +95,16 @@ void Cpu::fillOpcodeMapping() {
   */
 }
 
+Memory &Cpu::getMemory() { return memory; }
 uint16_t Cpu::getPC() { return PC; }
 uint8_t Cpu::getSP() { return SP; }
 uint8_t Cpu::getAC() { return AC; }
 uint8_t Cpu::getX() { return X; }
 uint8_t Cpu::getY() { return Y; }
 uint8_t Cpu::getSR() { return SR; }
-Memory &Cpu::getMemory() { return memory; }
 
-void Cpu::setFlag(Flag flag) {
-  switch (flag) {
-  case Flag::N:
-    SR = SR | (0x01 << 7); // 0b10000000;
-    break;
-  case Flag::V:
-    SR = SR | (0x01 << 6); // 0b01000000;
-    break;
-  case Flag::B:
-    SR = SR | (0x01 << 4); // 0b00010000;
-    break;
-  case Flag::D:
-    SR = SR | (0x01 << 3); // 0b00001000;
-    break;
-  case Flag::I:
-    SR = SR | (0x01 << 2); // 0b00000100;
-    break;
-  case Flag::Z:
-    SR = SR | (0x01 << 1); // 0b00000010;
-    break;
-  case Flag::C:
-    SR = SR | (0x01 << 0); // 0b00000001;
-    break;
-  default:
-    break;
-  }
-}
-
-void Cpu::remFlag(Flag flag) {
-  switch (flag) {
-  case Flag::N:
-    SR = SR & ~(0x01 << 7); // 0b10000000;
-    break;
-  case Flag::V:
-    SR = SR & ~(0x01 << 6); // 0b01000000;
-    break;
-  case Flag::B:
-    SR = SR & ~(0x01 << 4); // 0b00010000;
-    break;
-  case Flag::D:
-    SR = SR & ~(0x01 << 3); // 0b00001000;
-    break;
-  case Flag::I:
-    SR = SR & ~(0x01 << 2); // 0b00000100;
-    break;
-  case Flag::Z:
-    SR = SR & ~(0x01 << 1); // 0b00000010;
-    break;
-  case Flag::C:
-    SR = SR & ~(0x01 << 0); // 0b00000001;
-    break;
-  default:
-    break;
-  }
-}
+void Cpu::setFlag(Flag flag) { SR = SR | static_cast<uint8_t>(flag); }
+void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
 
@@ -247,10 +192,48 @@ uint8_t Cpu::indirectY() {
   return value;
 }
 
+// -- verificadores de flags
+// Nwgative
+void Cpu::flagActivationN(uint8_t value) {
+  if (value & (0x01 << 7)) {
+    setFlag(Flag::N);
+  }
+}
+
+// Overflow
+void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
+  if (((AC ^ value_orig) & (0x01 << 7)) && ((AC ^ value_new) & (0x01 << 7))) {
+    setFlag(Flag::V);
+  }
+}
+
+// Break
+void Cpu::flagActivationB(uint8_t value_orig, uint8_t value_new) {}
+
+// Decimal
+void Cpu::flagActivationD(uint8_t value_orig, uint8_t value_new) {}
+
+// Interrupt
+void Cpu::flagActivationI(uint8_t value_orig, uint8_t value_new) {}
+
+// Zero
+void Cpu::flagActivationZ(uint8_t value) {
+  if (value == 0) {
+    setFlag(Flag::Z);
+  }
+}
+
+// Carry
+void Cpu::flagActivationC(uint8_t value) {
+  if (value <= AC) {
+    setFlag(Flag::C);
+  }
+}
+
 // --ADC (ADd with Carry) ------------------------------------ //
 
 void Cpu::adc_flags_handler(uint8_t value_orig, uint8_t value_new) {
-  if (value_new & 0b10000000) {
+  if (value_new & (0x01 << 7)) {
     setFlag(Flag::N);
   }
 
@@ -262,91 +245,13 @@ void Cpu::adc_flags_handler(uint8_t value_orig, uint8_t value_new) {
     setFlag(Flag::C);
   }
 
-  if (((AC ^ value_orig) & 0b10000000) && ((AC ^ value_new) & 0b10000000)) {
+  if (((AC ^ value_orig) & (0x01 << 7)) && ((AC ^ value_new) & (0x01 << 7))) {
     setFlag(Flag::V);
   }
 }
 
 void Cpu::adc(uint8_t (Cpu::*Addressingmode)()) {
   uint8_t value = (this->*Addressingmode)();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor imediato diretamente no valor contido no registrador acumulador
-void Cpu::adc_im() {
-
-  adc(&Cpu::immediate);
-
-  uint8_t value = immediate();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor contido em endereço de zero page diretamente no valor contido no
-// registrador acumulador
-void Cpu::adc_zp() {
-  uint8_t value = zeropage();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor contido em endereço de zero page + X, diretamente no valor
-// contido no registrador acumulador
-void Cpu::adc_zpx() {
-  uint8_t value = zeropageX();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor contido em endereço de 16 bits, diretamente no valor contido no
-// registrador acumulador
-void Cpu::adc_abs() {
-  uint8_t value = absolute();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor contido em endereço de 16 bits + X, diretamente no valor contido
-// no registrador acumulador
-void Cpu::adc_absx() {
-  uint8_t value = absoluteX();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-// Soma o valor contido em endereço de 16 bits + Y, diretamente no valor contido
-// no registrador acumulador
-void Cpu::adc_absy() {
-  uint8_t value = absoluteY();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-void Cpu::adc_indx() {
-  uint8_t value = indirectX();
-  uint8_t result = AC + value;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x01);
-}
-
-void Cpu::adc_indy() {
-  uint8_t value = indirectY();
   uint8_t result = AC + value;
   adc_flags_handler(value, result);
   AC = result;
