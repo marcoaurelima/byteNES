@@ -1,2 +1,2 @@
-ADC #05
-ADC $00
+ASL 
+ASL $00

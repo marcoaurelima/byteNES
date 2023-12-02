@@ -33,11 +33,11 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY); };
 
   // ASL (Arithmetic Shift Left)
-  opcodeMapping[0x0A] = [this]() { this->ASL(&Cpu::accumulator); };
   opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage); };
   opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX); };
   opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute); };
   opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX); };
+  opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr); };
 
   // Flag (Processor Status) Instructions
   opcodeMapping[0x18] = [this]() { this->CLC(nullptr); };
@@ -209,8 +209,6 @@ uint16_t Cpu::indirectY() {
   return (address + Y);
 }
 
-uint16_t Cpu::accumulator() { return AC; }
-
 // -- verificadores de flags
 // Nwgative
 void Cpu::flagActivationN(uint8_t value) {
@@ -249,7 +247,7 @@ void Cpu::flagActivationC(uint16_t value) {
   }
 }
 
-// --ADC (ADd with Carry) ------------------------------------ //
+// ADC (ADd with Carry)
 void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
@@ -262,6 +260,7 @@ void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 
+// AND (bitwise AND with accumulator)
 void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
@@ -274,6 +273,7 @@ void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 
+// ASL (Arithmetic Shift Left)
 void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
@@ -285,52 +285,93 @@ void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 
+// ASL (Arithmetic Shift Left) - Operações diretas no acumulador
+void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint8_t value = AC;
+  uint8_t result = (AC << 0x01);
+  flagActivationN(result);
+  flagActivationC(AC << 0x01);
+  flagActivationZ(result);
+  AC = value;
+  incrementPC(0x01);
+}
+
+// BIT (test BITs)
+// Branch Instructions
+// BRK (BReaK)
+// CMP (CoMPare accumulator)
+// CPX (ComPare X register)
+// CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+// DEC (DECrement memory)
+// EOR (bitwise Exclusive OR)
+
 // Flag (Processor Status) Instructions
-// CLC (CLear Carry)
+/// - CLC (CLear Carry)
 void Cpu::CLC(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::C);
   incrementPC(0x01);
 }
 
-// SEC (SEt Carry)
+// - SEC (SEt Carry)
 void Cpu::SEC(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
 }
 
-// CLI (CLear Interrupt)
+// - CLI (CLear Interrupt)
 void Cpu::CLI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
 }
 
-// SEI (SEt Interrupt)
+// - SEI (SEt Interrupt)
 void Cpu::SEI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
 }
 
-// CLV (CLear oVerflow)
+// - CLV (CLear oVerflow)
 void Cpu::CLV(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
 }
 
-// CLD (CLear Decimal)
+// - CLD (CLear Decimal)
 void Cpu::CLD(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
 }
 
-// SED (SEt Decimal)
+// - SED (SEt Decimal)
 void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
 }
+
+// INC (INCrement memory)
+// JMP (JuMP)
+// JSR (Jump to SubRoutine)
+// LDA (LoaD Accumulator)
+// LDX (LoaD X register)
+// LDY (LoaD Y register)
+// LSR (Logical Shift Right)
+// NOP (No OPeration)
+// ORA (bitwise OR with Accumulator)
+// Register Instructions
+// ROL (ROtate Left)
+// ROR (ROtate Right)
+// RTI (ReTurn from Interrupt)
+// RTS (ReTurn from Subroutine)
+// SBC (SuBtract with Carry)
+// STA (STore Accumulator)
+// Stack Instructions
+// STX (STore X register)
+// STY (STore Y register)

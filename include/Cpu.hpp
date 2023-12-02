@@ -67,6 +67,7 @@ public:
 
   // ASL (Arithmetic Shift Left)
   void ASL(uint16_t (Cpu::*AddressingMode)());
+  void ASL_AC(uint16_t (Cpu::*AddressingMode)());
 
   // BIT (test BITs)
   // Branch Instructions
