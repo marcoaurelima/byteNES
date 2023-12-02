@@ -3,7 +3,7 @@
 #include "Gui.hpp"
 #include "Memory.hpp"
 
-int main(int argc, char *argv[]) {
+int main() {
 
   Memory mem;
   mem.fillZeroData();

@@ -51,27 +51,18 @@ public:
   // Funções de verificação de ativação de Flags após a operação
   void flagActivationN(uint8_t value);
   void flagActivationV(uint8_t value_orig, uint8_t value_new);
-  void flagActivationB(uint8_t value_orig, uint8_t value_new);
-  void flagActivationD(uint8_t value_orig, uint8_t value_new);
-  void flagActivationI(uint8_t value_orig, uint8_t value_new);
+  void flagActivationB();
+  void flagActivationD();
+  void flagActivationI();
   void flagActivationZ(uint8_t value);
   void flagActivationC(uint16_t value);
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void adc_flags_handler(uint8_t value_orig, uint8_t value_new);
-  void adc(uint8_t (Cpu::*AddressingMode)());
-  void adc_im();
-  void adc_zp();
-  void adc_zpx();
-  void adc_abs();
-  void adc_absx();
-  void adc_absy();
-  void adc_indx();
-  void adc_indy();
+  void ADC(uint8_t (Cpu::*AddressingMode)());
 
   // AND (bitwise AND with accumulator)
-  void and_flags_handler(uint8_t value_orig, uint8_t value_new);
+  void AND(uint8_t (Cpu::*AddressingMode)());
   void and_im();
   void and_zp();
   void and_zpx();
@@ -140,9 +131,9 @@ private:
   uint16_t PC;
   uint8_t SP;
   uint8_t AC;
-  uint8_t SR;
   uint8_t X;
   uint8_t Y;
+  uint8_t SR;
 
   // Flags
   void setFlag(Flag flag);

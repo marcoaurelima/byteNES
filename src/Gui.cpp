@@ -24,7 +24,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   gameScreenTitle->setPosition(50, 15);
 
   // Flags monitor
-  for (int i = 0; i < flagsTiles.size(); i++) {
+  for (size_t i = 0; i < flagsTiles.size(); i++) {
     flagsTiles[i] = new sf::RectangleShape(sf::Vector2f(19.8, 19));
     flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     flagsTiles[i]->setOutlineColor(sf::Color::Black);
@@ -46,7 +46,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   flagsText->setPosition(55, 538);
 
   // Registers monitor
-  for (int i = 0; i < registersTiles.size(); i++) {
+  for (size_t i = 0; i < registersTiles.size(); i++) {
     registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.8, 41));
     registersTiles[i]->setFillColor(sf::Color(40, 40, 40));
     registersTiles[i]->setOutlineColor(sf::Color(20, 20, 20));
@@ -106,7 +106,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   zeroPageLinesLabelText->setPosition(615, 90);
   zeroPageLinesLabelText->setLineSpacing(1.5);
 
-  for (int i = 1; i <= 256; i++) {
+  for (int i = 1; i <= 0xFF; i++) {
     zeroPageDataStr += "00 ";
     if (i % 16 == 0) {
       zeroPageDataStr += "\n";
@@ -161,7 +161,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
 Gui::~Gui() {}
 
 void Gui::updateFlag() {
-  for (int i = 0; i < flagsTiles.size(); i++) {
+  for (size_t i = 0; i < flagsTiles.size(); i++) {
     if (cpu.getSR() & (0x01 << i)) {
       flagsTiles[i]->setFillColor(sf::Color::Red);
     } else {
@@ -189,7 +189,7 @@ void Gui::updateRegisters() {
 void Gui::updateZeroPageMemory() {
   zeroPageDataStr = "";
 
-  for (int i = 1; i <= 256; i++) {
+  for (size_t i = 1; i <= 256; i++) {
     zeroPageDataStr += intTohex(cpu.getMemory().read(i - 1)) + " ";
     if (i % 16 == 0) {
       zeroPageDataStr += "\n";

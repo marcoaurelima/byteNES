@@ -12,18 +12,28 @@ Cpu::~Cpu() {}
 
 void Cpu::fillOpcodeMapping() {
 
-  opcodeMapping[0x69] = [this]() { this->adc(&Cpu::immediate); };
-  opcodeMapping[0x65] = [this]() { this->adc(&Cpu::zeropage); };
-  opcodeMapping[0x75] = [this]() { this->adc(&Cpu::zeropageX); };
-  opcodeMapping[0x6D] = [this]() { this->adc(&Cpu::absolute); };
-  opcodeMapping[0x7D] = [this]() { this->adc(&Cpu::absoluteX); };
-  opcodeMapping[0x79] = [this]() { this->adc(&Cpu::absoluteY); };
-  opcodeMapping[0x61] = [this]() { this->adc(&Cpu::indirectX); };
-  opcodeMapping[0x71] = [this]() { this->adc(&Cpu::indirectY); };
+  // ADC (ADd with Carry)
+  opcodeMapping[0x69] = [this]() { this->ADC(&Cpu::immediate); };
+  opcodeMapping[0x65] = [this]() { this->ADC(&Cpu::zeropage); };
+  opcodeMapping[0x75] = [this]() { this->ADC(&Cpu::zeropageX); };
+  opcodeMapping[0x6D] = [this]() { this->ADC(&Cpu::absolute); };
+  opcodeMapping[0x7D] = [this]() { this->ADC(&Cpu::absoluteX); };
+  opcodeMapping[0x79] = [this]() { this->ADC(&Cpu::absoluteY); };
+  opcodeMapping[0x61] = [this]() { this->ADC(&Cpu::indirectX); };
+  opcodeMapping[0x71] = [this]() { this->ADC(&Cpu::indirectY); };
+
+  // AND (bitwise AND with accumulator)
+  opcodeMapping[0x29] = [this]() { this->AND(&Cpu::immediate); };
+  opcodeMapping[0x25] = [this]() { this->AND(&Cpu::zeropage); };
+  opcodeMapping[0x35] = [this]() { this->AND(&Cpu::zeropageX); };
+  opcodeMapping[0x2D] = [this]() { this->AND(&Cpu::absolute); };
+  opcodeMapping[0x3D] = [this]() { this->AND(&Cpu::absoluteX); };
+  opcodeMapping[0x39] = [this]() { this->AND(&Cpu::absoluteY); };
+  opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX); };
+  opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY); };
 
   /*
 
-  // ADC (ADd with Carry)
   opcodeMapping[0x69] = [this]() { this->adc_im(); };
   opcodeMapping[0x65] = [this]() { this->adc_zp(); };
   opcodeMapping[0x75] = [this]() { this->adc_zpx(); };
@@ -205,13 +215,13 @@ void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
 }
 
 // Break
-void Cpu::flagActivationB(uint8_t value_orig, uint8_t value_new) {}
+void Cpu::flagActivationB() {}
 
 // Decimal
-void Cpu::flagActivationD(uint8_t value_orig, uint8_t value_new) {}
+void Cpu::flagActivationD() {}
 
 // Interrupt
-void Cpu::flagActivationI(uint8_t value_orig, uint8_t value_new) {}
+void Cpu::flagActivationI() {}
 
 // Zero
 void Cpu::flagActivationZ(uint8_t value) {
@@ -228,10 +238,21 @@ void Cpu::flagActivationC(uint16_t value) {
 }
 
 // --ADC (ADd with Carry) ------------------------------------ //
-void Cpu::adc(uint8_t (Cpu::*Addressingmode)()) {
+void Cpu::ADC(uint8_t (Cpu::*Addressingmode)()) {
   uint8_t value = (this->*Addressingmode)();
   uint8_t result = AC + value;
   flagActivationC(AC + value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  flagActivationV(value, result);
+  AC = result;
+  incrementPC(0x01);
+}
+
+void Cpu::AND(uint8_t (Cpu::*Addressingmode)()) {
+  uint8_t value = (this->*Addressingmode)();
+  uint8_t result = value & AC;
+  flagActivationC(value & AC);
   flagActivationN(result);
   flagActivationZ(result);
   flagActivationV(value, result);
