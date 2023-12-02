@@ -32,8 +32,25 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX); };
   opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY); };
 
+  // ASL (Arithmetic Shift Left)
+  opcodeMapping[0x0A] = [this]() { this->ASL(&Cpu::accumulator); };
+  opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage); };
+  opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX); };
+  opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute); };
+  opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX); };
+
+  // Flag (Processor Status) Instructions
+  opcodeMapping[0x18] = [this]() { this->CLC(nullptr); };
+  opcodeMapping[0x38] = [this]() { this->SEC(nullptr); };
+  opcodeMapping[0x58] = [this]() { this->CLI(nullptr); };
+  opcodeMapping[0x78] = [this]() { this->SEI(nullptr); };
+  opcodeMapping[0xB8] = [this]() { this->CLV(nullptr); };
+  opcodeMapping[0xD8] = [this]() { this->CLD(nullptr); };
+  opcodeMapping[0xF8] = [this]() { this->SED(nullptr); };
+
   /*
 
+  // ADC (ADd with Carry)
   opcodeMapping[0x69] = [this]() { this->adc_im(); };
   opcodeMapping[0x65] = [this]() { this->adc_zp(); };
   opcodeMapping[0x75] = [this]() { this->adc_zpx(); };
@@ -199,6 +216,9 @@ uint8_t Cpu::indirectY() {
   return value;
 }
 
+uint8_t Cpu::accumulator() { return AC; }
+
+
 // -- verificadores de flags
 // Nwgative
 void Cpu::flagActivationN(uint8_t value) {
@@ -252,269 +272,64 @@ void Cpu::ADC(uint8_t (Cpu::*Addressingmode)()) {
 void Cpu::AND(uint8_t (Cpu::*Addressingmode)()) {
   uint8_t value = (this->*Addressingmode)();
   uint8_t result = value & AC;
-  flagActivationC(value & AC);
   flagActivationN(result);
+  flagActivationC(value & AC);
   flagActivationZ(result);
   flagActivationV(value, result);
   AC = result;
   incrementPC(0x01);
 }
 
-/*
-// -- STX (STore X register) ------------------------------------ //
-
-// Armazena o valor contido no registrador X no endereço do operando (zeropage).
-void Cpu::stx_zp() {
-  uint8_t address = memory.read(PC + 1);
-  memory.write(address, X);
-  incrementPC(0x02);
-}
-
-// Armazena o valor contido no registrador X no endereço do operando + Y.
-void Cpu::stx_zpy() {
-  uint8_t address = memory.read(PC + 1);
-  memory.write(address + Y, X);
-  incrementPC(0x02);
-}
-
-// Armazena o valor contido no registrador X no endereço absoluto do operando.
-void Cpu::stx_abs() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-  memory.write(address, X);
-  incrementPC(0x03);
-}
-
-// -- STY (STore X register) ------------------------------------ //
-
-// Armazena o valor contido no registrador Y no endereço do operando (zeropage).
-void Cpu::sty_zp() {
-  uint8_t address = memory.read(PC + 1);
-  memory.write(address, Y);
-  incrementPC(0x02);
-}
-
-// Armazena o valor contido no registrador Y no endereço do operando + X.
-void Cpu::sty_zpx() {
-  uint8_t address = memory.read(PC + 1);
-  memory.write(address + X, Y);
-  incrementPC(0x02);
-}
-
-// Armazena o valor contido no registrador Y no endereço absoluto do operando.
-void Cpu::sty_abs() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-  memory.write(address, Y);
-  incrementPC(0x03);
-}
-
-// ++++++++++++++++++++++++ AND Memory with Accumulator
-// +++++++++++++++++++++++++++++++ //
-
-void Cpu::and_flags_handler(uint8_t value_orig, uint8_t value_new) {
-  if (value_new & 0b10000000) {
-    setFlag(Flag::N);
-  }
-
-  if (value_new == 0) {
-    setFlag(Flag::Z);
-  }
-}
-
-void Cpu::and_im() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = immediate(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x02);
-}
-
-void Cpu::and_zp() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = zeropage(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x02);
-}
-
-void Cpu::and_zpx() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = zeropage(value + X) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x02);
-}
-
-void Cpu::and_abs() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address);
-  uint8_t result = absolute(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x03);
-}
-
-void Cpu::and_absx() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + X);
-  uint8_t result = absolute(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x03);
-}
-
-void Cpu::and_absy() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + Y);
-  uint8_t result = absolute(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x03);
-}
-
-void Cpu::and_indx() {
-  uint8_t msb = memory.read(PC + X + 2);
-  uint8_t lsb = memory.read(PC + X + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address);
-  uint8_t result = absolute(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x02);
-}
-
-void Cpu::and_indy() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + Y);
-  uint8_t result = absolute(value) & AC;
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x02);
-}
-
-// -------------- ASL Shift Left One Bit (Memory or Accumulator) ---------------
-// com excessão de asl_acc, que ocorre no acumulador, as operações acontecem
-// diretamente no valor contido no end. de memória e o resultado obtido
-// é devolvido ao mesmo endereço.
-void Cpu::asl_flags_handler(uint8_t value_orig, uint8_t value_new) {
-  if (value_new & 0b10000000) {
-    setFlag(Flag::N);
-  }
-
-  if (value_new == 0) {
-    setFlag(Flag::Z);
-  }
-
-  if (value_new <= AC) {
-    setFlag(Flag::C);
-  }
-}
-
-void Cpu::asl_acc() {
-  uint8_t value = AC;
-  uint8_t result = AC << 0x01;
-  asl_flags_handler(value, result);
+void Cpu::ASL(uint8_t (Cpu::*Addressingmode)()) {
+  uint8_t value = (this->*Addressingmode)();
+  uint8_t result = value << 0x01;
+  flagActivationN(result);
+  flagActivationC(value << 0x01);
+  flagActivationZ(result);
+  memory.write(PC + 1, result);
   incrementPC(0x01);
-}
-
-void Cpu::asl_zp() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = zeropage(value) << 0x01;
-  memory.write(PC + 1, result);
-  asl_flags_handler(value, result);
-  incrementPC(0x02);
-}
-
-void Cpu::asl_zpx() {
-  uint8_t value = memory.read(PC + 1);
-  uint8_t result = zeropage(value + X) << 0x01;
-  memory.write(PC + 1, result);
-  asl_flags_handler(value, result);
-  incrementPC(0x02);
-}
-
-void Cpu::asl_abs() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address);
-  uint8_t result = absolute(value) << 0x01;
-  memory.write(address, result);
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x03);
-}
-
-void Cpu::asl_absx() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = concat2Bytes(msb, lsb);
-
-  uint8_t value = memory.read(address + X);
-  uint8_t result = absolute(value) << 0x01;
-  memory.write(address + X, result);
-  adc_flags_handler(value, result);
-  AC = result;
-  incrementPC(0x03);
 }
 
 // Flag (Processor Status) Instructions
 // CLC (CLear Carry)
-void Cpu::clc() {
+void Cpu::CLC(uint8_t (Cpu::*AddressingMode)()) {
   remFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // SEC (SEt Carry)
-void Cpu::sec() {
+void Cpu::SEC(uint8_t (Cpu::*AddressingMode)()) {
   setFlag(Flag::C);
   incrementPC(0x01);
 }
 
 // CLI (CLear Interrupt)
-void Cpu::cli() {
+void Cpu::CLI(uint8_t (Cpu::*AddressingMode)()) {
   remFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // SEI (SEt Interrupt)
-void Cpu::sei() {
+void Cpu::SEI(uint8_t (Cpu::*AddressingMode)()) {
   setFlag(Flag::I);
   incrementPC(0x01);
 }
 
 // CLV (CLear oVerflow)
-void Cpu::clv() {
+void Cpu::CLV(uint8_t (Cpu::*AddressingMode)()) {
   remFlag(Flag::V);
   incrementPC(0x01);
 }
 
 // CLD (CLear Decimal)
-void Cpu::cld() {
+void Cpu::CLD(uint8_t (Cpu::*AddressingMode)()) {
   remFlag(Flag::D);
   incrementPC(0x01);
 }
 
 // SED (SEt Decimal)
-void Cpu::sed() {
+void Cpu::SED(uint8_t (Cpu::*AddressingMode)()) {
   setFlag(Flag::D);
   incrementPC(0x01);
 }
-*/
+

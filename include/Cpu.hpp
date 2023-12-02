@@ -47,6 +47,7 @@ public:
   uint8_t absoluteY();
   uint8_t indirectX();
   uint8_t indirectY();
+  uint8_t accumulator();
 
   // Funções de verificação de ativação de Flags após a operação
   void flagActivationN(uint8_t value);
@@ -63,22 +64,9 @@ public:
 
   // AND (bitwise AND with accumulator)
   void AND(uint8_t (Cpu::*AddressingMode)());
-  void and_im();
-  void and_zp();
-  void and_zpx();
-  void and_abs();
-  void and_absx();
-  void and_absy();
-  void and_indx();
-  void and_indy();
 
   // ASL (Arithmetic Shift Left)
-  void asl_flags_handler(uint8_t value_orig, uint8_t value_new);
-  void asl_acc();
-  void asl_zp();
-  void asl_zpx();
-  void asl_abs();
-  void asl_absx();
+  void ASL(uint8_t (Cpu::*AddressingMode)());
 
   // BIT (test BITs)
   // Branch Instructions
@@ -88,14 +76,15 @@ public:
   // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
   // DEC (DECrement memory)
   // EOR (bitwise Exclusive OR)
+
   // Flag (Processor Status) Instructions
-  void clc();
-  void sec();
-  void cli();
-  void sei();
-  void clv();
-  void cld();
-  void sed();
+  void CLC(uint8_t (Cpu::*AddressingMode)());
+  void SEC(uint8_t (Cpu::*AddressingMode)());
+  void CLI(uint8_t (Cpu::*AddressingMode)());
+  void SEI(uint8_t (Cpu::*AddressingMode)());
+  void CLV(uint8_t (Cpu::*AddressingMode)());
+  void CLD(uint8_t (Cpu::*AddressingMode)());
+  void SED(uint8_t (Cpu::*AddressingMode)());
 
   // INC (INCrement memory)
   // JMP (JuMP)
@@ -115,13 +104,8 @@ public:
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
-  void stx_zp();
-  void stx_zpy();
-  void stx_abs();
   // STY (STore Y register)
-  void sty_zp();
-  void sty_zpx();
-  void sty_abs();
+  
 
 private:
   // Memoria ram (2Kb)
