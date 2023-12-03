@@ -90,6 +90,7 @@ public:
   void SED(uint16_t (Cpu::*AddressingMode)());
 
   // INC (INCrement memory)
+  void INC(uint16_t (Cpu::*AddressingMode)());
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)

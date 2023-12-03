@@ -62,6 +62,10 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xF8] = [this]() { this->SED(nullptr); };
 
   // INC (INCrement memory)
+  opcodeMapping[0xE6] = [this]() { this->INC(&Cpu::zeropage); };
+  opcodeMapping[0xF6] = [this]() { this->INC(&Cpu::zeropageX); };
+  opcodeMapping[0xEE] = [this]() { this->INC(&Cpu::absolute); };
+  opcodeMapping[0xFE] = [this]() { this->INC(&Cpu::absoluteX); };
   // JMP (JuMP)
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
@@ -356,6 +360,14 @@ void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
 }
 
 // INC (INCrement memory)
+void Cpu::INC(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  memory.write(address, value + 1);
+  incrementPC(0x01);
+}
 // JMP (JuMP)
 // JSR (Jump to SubRoutine)
 // LDA (LoaD Accumulator)
