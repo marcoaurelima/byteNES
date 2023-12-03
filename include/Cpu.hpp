@@ -75,8 +75,9 @@ public:
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
   // CPX (ComPare X register)
-  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+  // CPY (ComPare Y register)
   // DEC (DECrement memory)
+  void DEC(uint16_t (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)
 
   // Flag (Processor Status) Instructions

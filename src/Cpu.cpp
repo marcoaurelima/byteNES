@@ -44,8 +44,12 @@ void Cpu::fillOpcodeMapping() {
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
   // CPX (ComPare X register)
-  // CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+  // CPY (ComPare Y register)
   // DEC (DECrement memory)
+  opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage); };
+  opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX); };
+  opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute); };
+  opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX); };
   // EOR (bitwise Exclusive OR)
 
   // Flag (Processor Status) Instructions
@@ -289,8 +293,16 @@ void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
 // BRK (BReaK)
 // CMP (CoMPare accumulator)
 // CPX (ComPare X register)
-// CPY (ComPare Y regiarch?cache=wsyo1o9wyksi3aq9b7bnz8x5ster)
+// CPY (ComPare Y register)
 // DEC (DECrement memory)
+void Cpu::DEC(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  memory.write(address, value - 1);
+  incrementPC(0x01);
+}
 // EOR (bitwise Exclusive OR)
 
 // Flag (Processor Status) Instructions
