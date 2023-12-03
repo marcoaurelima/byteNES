@@ -95,7 +95,13 @@ void Cpu::fillOpcodeMapping() {
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
+  opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage); };
+  opcodeMapping[0x96] = [this]() { this->STX(&Cpu::zeropageY); };
+  opcodeMapping[0x8E] = [this]() { this->STX(&Cpu::absolute); };
   // STY (STore Y register)
+  opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage); };
+  opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY); };
+  opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute); };
 }
 
 Memory &Cpu::getMemory() { return memory; }
@@ -379,4 +385,14 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
 // STA (STore Accumulator)
 // Stack Instructions
 // STX (STore X register)
+void Cpu::STX(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  memory.write(address, X);
+  incrementPC(0x01);
+}
 // STY (STore Y register)
+void Cpu::STY(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  memory.write(address, Y);
+  incrementPC(0x01);
+}

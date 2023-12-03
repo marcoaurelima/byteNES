@@ -1,1 +1,4 @@
-LDY $00
+LDX $00
+STX $FF
+LDY $03
+STY $FE

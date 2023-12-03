@@ -109,8 +109,9 @@ public:
   // STA (STore Accumulator)
   // Stack Instructions
   // STX (STore X register)
+  void STX(uint16_t (Cpu::*AddressingMode)());
   // STY (STore Y register)
-  
+  void STY(uint16_t (Cpu::*AddressingMode)());
 
 private:
   // Memoria ram (2Kb)
