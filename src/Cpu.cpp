@@ -122,6 +122,7 @@ uint8_t Cpu::getSR() { return SR; }
 
 void Cpu::setFlag(Flag flag) { SR = SR | static_cast<uint8_t>(flag); }
 void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
+bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
 
@@ -246,8 +247,9 @@ void Cpu::flagActivationC(uint16_t value) {
 void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
-  uint8_t result = AC + value;
-  flagActivationC(AC + value);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = AC + value + carry;
+  flagActivationC(AC + value + carry);
   flagActivationN(result);
   flagActivationZ(result);
   flagActivationV(value, result);
@@ -261,9 +263,7 @@ void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(address);
   uint8_t result = value & AC;
   flagActivationN(result);
-  flagActivationC(value & AC);
   flagActivationZ(result);
-  flagActivationV(value, result);
   AC = result;
   incrementPC(0x01);
 }
