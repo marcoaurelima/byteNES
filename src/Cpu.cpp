@@ -40,6 +40,8 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr); };
 
   // BIT (test BITs)
+  opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage); };
+  opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::zeropage); };
   // Branch Instructions
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
@@ -302,6 +304,21 @@ void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
 }
 
 // BIT (test BITs)
+void Cpu::BIT(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = (AC & value);
+
+  if ((result & (0x01 << 7)) > 0x00) {
+    setFlag(Flag::N);
+  }
+  if ((result & (0x01 << 6)) > 0x00) {
+    setFlag(Flag::V);
+  }
+  if (result == 0x00) {
+    setFlag(Flag::Z);
+  }
+}
 // Branch Instructions
 // BRK (BReaK)
 // CMP (CoMPare accumulator)
@@ -408,7 +425,6 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
 }
 // LSR (Logical Shift Right)
 // NOP (No OPeration)
-
 void Cpu::NOP(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   incrementPC(0x01);

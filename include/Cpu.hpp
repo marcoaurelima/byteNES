@@ -71,6 +71,7 @@ public:
   void ASL_AC(uint16_t (Cpu::*AddressingMode)());
 
   // BIT (test BITs)
+  void BIT(uint16_t (Cpu::*AddressingMode)());
   // Branch Instructions
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
