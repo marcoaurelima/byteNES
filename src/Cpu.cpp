@@ -93,6 +93,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX); };
   // LSR (Logical Shift Right)
   // NOP (No OPeration)
+  opcodeMapping[0xEA] = [this]() { this->NOP(&Cpu::absoluteX); };
   // ORA (bitwise OR with Accumulator)
   // Register Instructions
   opcodeMapping[0xAA] = [this]() { this->TAX(nullptr); };
@@ -407,6 +408,11 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
 }
 // LSR (Logical Shift Right)
 // NOP (No OPeration)
+
+void Cpu::NOP(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  incrementPC(0x01);
+}
 // ORA (bitwise OR with Accumulator)
 // Register Instructions
 // - TAX (Transfer A to X)

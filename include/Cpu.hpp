@@ -101,6 +101,7 @@ public:
   void LDY(uint16_t (Cpu::*AddressingMode)());
   // LSR (Logical Shift Right)
   // NOP (No OPeration)
+  void NOP(uint16_t (Cpu::*AddressingMode)());
   // ORA (bitwise OR with Accumulator)
   // Register Instructions
   void TAX(uint16_t (Cpu::*AddressingMode)());

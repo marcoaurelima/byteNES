@@ -1,3 +1,5 @@
 SEC
+NOP
+NOP
 INX
 ADC $00
