@@ -103,6 +103,15 @@ public:
   // NOP (No OPeration)
   // ORA (bitwise OR with Accumulator)
   // Register Instructions
+  void TAX(uint16_t (Cpu::*AddressingMode)());
+  void TXA(uint16_t (Cpu::*AddressingMode)());
+  void DEX(uint16_t (Cpu::*AddressingMode)());
+  void INX(uint16_t (Cpu::*AddressingMode)());
+  void TAY(uint16_t (Cpu::*AddressingMode)());
+  void TYA(uint16_t (Cpu::*AddressingMode)());
+  void DEY(uint16_t (Cpu::*AddressingMode)());
+  void INY(uint16_t (Cpu::*AddressingMode)());
+
   // ROL (ROtate Left)
   // ROR (ROtate Right)
   // RTI (ReTurn from Interrupt)

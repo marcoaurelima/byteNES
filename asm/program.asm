@@ -1,2 +1,3 @@
 SEC
+INX
 ADC $00

@@ -95,6 +95,14 @@ void Cpu::fillOpcodeMapping() {
   // NOP (No OPeration)
   // ORA (bitwise OR with Accumulator)
   // Register Instructions
+  opcodeMapping[0xAA] = [this]() { this->TAX(nullptr); };
+  opcodeMapping[0x8A] = [this]() { this->TXA(nullptr); };
+  opcodeMapping[0xCA] = [this]() { this->DEX(nullptr); };
+  opcodeMapping[0xE8] = [this]() { this->INX(nullptr); };
+  opcodeMapping[0xA8] = [this]() { this->TAY(nullptr); };
+  opcodeMapping[0x98] = [this]() { this->TYA(nullptr); };
+  opcodeMapping[0x88] = [this]() { this->DEY(nullptr); };
+  opcodeMapping[0xC8] = [this]() { this->INY(nullptr); };
   // ROL (ROtate Left)
   // ROR (ROtate Right)
   // RTI (ReTurn from Interrupt)
@@ -401,6 +409,46 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
 // NOP (No OPeration)
 // ORA (bitwise OR with Accumulator)
 // Register Instructions
+void Cpu::TAX(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  X = AC;
+  incrementPC(0x01);
+}
+void Cpu::TXA(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  AC = X;
+  incrementPC(0x01);
+}
+void Cpu::DEX(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  X -= 0x01;
+  incrementPC(0x01);
+}
+void Cpu::INX(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  X += 0x01;
+  incrementPC(0x01);
+}
+void Cpu::TAY(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  Y = AC;
+  incrementPC(0x01);
+}
+void Cpu::TYA(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  AC = Y;
+  incrementPC(0x01);
+}
+void Cpu::DEY(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  Y -= 0x01;
+  incrementPC(0x01);
+}
+void Cpu::INY(uint16_t (Cpu::*AddressingMode)()) {
+  static_cast<void>(AddressingMode);
+  Y += 0x01;
+  incrementPC(0x01);
+}
 // ROL (ROtate Left)
 // ROR (ROtate Right)
 // RTI (ReTurn from Interrupt)
