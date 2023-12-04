@@ -409,41 +409,49 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
 // NOP (No OPeration)
 // ORA (bitwise OR with Accumulator)
 // Register Instructions
+// - TAX (Transfer A to X)
 void Cpu::TAX(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X = AC;
   incrementPC(0x01);
 }
+// - TXA (Transfer X to A)
 void Cpu::TXA(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = X;
   incrementPC(0x01);
 }
+// - DEX (DEcrement X)
 void Cpu::DEX(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X -= 0x01;
   incrementPC(0x01);
 }
+// - INX (INcrement X)
 void Cpu::INX(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X += 0x01;
   incrementPC(0x01);
 }
+// - TAY (Transfer A to Y)
 void Cpu::TAY(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y = AC;
   incrementPC(0x01);
 }
+// - TYA (Transfer Y to A)
 void Cpu::TYA(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = Y;
   incrementPC(0x01);
 }
+// - DEY (DEcrement Y)
 void Cpu::DEY(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y -= 0x01;
   incrementPC(0x01);
 }
+// - INY (INcrement Y)
 void Cpu::INY(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y += 0x01;
