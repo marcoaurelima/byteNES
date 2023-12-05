@@ -121,6 +121,11 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x3E] = [this]() { this->ROL(&Cpu::absoluteX); };
   opcodeMapping[0x2A] = [this]() { this->ROL_AC(nullptr); };
   // ROR (ROtate Right)
+  opcodeMapping[0x66] = [this]() { this->ROR(&Cpu::zeropage); };
+  opcodeMapping[0x76] = [this]() { this->ROR(&Cpu::zeropageX); };
+  opcodeMapping[0x6E] = [this]() { this->ROR(&Cpu::absolute); };
+  opcodeMapping[0x7E] = [this]() { this->ROR(&Cpu::absoluteX); };
+  opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr); };
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
@@ -534,7 +539,7 @@ void Cpu::ROL(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = (value << 0x01) + carry;
-  flagActivationC_Sum(value << 0x01);
+  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(address, result);
@@ -544,13 +549,34 @@ void Cpu::ROL_AC(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = (AC << 0x01) + carry;
-  flagActivationC_Sum(AC << 0x01);
+  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
   incrementPC(0x01);
 }
 // ROR (ROtate Right)
+void Cpu::ROR(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = (value >> 0x01) + (carry << 0x07);
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
+  incrementPC(0x01);
+}
+void Cpu::ROR_AC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = (AC >> 0x01) + (carry << 0x07);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // RTI (ReTurn from Interrupt)
 // RTS (ReTurn from Subroutine)
 // SBC (SuBtract with Carry)

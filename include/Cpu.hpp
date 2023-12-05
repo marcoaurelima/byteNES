@@ -116,6 +116,8 @@ public:
   void ROL(uint16_t (Cpu::*AddressingMode)());
   void ROL_AC(uint16_t (Cpu::*AddressingMode)());
   // ROR (ROtate Right)
+  void ROR(uint16_t (Cpu::*AddressingMode)());
+  void ROR_AC(uint16_t (Cpu::*AddressingMode)());
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
