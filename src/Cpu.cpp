@@ -113,6 +113,14 @@ void Cpu::fillOpcodeMapping() {
   // NOP (No OPeration)
   opcodeMapping[0xEA] = [this]() { this->NOP(&Cpu::absoluteX); };
   // ORA (bitwise OR with Accumulator)
+  opcodeMapping[0x09] = [this]() { this->ORA(&Cpu::immediate); };
+  opcodeMapping[0x05] = [this]() { this->ORA(&Cpu::zeropage); };
+  opcodeMapping[0x15] = [this]() { this->ORA(&Cpu::zeropageX); };
+  opcodeMapping[0x0D] = [this]() { this->ORA(&Cpu::absolute); };
+  opcodeMapping[0x1D] = [this]() { this->ORA(&Cpu::absoluteX); };
+  opcodeMapping[0x19] = [this]() { this->ORA(&Cpu::absoluteY); };
+  opcodeMapping[0x01] = [this]() { this->ORA(&Cpu::indirectX); };
+  opcodeMapping[0x11] = [this]() { this->ORA(&Cpu::indirectY); };
   // Register Instructions
   opcodeMapping[0xAA] = [this]() { this->TAX(nullptr); };
   opcodeMapping[0x8A] = [this]() { this->TXA(nullptr); };
@@ -503,6 +511,15 @@ void Cpu::NOP(uint16_t (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // ORA (bitwise OR with Accumulator)
+void Cpu::ORA(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = value | AC;
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
+  incrementPC(0x01);
+}
 // Register Instructions
 // - TAX (Transfer A to X)
 void Cpu::TAX(uint16_t (Cpu::*AddressingMode)()) {

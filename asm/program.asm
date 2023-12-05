@@ -1,3 +1,4 @@
 ADC $00
-ROL
-ROR
+STA $FF
+EOR $FF
+ORA $FF

@@ -104,6 +104,7 @@ public:
   // NOP (No OPeration)
   void NOP(uint16_t (Cpu::*AddressingMode)());
   // ORA (bitwise OR with Accumulator)
+  void ORA(uint16_t (Cpu::*AddressingMode)());
   // Register Instructions
   void TAX(uint16_t (Cpu::*AddressingMode)());
   void TXA(uint16_t (Cpu::*AddressingMode)());
