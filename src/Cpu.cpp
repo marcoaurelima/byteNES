@@ -21,7 +21,6 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x79] = [this]() { this->ADC(&Cpu::absoluteY); };
   opcodeMapping[0x61] = [this]() { this->ADC(&Cpu::indirectX); };
   opcodeMapping[0x71] = [this]() { this->ADC(&Cpu::indirectY); };
-
   // AND (bitwise AND with accumulator)
   opcodeMapping[0x29] = [this]() { this->AND(&Cpu::immediate); };
   opcodeMapping[0x25] = [this]() { this->AND(&Cpu::zeropage); };
@@ -31,14 +30,12 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x39] = [this]() { this->AND(&Cpu::absoluteY); };
   opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX); };
   opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY); };
-
   // ASL (Arithmetic Shift Left)
   opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage); };
   opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX); };
   opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute); };
   opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX); };
   opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr); };
-
   // BIT (test BITs)
   opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage); };
   opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::zeropage); };
@@ -61,7 +58,6 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute); };
   opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX); };
   // EOR (bitwise Exclusive OR)
-
   // Flag (Processor Status) Instructions
   opcodeMapping[0x18] = [this]() { this->CLC(nullptr); };
   opcodeMapping[0x38] = [this]() { this->SEC(nullptr); };
@@ -70,7 +66,6 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xB8] = [this]() { this->CLV(nullptr); };
   opcodeMapping[0xD8] = [this]() { this->CLD(nullptr); };
   opcodeMapping[0xF8] = [this]() { this->SED(nullptr); };
-
   // INC (INCrement memory)
   opcodeMapping[0xE6] = [this]() { this->INC(&Cpu::zeropage); };
   opcodeMapping[0xF6] = [this]() { this->INC(&Cpu::zeropageX); };
@@ -87,14 +82,12 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xB9] = [this]() { this->LDA(&Cpu::absoluteY); };
   opcodeMapping[0xA1] = [this]() { this->LDA(&Cpu::indirectX); };
   opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY); };
-
   // LDX (LoaD X register)
   opcodeMapping[0xA2] = [this]() { this->LDX(&Cpu::immediate); };
   opcodeMapping[0xA6] = [this]() { this->LDX(&Cpu::zeropage); };
   opcodeMapping[0xB6] = [this]() { this->LDX(&Cpu::zeropageY); };
   opcodeMapping[0xAE] = [this]() { this->LDX(&Cpu::absolute); };
   opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY); };
-
   // LDY (LoaD Y register)
   opcodeMapping[0xA0] = [this]() { this->LDY(&Cpu::immediate); };
   opcodeMapping[0xA4] = [this]() { this->LDY(&Cpu::zeropage); };
@@ -272,6 +265,7 @@ void Cpu::flagActivationC_Sub(uint16_t result, uint8_t value) {
   }
 }
 
+// Implementações das instruções
 // ADC (ADd with Carry)
 void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
@@ -285,7 +279,6 @@ void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   AC = result;
   incrementPC(0x01);
 }
-
 // AND (bitwise AND with accumulator)
 void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
@@ -296,7 +289,6 @@ void Cpu::AND(uint16_t (Cpu::*Addressingmode)()) {
   AC = result;
   incrementPC(0x01);
 }
-
 // ASL (Arithmetic Shift Left)
 void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
@@ -308,7 +300,6 @@ void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
   memory.write(PC + 1, result);
   incrementPC(0x01);
 }
-
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
 void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
@@ -320,7 +311,6 @@ void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
   AC = value;
   incrementPC(0x01);
 }
-
 // BIT (test BITs)
 void Cpu::BIT(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
@@ -362,7 +352,6 @@ void Cpu::DEC(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // EOR (bitwise Exclusive OR)
-
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
 void Cpu::CLC(uint16_t (Cpu::*AddressingMode)()) {
@@ -370,49 +359,42 @@ void Cpu::CLC(uint16_t (Cpu::*AddressingMode)()) {
   remFlag(Flag::C);
   incrementPC(0x01);
 }
-
 // - SEC (SEt Carry)
 void Cpu::SEC(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
 }
-
 // - CLI (CLear Interrupt)
 void Cpu::CLI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
 }
-
 // - SEI (SEt Interrupt)
 void Cpu::SEI(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
 }
-
 // - CLV (CLear oVerflow)
 void Cpu::CLV(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
 }
-
 // - CLD (CLear Decimal)
 void Cpu::CLD(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
 }
-
 // - SED (SEt Decimal)
 void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
 }
-
 // INC (INCrement memory)
 void Cpu::INC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();

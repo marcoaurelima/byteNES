@@ -63,14 +63,11 @@ public:
   // Implementações das instruções
   // ADC (ADd with Carry)
   void ADC(uint16_t (Cpu::*AddressingMode)());
-
   // AND (bitwise AND with accumulator)
   void AND(uint16_t (Cpu::*AddressingMode)());
-
   // ASL (Arithmetic Shift Left)
   void ASL(uint16_t (Cpu::*AddressingMode)());
   void ASL_AC(uint16_t (Cpu::*AddressingMode)());
-
   // BIT (test BITs)
   void BIT(uint16_t (Cpu::*AddressingMode)());
   // Branch Instructions
@@ -82,7 +79,6 @@ public:
   // DEC (DECrement memory)
   void DEC(uint16_t (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)
-
   // Flag (Processor Status) Instructions
   void CLC(uint16_t (Cpu::*AddressingMode)());
   void SEC(uint16_t (Cpu::*AddressingMode)());
@@ -91,7 +87,6 @@ public:
   void CLV(uint16_t (Cpu::*AddressingMode)());
   void CLD(uint16_t (Cpu::*AddressingMode)());
   void SED(uint16_t (Cpu::*AddressingMode)());
-
   // INC (INCrement memory)
   void INC(uint16_t (Cpu::*AddressingMode)());
   // JMP (JuMP)
@@ -115,7 +110,6 @@ public:
   void TYA(uint16_t (Cpu::*AddressingMode)());
   void DEY(uint16_t (Cpu::*AddressingMode)());
   void INY(uint16_t (Cpu::*AddressingMode)());
-
   // ROL (ROtate Left)
   // ROR (ROtate Right)
   // RTI (ReTurn from Interrupt)
