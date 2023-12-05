@@ -90,6 +90,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x4C] = [this]() { this->JMP(&Cpu::absolute); };
   opcodeMapping[0x6C] = [this]() { this->JMP(&Cpu::indirect); };
   // JSR (Jump to SubRoutine)
+  opcodeMapping[0x20] = [this]() { this->JSR(&Cpu::absolute); };
   // LDA (LoaD Accumulator)
   opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate); };
   opcodeMapping[0xA5] = [this]() { this->LDA(&Cpu::zeropage); };
@@ -513,7 +514,15 @@ void Cpu::JMP(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(address);
   PC = value;
 }
-// JSR (Jump to SubRoutine)
+// JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
+void Cpu::JSR(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint16_t nextOP = PC + 0x03;
+  decrementSP();
+  memory.write(SP, nextOP);
+  uint8_t value = memory.read(address);
+  PC = value;
+}
 // LDA (LoaD Accumulator)
 void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();

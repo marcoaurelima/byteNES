@@ -101,6 +101,7 @@ public:
   // JMP (JuMP)
   void JMP(uint16_t (Cpu::*AddressingMode)());
   // JSR (Jump to SubRoutine)
+  void JSR(uint16_t (Cpu::*AddressingMode)());
   // LDA (LoaD Accumulator)
   void LDA(uint16_t (Cpu::*AddressingMode)());
   // LDX (LoaD X register)
