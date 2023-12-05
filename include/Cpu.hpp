@@ -57,7 +57,8 @@ public:
   void flagActivationD();
   void flagActivationI();
   void flagActivationZ(uint8_t value);
-  void flagActivationC(uint16_t value);
+  void flagActivationC_Sum(uint16_t value);
+  void flagActivationC_Sub(uint16_t result, uint8_t value);
 
   // Implementações das instruções
   // ADC (ADd with Carry)
@@ -75,6 +76,7 @@ public:
   // Branch Instructions
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
+  void CMP(uint16_t (Cpu::*AddressingMode)());
   // CPX (ComPare X register)
   // CPY (ComPare Y register)
   // DEC (DECrement memory)

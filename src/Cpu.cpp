@@ -45,6 +45,14 @@ void Cpu::fillOpcodeMapping() {
   // Branch Instructions
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
+  opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate); };
+  opcodeMapping[0xC5] = [this]() { this->CMP(&Cpu::zeropage); };
+  opcodeMapping[0xD5] = [this]() { this->CMP(&Cpu::zeropageX); };
+  opcodeMapping[0xCD] = [this]() { this->CMP(&Cpu::absolute); };
+  opcodeMapping[0xDD] = [this]() { this->CMP(&Cpu::absoluteX); };
+  opcodeMapping[0xD9] = [this]() { this->CMP(&Cpu::absoluteY); };
+  opcodeMapping[0xC1] = [this]() { this->CMP(&Cpu::indirectX); };
+  opcodeMapping[0xD1] = [this]() { this->CMP(&Cpu::indirectY); };
   // CPX (ComPare X register)
   // CPY (ComPare Y register)
   // DEC (DECrement memory)
@@ -247,10 +255,20 @@ void Cpu::flagActivationZ(uint8_t value) {
   }
 }
 
-// Carry
-void Cpu::flagActivationC(uint16_t value) {
+// Carry (sum)
+void Cpu::flagActivationC_Sum(uint16_t value) {
   if (value > 0xFF) {
     setFlag(Flag::C);
+  }
+}
+
+// Carry (subtraction)
+// Este flag é definido se não houver empréstimo durante a subtração.
+void Cpu::flagActivationC_Sub(uint16_t result, uint8_t value) {
+  if (result >= value) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
   }
 }
 
@@ -260,7 +278,7 @@ void Cpu::ADC(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = AC + value + carry;
-  flagActivationC(AC + value + carry);
+  flagActivationC_Sum(AC + value + carry);
   flagActivationN(result);
   flagActivationZ(result);
   flagActivationV(value, result);
@@ -285,7 +303,7 @@ void Cpu::ASL(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(address);
   uint8_t result = value << 0x01;
   flagActivationN(result);
-  flagActivationC(value << 0x01);
+  flagActivationC_Sum(value << 0x01);
   flagActivationZ(result);
   memory.write(PC + 1, result);
   incrementPC(0x01);
@@ -297,7 +315,7 @@ void Cpu::ASL_AC(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t value = AC;
   uint8_t result = (AC << 0x01);
   flagActivationN(result);
-  flagActivationC(AC << 0x01);
+  flagActivationC_Sum(AC << 0x01);
   flagActivationZ(result);
   AC = value;
   incrementPC(0x01);
@@ -322,6 +340,16 @@ void Cpu::BIT(uint16_t (Cpu::*Addressingmode)()) {
 // Branch Instructions
 // BRK (BReaK)
 // CMP (CoMPare accumulator)
+void Cpu::CMP(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = AC - value;
+  flagActivationC_Sub(result, value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // CPX (ComPare X register)
 // CPY (ComPare Y register)
 // DEC (DECrement memory)
