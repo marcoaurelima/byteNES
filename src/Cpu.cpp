@@ -1,5 +1,6 @@
 #include "Cpu.hpp"
 #include <cstdint>
+#include <iostream>
 #include <sys/types.h>
 
 Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
@@ -119,6 +120,13 @@ void Cpu::fillOpcodeMapping() {
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
   // STA (STore Accumulator)
+  opcodeMapping[0x85] = [this]() { this->STA(&Cpu::zeropage); };
+  opcodeMapping[0x95] = [this]() { this->STA(&Cpu::zeropageX); };
+  opcodeMapping[0x8D] = [this]() { this->STA(&Cpu::absolute); };
+  opcodeMapping[0x9D] = [this]() { this->STA(&Cpu::absoluteX); };
+  opcodeMapping[0x99] = [this]() { this->STA(&Cpu::absoluteY); };
+  opcodeMapping[0x81] = [this]() { this->STA(&Cpu::indirectX); };
+  opcodeMapping[0x91] = [this]() { this->STA(&Cpu::indirectY); };
   // Stack Instructions
   // STX (STore X register)
   opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage); };
@@ -521,6 +529,11 @@ void Cpu::INY(uint16_t (Cpu::*AddressingMode)()) {
 // RTS (ReTurn from Subroutine)
 // SBC (SuBtract with Carry)
 // STA (STore Accumulator)
+void Cpu::STA(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  memory.write(address, AC);
+  incrementPC(0x01);
+}
 // Stack Instructions
 // STX (STore X register)
 void Cpu::STX(uint16_t (Cpu::*Addressingmode)()) {

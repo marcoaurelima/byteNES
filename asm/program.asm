@@ -1,6 +1,2 @@
-SEC
-NOP
-NOP
-INX
 ADC $00
-BIT $FF
+STA $FF

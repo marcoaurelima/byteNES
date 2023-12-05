@@ -118,6 +118,7 @@ public:
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
   // STA (STore Accumulator)
+  void STA(uint16_t (Cpu::*AddressingMode)());
   // Stack Instructions
   // STX (STore X register)
   void STX(uint16_t (Cpu::*AddressingMode)());
