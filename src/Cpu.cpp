@@ -57,7 +57,7 @@ void Cpu::fillOpcodeMapping() {
   // CPY (ComPare Y register)
   opcodeMapping[0xC0] = [this]() { this->CPY(&Cpu::immediate); };
   opcodeMapping[0xC4] = [this]() { this->CPY(&Cpu::zeropage); };
-  opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute); }
+  opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute); };
   // DEC (DECrement memory)
   opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage); };
   opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX); };
