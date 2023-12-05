@@ -3,3 +3,4 @@ TXS
 LDA #$AB
 PHA
 PLA
+JMP ($FE)

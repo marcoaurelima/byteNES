@@ -51,6 +51,7 @@ public:
   uint16_t absolute();
   uint16_t absoluteX();
   uint16_t absoluteY();
+  uint16_t indirect();
   uint16_t indirectX();
   uint16_t indirectY();
   uint16_t accumulator();
@@ -98,6 +99,7 @@ public:
   // INC (INCrement memory)
   void INC(uint16_t (Cpu::*AddressingMode)());
   // JMP (JuMP)
+  void JMP(uint16_t (Cpu::*AddressingMode)());
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
   void LDA(uint16_t (Cpu::*AddressingMode)());

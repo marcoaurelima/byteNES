@@ -87,6 +87,8 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xEE] = [this]() { this->INC(&Cpu::absolute); };
   opcodeMapping[0xFE] = [this]() { this->INC(&Cpu::absoluteX); };
   // JMP (JuMP)
+  opcodeMapping[0x4C] = [this]() { this->JMP(&Cpu::absolute); };
+  opcodeMapping[0x6C] = [this]() { this->JMP(&Cpu::indirect); };
   // JSR (Jump to SubRoutine)
   // LDA (LoaD Accumulator)
   opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate); };
@@ -259,6 +261,14 @@ uint16_t Cpu::absoluteY() {
 
   incrementPC(0x02);
   return (address + Y);
+}
+uint16_t Cpu::indirect() {
+  uint8_t msb = memory.read(PC + 2);
+  uint8_t lsb = memory.read(PC + 1);
+  uint16_t address = (msb << 8) | lsb;
+
+  incrementPC(0x01);
+  return address;
 }
 
 uint16_t Cpu::indirectX() {
@@ -498,6 +508,11 @@ void Cpu::INC(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // JMP (JuMP)
+void Cpu::JMP(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  PC = value;
+}
 // JSR (Jump to SubRoutine)
 // LDA (LoaD Accumulator)
 void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
