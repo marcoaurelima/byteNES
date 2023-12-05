@@ -65,6 +65,14 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute); };
   opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX); };
   // EOR (bitwise Exclusive OR)
+  opcodeMapping[0x49] = [this]() { this->EOR(&Cpu::immediate); };
+  opcodeMapping[0x45] = [this]() { this->EOR(&Cpu::zeropage); };
+  opcodeMapping[0x55] = [this]() { this->EOR(&Cpu::zeropageX); };
+  opcodeMapping[0x4D] = [this]() { this->EOR(&Cpu::absolute); };
+  opcodeMapping[0x5D] = [this]() { this->EOR(&Cpu::absoluteX); };
+  opcodeMapping[0x59] = [this]() { this->EOR(&Cpu::absoluteY); };
+  opcodeMapping[0x41] = [this]() { this->EOR(&Cpu::indirectX); };
+  opcodeMapping[0x51] = [this]() { this->EOR(&Cpu::indirectY); };
   // Flag (Processor Status) Instructions
   opcodeMapping[0x18] = [this]() { this->CLC(nullptr); };
   opcodeMapping[0x38] = [this]() { this->SEC(nullptr); };
@@ -390,12 +398,22 @@ void Cpu::CPY(uint16_t (Cpu::*Addressingmode)()) {
 void Cpu::DEC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
-  flagActivationN(value);
-  flagActivationZ(value);
-  memory.write(address, value - 1);
+  uint8_t result = value - 1;
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
   incrementPC(0x01);
 }
 // EOR (bitwise Exclusive OR)
+void Cpu::EOR(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = value ^ AC;
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
+  incrementPC(0x01);
+}
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
 void Cpu::CLC(uint16_t (Cpu::*AddressingMode)()) {
@@ -443,9 +461,10 @@ void Cpu::SED(uint16_t (Cpu::*AddressingMode)()) {
 void Cpu::INC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
-  flagActivationN(value);
-  flagActivationZ(value);
-  memory.write(address, value + 1);
+  uint8_t result = value + 1;
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
   incrementPC(0x01);
 }
 // JMP (JuMP)

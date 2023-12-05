@@ -81,6 +81,7 @@ public:
   // DEC (DECrement memory)
   void DEC(uint16_t (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)
+  void EOR(uint16_t (Cpu::*AddressingMode)());
   // Flag (Processor Status) Instructions
   void CLC(uint16_t (Cpu::*AddressingMode)());
   void SEC(uint16_t (Cpu::*AddressingMode)());
