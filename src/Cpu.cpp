@@ -110,8 +110,13 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xAC] = [this]() { this->LDY(&Cpu::absolute); };
   opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX); };
   // LSR (Logical Shift Right)
+  opcodeMapping[0x46] = [this]() { this->LSR(&Cpu::zeropage); };
+  opcodeMapping[0x56] = [this]() { this->LSR(&Cpu::zeropageX); };
+  opcodeMapping[0x4E] = [this]() { this->LSR(&Cpu::absolute); };
+  opcodeMapping[0x5E] = [this]() { this->LSR(&Cpu::absoluteX); };
+  opcodeMapping[0x4A] = [this]() { this->LSR_AC(nullptr); };
   // NOP (No OPeration)
-  opcodeMapping[0xEA] = [this]() { this->NOP(&Cpu::absoluteX); };
+  opcodeMapping[0xEA] = [this]() { this->NOP(nullptr); };
   // ORA (bitwise OR with Accumulator)
   opcodeMapping[0x09] = [this]() { this->ORA(&Cpu::immediate); };
   opcodeMapping[0x05] = [this]() { this->ORA(&Cpu::zeropage); };
@@ -505,6 +510,25 @@ void Cpu::LDY(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // LSR (Logical Shift Right)
+void Cpu::LSR(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  uint8_t result = (value >> 0x01);
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
+  incrementPC(0x01);
+}
+void Cpu::LSR_AC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  uint8_t result = (AC >> 0x01);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // NOP (No OPeration)
 void Cpu::NOP(uint16_t (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);

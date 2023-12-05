@@ -2,3 +2,4 @@ ADC $00
 STA $FF
 EOR $FF
 ORA $FF
+LSR $03
