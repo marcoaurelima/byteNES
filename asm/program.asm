@@ -3,3 +3,4 @@ STA $FF
 EOR $FF
 ORA $FF
 LSR $03
+SBC $02

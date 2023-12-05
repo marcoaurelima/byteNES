@@ -125,6 +125,7 @@ public:
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
+  void SBC(uint16_t (Cpu::*AddressingMode)());
   // STA (STore Accumulator)
   void STA(uint16_t (Cpu::*AddressingMode)());
   // Stack Instructions

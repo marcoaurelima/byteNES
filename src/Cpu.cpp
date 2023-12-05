@@ -150,6 +150,14 @@ void Cpu::fillOpcodeMapping() {
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
   // SBC (SuBtract with Carry)
+  opcodeMapping[0xE9] = [this]() { this->SBC(&Cpu::immediate); };
+  opcodeMapping[0xE5] = [this]() { this->SBC(&Cpu::zeropage); };
+  opcodeMapping[0xF5] = [this]() { this->SBC(&Cpu::zeropageX); };
+  opcodeMapping[0xED] = [this]() { this->SBC(&Cpu::absolute); };
+  opcodeMapping[0xFD] = [this]() { this->SBC(&Cpu::absoluteX); };
+  opcodeMapping[0xF9] = [this]() { this->SBC(&Cpu::absoluteY); };
+  opcodeMapping[0xE1] = [this]() { this->SBC(&Cpu::indirectX); };
+  opcodeMapping[0xF1] = [this]() { this->SBC(&Cpu::indirectY); };
   // STA (STore Accumulator)
   opcodeMapping[0x85] = [this]() { this->STA(&Cpu::zeropage); };
   opcodeMapping[0x95] = [this]() { this->STA(&Cpu::zeropageX); };
@@ -640,6 +648,19 @@ void Cpu::ROR_AC(uint16_t (Cpu::*Addressingmode)()) {
 // RTI (ReTurn from Interrupt)
 // RTS (ReTurn from Subroutine)
 // SBC (SuBtract with Carry)
+void Cpu::SBC(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = AC - value - carry;
+  flagActivationC_Sub(result, value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  flagActivationV(value, result);
+  AC = result;
+  incrementPC(0x01);
+}
+
 // STA (STore Accumulator)
 void Cpu::STA(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
