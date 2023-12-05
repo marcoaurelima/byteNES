@@ -113,6 +113,8 @@ public:
   void DEY(uint16_t (Cpu::*AddressingMode)());
   void INY(uint16_t (Cpu::*AddressingMode)());
   // ROL (ROtate Left)
+  void ROL(uint16_t (Cpu::*AddressingMode)());
+  void ROL_AC(uint16_t (Cpu::*AddressingMode)());
   // ROR (ROtate Right)
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)

@@ -115,6 +115,11 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x88] = [this]() { this->DEY(nullptr); };
   opcodeMapping[0xC8] = [this]() { this->INY(nullptr); };
   // ROL (ROtate Left)
+  opcodeMapping[0x26] = [this]() { this->ROL(&Cpu::zeropage); };
+  opcodeMapping[0x36] = [this]() { this->ROL(&Cpu::zeropageX); };
+  opcodeMapping[0x2E] = [this]() { this->ROL(&Cpu::absolute); };
+  opcodeMapping[0x3E] = [this]() { this->ROL(&Cpu::absoluteX); };
+  opcodeMapping[0x2A] = [this]() { this->ROL_AC(nullptr); };
   // ROR (ROtate Right)
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
@@ -524,6 +529,27 @@ void Cpu::INY(uint16_t (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // ROL (ROtate Left)
+void Cpu::ROL(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = (value << 0x01) + carry;
+  flagActivationC_Sum(value << 0x01);
+  flagActivationN(result);
+  flagActivationZ(result);
+  memory.write(address, result);
+  incrementPC(0x01);
+}
+void Cpu::ROL_AC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t result = (AC << 0x01) + carry;
+  flagActivationC_Sum(AC << 0x01);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // ROR (ROtate Right)
 // RTI (ReTurn from Interrupt)
 // RTS (ReTurn from Subroutine)
