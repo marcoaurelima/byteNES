@@ -167,6 +167,12 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x81] = [this]() { this->STA(&Cpu::indirectX); };
   opcodeMapping[0x91] = [this]() { this->STA(&Cpu::indirectY); };
   // Stack Instructions
+  opcodeMapping[0x9A] = [this]() { this->TXS(nullptr); };
+  opcodeMapping[0xBA] = [this]() { this->TSX(nullptr); };
+  opcodeMapping[0x48] = [this]() { this->PHA(nullptr); };
+  opcodeMapping[0x68] = [this]() { this->PLA(nullptr); };
+  opcodeMapping[0x08] = [this]() { this->PHP(nullptr); };
+  opcodeMapping[0x28] = [this]() { this->PLP(nullptr); };
   // STX (STore X register)
   opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage); };
   opcodeMapping[0x96] = [this]() { this->STX(&Cpu::zeropageY); };
@@ -190,6 +196,9 @@ void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
 bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
+void Cpu::decrementPC(uint16_t value) { PC -= value; }
+void Cpu::incrementSP() { SP += 0x01; }
+void Cpu::decrementSP() { SP -= 0x01; }
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
@@ -668,6 +677,54 @@ void Cpu::STA(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // Stack Instructions
+// - TXS (Transfer X to Stack ptr)
+void Cpu::TXS(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  SP = X;
+  incrementPC(0x01);
+}
+// - TSX (Transfer Stack ptr to X)
+void Cpu::TSX(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  X = SP;
+  incrementPC(0x01);
+}
+// - PHA (PusH Accumulator)
+void Cpu::PHA(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint16_t address = STACK_ADDRESS + SP;
+  uint8_t value = AC;
+  memory.write(address, value);
+  decrementSP();
+  incrementPC(0x01);
+}
+// - PLA (PuLl Accumulator)
+void Cpu::PLA(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint16_t address = STACK_ADDRESS + SP;
+  uint8_t value = memory.read(address);
+  AC = value;
+  incrementSP();
+  incrementPC(0x01);
+}
+// - PHP (PusH Processor status)
+void Cpu::PHP(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint16_t address = STACK_ADDRESS + SP;
+  uint8_t value = SR;
+  memory.write(address, value);
+  decrementSP();
+  incrementPC(0x01);
+}
+// - PLP (PuLl Processor status)
+void Cpu::PLP(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint16_t address = STACK_ADDRESS + SP;
+  uint8_t value = memory.read(address);
+  SR = value;
+  incrementSP();
+  incrementPC(0x01);
+}
 // STX (STore X register)
 void Cpu::STX(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();

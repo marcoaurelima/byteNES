@@ -18,6 +18,11 @@ enum class Flag {
   C = (0x01 << 0), // Carry
 };
 
+// O endereço inicial da stack é o endereço 
+// imediatamente após o último endereço da
+// zero page
+const uint16_t STACK_ADDRESS = 0x00; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para debugar e testar na UI.
+
 class Cpu {
 public:
   Cpu(Memory &memory, uint16_t PC = 0x00, uint8_t SP = 0x00, uint8_t AC = 0x00,
@@ -129,6 +134,12 @@ public:
   // STA (STore Accumulator)
   void STA(uint16_t (Cpu::*AddressingMode)());
   // Stack Instructions
+  void TXS(uint16_t (Cpu::*AddressingMode)());
+  void TSX(uint16_t (Cpu::*AddressingMode)());
+  void PHA(uint16_t (Cpu::*AddressingMode)());
+  void PLA(uint16_t (Cpu::*AddressingMode)());
+  void PHP(uint16_t (Cpu::*AddressingMode)());
+  void PLP(uint16_t (Cpu::*AddressingMode)());
   // STX (STore X register)
   void STX(uint16_t (Cpu::*AddressingMode)());
   // STY (STore Y register)
@@ -151,6 +162,9 @@ private:
   void remFlag(Flag flag);
   bool chkFlag(Flag flag);
   void incrementPC(uint16_t value);
+  void decrementPC(uint16_t value);
+  void incrementSP();
+  void decrementSP();
 
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
