@@ -75,7 +75,9 @@ public:
   // CMP (CoMPare accumulator)
   void CMP(uint16_t (Cpu::*AddressingMode)());
   // CPX (ComPare X register)
+  void CPX(uint16_t (Cpu::*AddressingMode)());
   // CPY (ComPare Y register)
+  void CPY(uint16_t (Cpu::*AddressingMode)());
   // DEC (DECrement memory)
   void DEC(uint16_t (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)

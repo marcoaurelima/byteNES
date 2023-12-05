@@ -51,7 +51,13 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xC1] = [this]() { this->CMP(&Cpu::indirectX); };
   opcodeMapping[0xD1] = [this]() { this->CMP(&Cpu::indirectY); };
   // CPX (ComPare X register)
+  opcodeMapping[0xE0] = [this]() { this->CPX(&Cpu::immediate); };
+  opcodeMapping[0xE4] = [this]() { this->CPX(&Cpu::zeropage); };
+  opcodeMapping[0xEC] = [this]() { this->CPX(&Cpu::absolute); };
   // CPY (ComPare Y register)
+  opcodeMapping[0xC0] = [this]() { this->CPY(&Cpu::immediate); };
+  opcodeMapping[0xC4] = [this]() { this->CPY(&Cpu::zeropage); };
+  opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute); }
   // DEC (DECrement memory)
   opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage); };
   opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX); };
@@ -341,7 +347,27 @@ void Cpu::CMP(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // CPX (ComPare X register)
+void Cpu::CPX(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = X - value;
+  flagActivationC_Sub(result, value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // CPY (ComPare Y register)
+void Cpu::CPY(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  uint8_t value = memory.read(address);
+  uint8_t result = Y - value;
+  flagActivationC_Sub(result, value);
+  flagActivationN(result);
+  flagActivationZ(result);
+  AC = result;
+  incrementPC(0x01);
+}
 // DEC (DECrement memory)
 void Cpu::DEC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
