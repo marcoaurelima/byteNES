@@ -431,7 +431,7 @@ void Cpu::BPL(uint16_t (Cpu::*Addressingmode)()) {
     return;
   }
 
-  std::cout << "BPL --\n";
+  std::cout << "BPL not\n";
   incrementPC(0x02);
 }
 // - BMI (Branch on MInus)
@@ -443,7 +443,7 @@ void Cpu::BMI(uint16_t (Cpu::*Addressingmode)()) {
     return;
   }
 
-  std::cout << "BMI --\n";
+  std::cout << "BMI not\n";
   incrementPC(0x02);
 }
 // - BVC (Branch on oVerflow Clear)
@@ -455,7 +455,7 @@ void Cpu::BVC(uint16_t (Cpu::*Addressingmode)()) {
     return;
   }
 
-  std::cout << "BVC --\n";
+  std::cout << "BVC not\n";
   incrementPC(0x02);
 }
 // - BVS (Branch on oVerflow Set)
@@ -467,16 +467,32 @@ void Cpu::BVS(uint16_t (Cpu::*Addressingmode)()) {
     return;
   }
 
-  std::cout << "BVS --\n";
+  std::cout << "BVS not\n";
   incrementPC(0x02);
 }
 // - BCC (Branch on Carry Clear)
 void Cpu::BCC(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (!chkFlag(Flag::C)) {
+    PC = address;
+    std::cout << "BCC condicional\n";
+    return;
+  }
+
+  std::cout << "BCC not\n";
+  incrementPC(0x02);
 }
 // - BCS (Branch on Carry Set)
 void Cpu::BCS(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (chkFlag(Flag::C)) {
+    PC = address;
+    std::cout << "BCS condicional\n";
+    return;
+  }
+
+  std::cout << "BCS not\n";
+  incrementPC(0x02);
 }
 // - BNE (Branch on Not Equal)
 void Cpu::BNE(uint16_t (Cpu::*Addressingmode)()) {
