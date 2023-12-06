@@ -448,11 +448,27 @@ void Cpu::BMI(uint16_t (Cpu::*Addressingmode)()) {
 }
 // - BVC (Branch on oVerflow Clear)
 void Cpu::BVC(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (!chkFlag(Flag::V)) {
+    PC = address;
+    std::cout << "BVC condicional\n";
+    return;
+  }
+
+  std::cout << "BVC --\n";
+  incrementPC(0x02);
 }
 // - BVS (Branch on oVerflow Set)
 void Cpu::BVS(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (chkFlag(Flag::V)) {
+    PC = address;
+    std::cout << "BVS condicional\n";
+    return;
+  }
+
+  std::cout << "BVS --\n";
+  incrementPC(0x02);
 }
 // - BCC (Branch on Carry Clear)
 void Cpu::BCC(uint16_t (Cpu::*Addressingmode)()) {

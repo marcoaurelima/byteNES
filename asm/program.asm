@@ -1,11 +1,10 @@
-INX
-
 LDA #$FF
+ADC #$02
 
-BMI FUNC
+BVS FUNC
+NOP
 NOP
 NOP
 
 FUNC:
 INX
-
