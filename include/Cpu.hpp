@@ -54,6 +54,7 @@ public:
   uint16_t indirect();
   uint16_t indirectX();
   uint16_t indirectY();
+  uint16_t relative();
   uint16_t accumulator();
 
   // Funções de verificação de ativação de Flags à partir de valores
@@ -77,6 +78,14 @@ public:
   // BIT (test BITs)
   void BIT(uint16_t (Cpu::*AddressingMode)());
   // Branch Instructions
+  void BPL(uint16_t (Cpu::*AddressingMode)());
+  void BMI(uint16_t (Cpu::*AddressingMode)());
+  void BVC(uint16_t (Cpu::*AddressingMode)());
+  void BVS(uint16_t (Cpu::*AddressingMode)());
+  void BCC(uint16_t (Cpu::*AddressingMode)());
+  void BCS(uint16_t (Cpu::*AddressingMode)());
+  void BNE(uint16_t (Cpu::*AddressingMode)());
+  void BEQ(uint16_t (Cpu::*AddressingMode)());
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
   void CMP(uint16_t (Cpu::*AddressingMode)());

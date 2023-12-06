@@ -1,15 +1,10 @@
-JSR init
-JSR loop
-JSR end
+INX
 
-init:
-  LDX #$11
-  RTS
+LDA #$11
 
-loop:
-  INX
-  CPX #$05
-  RTS
+BPL FUNC
+LDX #$EE
 
-end:
-  INX
+FUNC:
+INX
+

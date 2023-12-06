@@ -75,7 +75,6 @@ void Memory::saveMemoryStatusToFile() {
       file << data[i];
     }
   }
-  std::cout << "saveMemoryStatusToFile()\n";
 }
 
 void Memory::write(uint16_t address, uint8_t value) {

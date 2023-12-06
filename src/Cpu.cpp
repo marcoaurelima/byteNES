@@ -41,6 +41,14 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage); };
   opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::zeropage); };
   // Branch Instructions
+  opcodeMapping[0x10] = [this]() { this->BPL(&Cpu::relative); };
+  opcodeMapping[0x30] = [this]() { this->BMI(&Cpu::relative); };
+  opcodeMapping[0x50] = [this]() { this->BVC(&Cpu::relative); };
+  opcodeMapping[0x70] = [this]() { this->BVS(&Cpu::relative); };
+  opcodeMapping[0x90] = [this]() { this->BCC(&Cpu::relative); };
+  opcodeMapping[0xB0] = [this]() { this->BCS(&Cpu::relative); };
+  opcodeMapping[0xD0] = [this]() { this->BNE(&Cpu::relative); };
+  opcodeMapping[0xF0] = [this]() { this->BEQ(&Cpu::relative); };
   // BRK (BReaK)
   // CMP (CoMPare accumulator)
   opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate); };
@@ -265,6 +273,7 @@ uint16_t Cpu::absoluteY() {
   incrementPC(0x02);
   return (address + Y);
 }
+
 uint16_t Cpu::indirect() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
@@ -292,6 +301,16 @@ uint16_t Cpu::indirectY() {
   return (address + Y);
 }
 
+uint16_t Cpu::relative() {
+  uint16_t value = memory.read(PC + 1);
+  uint8_t offset = ~(0x01 << 7) & value;
+
+  if ((value & (0x01 << 7)) == 0) {
+    return (PC + offset);
+  }
+
+  return (PC - offset);
+}
 // -- verificadores de flags
 // Nwgative
 void Cpu::flagActivationN(uint8_t value) {
@@ -403,6 +422,44 @@ void Cpu::BIT(uint16_t (Cpu::*Addressingmode)()) {
   }
 }
 // Branch Instructions
+// - BPL (Branch on PLus)
+void Cpu::BPL(uint16_t (Cpu::*Addressingmode)()) {
+  uint16_t address = (this->*Addressingmode)();
+  if ((AC & (0x01 << 7)) == 0x00) {
+    PC = address;
+    return;
+  }
+
+  incrementPC(0x02);
+}
+// - BMI (Branch on MInus)
+void Cpu::BMI(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BVC (Branch on oVerflow Clear)
+void Cpu::BVC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BVS (Branch on oVerflow Set)
+void Cpu::BVS(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BCC (Branch on Carry Clear)
+void Cpu::BCC(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BCS (Branch on Carry Set)
+void Cpu::BCS(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BNE (Branch on Not Equal)
+void Cpu::BNE(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
+// - BEQ (Branch on EQual)
+void Cpu::BEQ(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+}
 // BRK (BReaK)
 // CMP (CoMPare accumulator)
 void Cpu::CMP(uint16_t (Cpu::*Addressingmode)()) {
