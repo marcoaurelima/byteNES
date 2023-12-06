@@ -427,14 +427,24 @@ void Cpu::BPL(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if ((AC & (0x01 << 7)) == 0x00) {
     PC = address;
+    std::cout << "BPL condicional\n";
     return;
   }
 
+  std::cout << "BPL --\n";
   incrementPC(0x02);
 }
 // - BMI (Branch on MInus)
 void Cpu::BMI(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if ((AC & (0x01 << 7)) > 0x00) {
+    PC = address;
+    std::cout << "BMI condicional\n";
+    return;
+  }
+
+  std::cout << "BMI --\n";
+  incrementPC(0x02);
 }
 // - BVC (Branch on oVerflow Clear)
 void Cpu::BVC(uint16_t (Cpu::*Addressingmode)()) {

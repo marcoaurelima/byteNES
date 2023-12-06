@@ -1,9 +1,10 @@
 INX
 
-LDA #$11
+LDA #$FF
 
-BPL FUNC
-LDX #$EE
+BMI FUNC
+NOP
+NOP
 
 FUNC:
 INX
