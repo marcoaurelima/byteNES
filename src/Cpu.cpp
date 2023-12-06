@@ -496,11 +496,27 @@ void Cpu::BCS(uint16_t (Cpu::*Addressingmode)()) {
 }
 // - BNE (Branch on Not Equal)
 void Cpu::BNE(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (!chkFlag(Flag::Z)) {
+    PC = address;
+    std::cout << "BNE condicional\n";
+    return;
+  }
+
+  std::cout << "BNE not\n";
+  incrementPC(0x02);
 }
 // - BEQ (Branch on EQual)
 void Cpu::BEQ(uint16_t (Cpu::*Addressingmode)()) {
-  static_cast<void>(Addressingmode);
+  uint16_t address = (this->*Addressingmode)();
+  if (chkFlag(Flag::Z)) {
+    PC = address;
+    std::cout << "BEQ condicional\n";
+    return;
+  }
+
+  std::cout << "BEQ not\n";
+  incrementPC(0x02);
 }
 // BRK (BReaK)
 // CMP (CoMPare accumulator)
