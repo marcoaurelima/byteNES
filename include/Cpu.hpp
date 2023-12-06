@@ -25,7 +25,7 @@ const uint16_t STACK_ADDRESS = 0x00; // 0X1000; o valor correto é 0x1000; o val
 
 class Cpu {
 public:
-  Cpu(Memory &memory, uint16_t PC = 0x00, uint8_t SP = 0x00, uint8_t AC = 0x00,
+  Cpu(Memory &memory, uint16_t PC = 0x00, uint8_t SP = 0xFF, uint8_t AC = 0x00,
       uint8_t X = 0x00, uint8_t Y = 0x00, uint8_t SR = 0x00);
   ~Cpu();
 
@@ -132,6 +132,7 @@ public:
   void ROR_AC(uint16_t (Cpu::*AddressingMode)());
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
+  void RTS(uint16_t (Cpu::*AddressingMode)());
   // SBC (SuBtract with Carry)
   void SBC(uint16_t (Cpu::*AddressingMode)());
   // STA (STore Accumulator)

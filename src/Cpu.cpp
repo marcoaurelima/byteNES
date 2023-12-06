@@ -152,6 +152,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr); };
   // RTI (ReTurn from Interrupt)
   // RTS (ReTurn from Subroutine)
+  opcodeMapping[0x60] = [this]() { this->RTS(nullptr); };
   // SBC (SuBtract with Carry)
   opcodeMapping[0xE9] = [this]() { this->SBC(&Cpu::immediate); };
   opcodeMapping[0xE5] = [this]() { this->SBC(&Cpu::zeropage); };
@@ -210,7 +211,8 @@ void Cpu::next() {
 
 void Cpu::reset() {
   memory.reset();
-  PC = SP = AC = X = Y = SR = 0X00;
+  PC = AC = X = Y = SR = 0X00;
+  SP = 0xFF;
 }
 
 // Modos de endereçamento
@@ -517,11 +519,12 @@ void Cpu::JMP(uint16_t (Cpu::*Addressingmode)()) {
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
-  uint16_t nextOP = PC + 0x03;
-  decrementSP();
+  uint16_t nextOP =
+      PC + 0x03 - 0x02; // A chamada da função Addressingmode incrementa PC; a
+                        // subtração é para compensar isso
   memory.write(SP, nextOP);
-  uint8_t value = memory.read(address);
-  PC = value;
+  decrementSP();
+  PC = address;
 }
 // LDA (LoaD Accumulator)
 void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
@@ -680,6 +683,12 @@ void Cpu::ROR_AC(uint16_t (Cpu::*Addressingmode)()) {
 }
 // RTI (ReTurn from Interrupt)
 // RTS (ReTurn from Subroutine)
+void Cpu::RTS(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint16_t address = memory.read(SP + 1);
+  PC = address;
+  incrementSP();
+}
 // SBC (SuBtract with Carry)
 void Cpu::SBC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();

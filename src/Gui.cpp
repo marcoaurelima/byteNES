@@ -41,18 +41,27 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   flagsText = new sf::Text();
   flagsText->setFont(*font);
   flagsText->setFillColor(sf::Color::White);
-  flagsText->setString("FLAGS   N V   B D I Z C");
+  flagsText->setString("FLAG    N V   B D I Z C");
   flagsText->setCharacterSize(20);
   flagsText->setPosition(55, 538);
 
   // Registers monitor
   for (size_t i = 0; i < registersTiles.size(); i++) {
-    registersTiles[i] = new sf::RectangleShape(sf::Vector2f(29.8, 41));
+    if (i == 0) {
+      registersTiles[i] = new sf::RectangleShape(sf::Vector2f(49.8, 41));
+    } else {
+      registersTiles[i] = new sf::RectangleShape(sf::Vector2f(1129.8, 41));
+    }
     registersTiles[i]->setFillColor(sf::Color(40, 40, 40));
     registersTiles[i]->setOutlineColor(sf::Color(20, 20, 20));
     registersTiles[i]->setOutlineThickness(2);
-    registersTiles[i]->setPosition(
-        374 + ((registersTiles.size() - i - 1) * 29.8), 544);
+    if (i == 0) {
+      registersTiles[i]->setPosition(
+          354 + ((registersTiles.size() - i - 1) * 49.8), 544);
+    } else {
+      registersTiles[i]->setPosition(
+          354 + ((registersTiles.size() - i - 1) * 29.8), 1544);
+    }
   }
 
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
@@ -64,7 +73,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   registersLabelText = new sf::Text();
   registersLabelText->setFont(*font);
   registersLabelText->setFillColor(sf::Color::White);
-  registersLabelText->setString("REGS   PC SP AC X  Y  SR");
+  registersLabelText->setString("REG    PC SP AC X  Y  SR");
   registersLabelText->setCharacterSize(20);
   registersLabelText->setPosition(310, 538);
 
@@ -73,7 +82,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   registersText->setFillColor(sf::Color::Green);
   registersText->setString(registerSStr.str());
   registersText->setCharacterSize(20);
-  registersText->setPosition(379, 558);
+  registersText->setPosition(359, 558);
 
   // Zero Page monitor
   zeroPageScreenTitle = new sf::Text();
@@ -170,18 +179,25 @@ void Gui::updateFlag() {
   }
 }
 
-std::string intTohex(uint16_t value) {
+std::string intTohexU8(int value) {
   std::stringstream ss;
   ss << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
      << value;
   return ss.str();
 }
 
+std::string intTohexU16(int value) {
+  std::stringstream ss;
+  ss << std::setfill('0') << std::setw(4) << std::uppercase << std::hex
+     << value;
+  return ss.str();
+}
 void Gui::updateRegisters() {
   registerSStr.str("");
-  registerSStr << intTohex(cpu.getPC()) << " " << intTohex(cpu.getSP()) << " "
-               << intTohex(cpu.getAC()) << " " << intTohex(cpu.getX()) << " "
-               << intTohex(cpu.getY()) << " " << intTohex(cpu.getSR()) << " ";
+  registerSStr << intTohexU16(cpu.getPC()) << " " << intTohexU8(cpu.getSP())
+               << " " << intTohexU8(cpu.getAC()) << " "
+               << intTohexU8(cpu.getX()) << " " << intTohexU8(cpu.getY()) << " "
+               << intTohexU8(cpu.getSR()) << " ";
 
   registersText->setString(registerSStr.str());
 }
@@ -190,7 +206,7 @@ void Gui::updateZeroPageMemory() {
   zeroPageDataStr = "";
 
   for (size_t i = 1; i <= 256; i++) {
-    zeroPageDataStr += intTohex(cpu.getMemory().read(i - 1)) + " ";
+    zeroPageDataStr += intTohexU8(cpu.getMemory().read(i - 1)) + " ";
     if (i % 16 == 0) {
       zeroPageDataStr += "\n";
     }
