@@ -50,6 +50,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xD0] = [this]() { this->BNE(&Cpu::relative); };
   opcodeMapping[0xF0] = [this]() { this->BEQ(&Cpu::relative); };
   // BRK (BReaK)
+  opcodeMapping[0x00] = [this]() { this->BRK(nullptr); };
   // CMP (CoMPare accumulator)
   opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate); };
   opcodeMapping[0xC5] = [this]() { this->CMP(&Cpu::zeropage); };
@@ -159,6 +160,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x7E] = [this]() { this->ROR(&Cpu::absoluteX); };
   opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr); };
   // RTI (ReTurn from Interrupt)
+  opcodeMapping[0x40] = [this]() { this->RTI(nullptr); };
   // RTS (ReTurn from Subroutine)
   opcodeMapping[0x60] = [this]() { this->RTS(nullptr); };
   // SBC (SuBtract with Carry)
@@ -209,8 +211,8 @@ bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
 void Cpu::decrementPC(uint16_t value) { PC -= value; }
-void Cpu::incrementSP() { SP += 0x01; }
-void Cpu::decrementSP() { SP -= 0x01; }
+void Cpu::incrementSP(uint16_t value) { SP += value; }
+void Cpu::decrementSP(uint16_t value) { SP -= value; }
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
@@ -519,6 +521,33 @@ void Cpu::BEQ(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x02);
 }
 // BRK (BReaK)
+void Cpu::BRK(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  incrementPC(0x01);
+  uint8_t PC_lsb = static_cast<uint8_t>(PC & 0xFF);
+  uint8_t PC_msb = static_cast<uint8_t>(PC >> 8);
+
+  setFlag(Flag::I);
+  
+  std::cout << "SP1: " << std::hex << (int)SP << " - " << (int)PC << "\n";
+  memory.write(SP, SR);
+  decrementSP();
+  std::cout << "SP2: " << std::hex << (int)SP << " - " << (int)PC << "\n";
+  memory.write(SP, PC_lsb);
+  decrementSP();
+  std::cout << "SP3: " << std::hex << (int)SP << " - " << (int)PC << "\n";
+  memory.write(SP, PC_msb);
+  decrementSP();
+
+  uint8_t IRQ_msb = memory.read(0xFFFF);
+  uint8_t IRQ_lsb = memory.read(0xFFFE);
+
+  std::cout << "IRQ: " << std::hex << (int)IRQ_msb << " - " << (int)IRQ_lsb << "\n";
+  uint16_t address = (IRQ_msb << 8) | IRQ_lsb;
+  std::cout << "ADDR: " << std::hex << (int)address << "\n";
+
+  PC = address;
+}
 // CMP (CoMPare accumulator)
 void Cpu::CMP(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
@@ -797,10 +826,21 @@ void Cpu::ROR_AC(uint16_t (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // RTI (ReTurn from Interrupt)
+void Cpu::RTI(uint16_t (Cpu::*Addressingmode)()) {
+  static_cast<void>(Addressingmode);
+  uint8_t PC_msb = memory.read(SP + 0x01);
+  incrementSP();
+  uint8_t PC_lsb = memory.read(SP + 0x01); 
+  incrementSP();
+  SR = memory.read(SP + 0x01);
+  decrementSP();
+
+  PC = (PC_msb << 8) | PC_lsb;
+}
 // RTS (ReTurn from Subroutine)
 void Cpu::RTS(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = memory.read(SP + 1);
+  uint16_t address = memory.read(SP + 0x01);
   PC = address;
   incrementSP();
 }
@@ -849,10 +889,10 @@ void Cpu::PHA(uint16_t (Cpu::*Addressingmode)()) {
 // - PLA (PuLl Accumulator)
 void Cpu::PLA(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP;
+  uint16_t address = STACK_ADDRESS + SP + 0x01;
   uint8_t value = memory.read(address);
   AC = value;
-  incrementSP();
+  incrementSP(0x01);
   incrementPC(0x01);
 }
 // - PHP (PusH Processor status)
@@ -867,10 +907,10 @@ void Cpu::PHP(uint16_t (Cpu::*Addressingmode)()) {
 // - PLP (PuLl Processor status)
 void Cpu::PLP(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP;
+  uint16_t address = STACK_ADDRESS + SP + 0x01;
   uint8_t value = memory.read(address);
   SR = value;
-  incrementSP();
+  incrementSP(0x01);
   incrementPC(0x01);
 }
 // STX (STore X register)

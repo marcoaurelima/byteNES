@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-#define MEMSIZE 0xFFFF
+#define MEMSIZE 0xFFFF + 0x0001
 
 class Memory {
 public:

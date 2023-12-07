@@ -87,6 +87,7 @@ public:
   void BNE(uint16_t (Cpu::*AddressingMode)());
   void BEQ(uint16_t (Cpu::*AddressingMode)());
   // BRK (BReaK)
+  void BRK(uint16_t (Cpu::*AddressingMode)());
   // CMP (CoMPare accumulator)
   void CMP(uint16_t (Cpu::*AddressingMode)());
   // CPX (ComPare X register)
@@ -140,6 +141,7 @@ public:
   void ROR(uint16_t (Cpu::*AddressingMode)());
   void ROR_AC(uint16_t (Cpu::*AddressingMode)());
   // RTI (ReTurn from Interrupt)
+  void RTI(uint16_t (Cpu::*AddressingMode)());
   // RTS (ReTurn from Subroutine)
   void RTS(uint16_t (Cpu::*AddressingMode)());
   // SBC (SuBtract with Carry)
@@ -176,8 +178,8 @@ private:
   bool chkFlag(Flag flag);
   void incrementPC(uint16_t value);
   void decrementPC(uint16_t value);
-  void incrementSP();
-  void decrementSP();
+  void incrementSP(uint16_t value = 0x01);
+  void decrementSP(uint16_t value = 0x01);
 
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
