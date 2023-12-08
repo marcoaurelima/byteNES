@@ -1,9 +1,11 @@
 #include "Gui.hpp"
+#include <ctime>
 #include <iomanip>
+#include <sstream>
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(1170, 660), "NES Emulator");
+  window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
   window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
@@ -22,6 +24,16 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   gameScreenTitle->setString("NES Emulator");
   gameScreenTitle->setCharacterSize(20);
   gameScreenTitle->setPosition(50, 15);
+
+  // Game screen
+  gameScreenInfo = new sf::Text();
+  gameScreenInfo->setFont(*font);
+  gameScreenInfo->setFillColor(sf::Color::Yellow);
+  std::stringstream ss;
+  ss << "CLOCK " << clock << " Hz";
+  gameScreenInfo->setString(ss.str());
+  gameScreenInfo->setCharacterSize(20);
+  gameScreenInfo->setPosition(470, 15);
 
   // Flags monitor
   for (size_t i = 0; i < flagsTiles.size(); i++) {
@@ -255,6 +267,7 @@ void Gui::show() {
 
     window->clear();
     window->draw(*gameScreenTitle);
+    window->draw(*gameScreenInfo);
     window->draw(*gameScreen);
 
     updateFlag();

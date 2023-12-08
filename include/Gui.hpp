@@ -20,6 +20,8 @@ private:
 
   sf::RectangleShape *gameScreen;
   sf::Text *gameScreenTitle;
+  sf::Text *gameScreenInfo;
+  uint64_t clock {1};
 
   uint8_t flags{0};
   sf::RectangleShape *flagsBar;
