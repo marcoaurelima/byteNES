@@ -1,4 +1,8 @@
 #include "Gui.hpp"
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -8,11 +12,23 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
   window->setVerticalSyncEnabled(true);
 
-  gameScreen = new sf::RectangleShape(sf::Vector2f(256 * 2, 240 * 2));
+  gameScreen = new sf::RectangleShape(sf::Vector2f(256, 240));
   gameScreen->setPosition(50, 50);
   gameScreen->setFillColor(sf::Color(30, 30, 30));
   gameScreen->setOutlineColor(sf::Color(80, 80, 80));
   gameScreen->setOutlineThickness(1);
+  gameScreen->setScale(sf::Vector2f(2, 2));
+
+  gameImage = new sf::Image();
+  gameImage->create(256, 240, sf::Color(15, 15, 15));
+
+  gameTexture = new sf::Texture();
+  gameTexture->loadFromImage(*gameImage);
+
+  gameSprite = new sf::Sprite();
+  gameSprite->setTexture(*gameTexture);
+  gameSprite->setPosition(50, 50);
+  gameSprite->setScale(2, 2);
 
   font = new sf::Font();
   font->loadFromFile("fonts/ProFontWindowsNerdFontMono-Regular.ttf");
@@ -302,6 +318,8 @@ void Gui::show() {
     window->draw(*keyMappingText);
 
     window->draw(*filePathText);
+
+    window->draw(*gameSprite);
 
     window->display();
     flags++;

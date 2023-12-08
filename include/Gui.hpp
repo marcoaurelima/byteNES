@@ -3,6 +3,9 @@
 
 #include "Cpu.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <array>
 #include <cstdint>
 #include <sstream>
@@ -22,6 +25,10 @@ private:
   sf::Text *gameScreenTitle;
   sf::Text *gameScreenInfo;
   uint64_t clock {1};
+  
+  sf::Image* gameImage;
+  sf::Texture* gameTexture;
+  sf::Sprite* gameSprite;
 
   uint8_t flags{0};
   sf::RectangleShape *flagsBar;
