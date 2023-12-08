@@ -18,10 +18,12 @@ enum class Flag {
   C = (0x01 << 0), // Carry
 };
 
-// O endereço inicial da stack é o endereço 
+// O endereço inicial da stack é o endereço
 // imediatamente após o último endereço da
 // zero page
-const uint16_t STACK_ADDRESS = 0x00; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para debugar e testar na UI.
+const uint16_t STACK_ADDRESS =
+    0x00; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para
+          // debugar e testar na UI.
 
 class Cpu {
 public:
@@ -178,8 +180,9 @@ private:
   bool chkFlag(Flag flag);
   void incrementPC(uint16_t value);
   void decrementPC(uint16_t value);
-  void incrementSP(uint16_t value = 0x01);
-  void decrementSP(uint16_t value = 0x01);
+
+  void stackPUSH(uint8_t value);
+  uint8_t stackPOP();
 
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};

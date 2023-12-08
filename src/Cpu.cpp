@@ -211,8 +211,17 @@ bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
 void Cpu::decrementPC(uint16_t value) { PC -= value; }
-void Cpu::incrementSP(uint16_t value) { SP += value; }
-void Cpu::decrementSP(uint16_t value) { SP -= value; }
+
+void Cpu::stackPUSH(uint8_t value) {
+  memory.write(SP, value);
+  SP -= 0x01;
+}
+
+uint8_t Cpu::stackPOP() {
+  int8_t value = memory.read(SP + 0x01);
+  SP += 0x01;
+  return value;
+}
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
@@ -429,11 +438,9 @@ void Cpu::BPL(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if ((AC & (0x01 << 7)) == 0x00) {
     PC = address;
-    std::cout << "BPL condicional\n";
     return;
   }
 
-  std::cout << "BPL not\n";
   incrementPC(0x02);
 }
 // - BMI (Branch on MInus)
@@ -441,11 +448,9 @@ void Cpu::BMI(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if ((AC & (0x01 << 7)) > 0x00) {
     PC = address;
-    std::cout << "BMI condicional\n";
     return;
   }
 
-  std::cout << "BMI not\n";
   incrementPC(0x02);
 }
 // - BVC (Branch on oVerflow Clear)
@@ -453,11 +458,9 @@ void Cpu::BVC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (!chkFlag(Flag::V)) {
     PC = address;
-    std::cout << "BVC condicional\n";
     return;
   }
 
-  std::cout << "BVC not\n";
   incrementPC(0x02);
 }
 // - BVS (Branch on oVerflow Set)
@@ -465,11 +468,9 @@ void Cpu::BVS(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (chkFlag(Flag::V)) {
     PC = address;
-    std::cout << "BVS condicional\n";
     return;
   }
 
-  std::cout << "BVS not\n";
   incrementPC(0x02);
 }
 // - BCC (Branch on Carry Clear)
@@ -477,11 +478,9 @@ void Cpu::BCC(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (!chkFlag(Flag::C)) {
     PC = address;
-    std::cout << "BCC condicional\n";
     return;
   }
 
-  std::cout << "BCC not\n";
   incrementPC(0x02);
 }
 // - BCS (Branch on Carry Set)
@@ -489,11 +488,9 @@ void Cpu::BCS(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (chkFlag(Flag::C)) {
     PC = address;
-    std::cout << "BCS condicional\n";
     return;
   }
 
-  std::cout << "BCS not\n";
   incrementPC(0x02);
 }
 // - BNE (Branch on Not Equal)
@@ -501,11 +498,9 @@ void Cpu::BNE(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (!chkFlag(Flag::Z)) {
     PC = address;
-    std::cout << "BNE condicional\n";
     return;
   }
 
-  std::cout << "BNE not\n";
   incrementPC(0x02);
 }
 // - BEQ (Branch on EQual)
@@ -513,11 +508,9 @@ void Cpu::BEQ(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   if (chkFlag(Flag::Z)) {
     PC = address;
-    std::cout << "BEQ condicional\n";
     return;
   }
 
-  std::cout << "BEQ not\n";
   incrementPC(0x02);
 }
 // BRK (BReaK)
@@ -528,23 +521,15 @@ void Cpu::BRK(uint16_t (Cpu::*Addressingmode)()) {
   uint8_t PC_msb = static_cast<uint8_t>(PC >> 8);
 
   setFlag(Flag::I);
-  
-  std::cout << "SP1: " << std::hex << (int)SP << " - " << (int)PC << "\n";
-  memory.write(SP, SR);
-  decrementSP();
-  std::cout << "SP2: " << std::hex << (int)SP << " - " << (int)PC << "\n";
-  memory.write(SP, PC_lsb);
-  decrementSP();
-  std::cout << "SP3: " << std::hex << (int)SP << " - " << (int)PC << "\n";
-  memory.write(SP, PC_msb);
-  decrementSP();
+
+  stackPUSH(SR);
+  stackPUSH(PC_lsb);
+  stackPUSH(PC_msb);
 
   uint8_t IRQ_msb = memory.read(0xFFFF);
   uint8_t IRQ_lsb = memory.read(0xFFFE);
 
-  std::cout << "IRQ: " << std::hex << (int)IRQ_msb << " - " << (int)IRQ_lsb << "\n";
   uint16_t address = (IRQ_msb << 8) | IRQ_lsb;
-  std::cout << "ADDR: " << std::hex << (int)address << "\n";
 
   PC = address;
 }
@@ -663,11 +648,11 @@ void Cpu::JMP(uint16_t (Cpu::*Addressingmode)()) {
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
-  uint16_t nextOP =
-      PC + 0x03 - 0x02; // A chamada da função Addressingmode incrementa PC; a
-                        // subtração é para compensar isso
-  memory.write(SP, nextOP);
-  decrementSP();
+
+  // A chamada da função Addressingmode incrementa PC;
+  // a subtração (- 0x02) é para compensar isso.
+  uint16_t nextOP = PC + 0x03 - 0x02;
+  stackPUSH(nextOP);
   PC = address;
 }
 // LDA (LoaD Accumulator)
@@ -828,21 +813,17 @@ void Cpu::ROR_AC(uint16_t (Cpu::*Addressingmode)()) {
 // RTI (ReTurn from Interrupt)
 void Cpu::RTI(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint8_t PC_msb = memory.read(SP + 0x01);
-  incrementSP();
-  uint8_t PC_lsb = memory.read(SP + 0x01); 
-  incrementSP();
-  SR = memory.read(SP + 0x01);
-  decrementSP();
+  uint8_t PC_msb = stackPOP();
+  uint8_t PC_lsb = stackPOP();
 
+  SR = stackPOP();
   PC = (PC_msb << 8) | PC_lsb;
 }
 // RTS (ReTurn from Subroutine)
 void Cpu::RTS(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = memory.read(SP + 0x01);
+  uint16_t address = stackPOP();
   PC = address;
-  incrementSP();
 }
 // SBC (SuBtract with Carry)
 void Cpu::SBC(uint16_t (Cpu::*Addressingmode)()) {
@@ -880,37 +861,25 @@ void Cpu::TSX(uint16_t (Cpu::*Addressingmode)()) {
 // - PHA (PusH Accumulator)
 void Cpu::PHA(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP;
-  uint8_t value = AC;
-  memory.write(address, value);
-  decrementSP();
+  stackPUSH(AC);
   incrementPC(0x01);
 }
 // - PLA (PuLl Accumulator)
 void Cpu::PLA(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP + 0x01;
-  uint8_t value = memory.read(address);
-  AC = value;
-  incrementSP(0x01);
+  AC = stackPOP();
   incrementPC(0x01);
 }
 // - PHP (PusH Processor status)
 void Cpu::PHP(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP;
-  uint8_t value = SR;
-  memory.write(address, value);
-  decrementSP();
+  stackPUSH(SR);
   incrementPC(0x01);
 }
 // - PLP (PuLl Processor status)
 void Cpu::PLP(uint16_t (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint16_t address = STACK_ADDRESS + SP + 0x01;
-  uint8_t value = memory.read(address);
-  SR = value;
-  incrementSP(0x01);
+  SR = stackPOP();
   incrementPC(0x01);
 }
 // STX (STore X register)
