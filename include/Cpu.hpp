@@ -169,7 +169,7 @@ private:
   Memory &memory;
 
   // Endereço inicial do assembler
-  uint16_t asmAddress;
+  uint16_t asmAddress{};
 
   // Registradores
   uint16_t PC{};

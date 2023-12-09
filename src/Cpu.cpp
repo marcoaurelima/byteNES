@@ -232,7 +232,8 @@ void Cpu::next() {
 
 void Cpu::reset() {
   memory.reset();
-  PC = AC = X = Y = SR = 0X00;
+  PC = AC = X = Y = 0X00;
+  SR = 0x30;
   SP = 0xFF;
 }
 
