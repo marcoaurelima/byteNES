@@ -8,9 +8,10 @@ int main() {
   Memory mem;
   mem.fillZeroData();
   // mem.fillRandomData();
-  mem.loadMemoryFromFile("asm/program.bin");
+  mem.loadMemoryFromFile("asm/program.bin", 0x0600);
 
   Cpu cpu(mem);
+  cpu.setAsmAddress(0x0600);
 
   Gui gui(cpu);
   gui.show();

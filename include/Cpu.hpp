@@ -22,13 +22,14 @@ enum class Flag {
 // imediatamente após o último endereço da
 // zero page
 const uint16_t STACK_ADDRESS =
-    0x00; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para
-          // debugar e testar na UI.
+    0x1000; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para
+            // debugar e testar na UI.
+
 
 class Cpu {
 public:
-  Cpu(Memory &memory, uint16_t PC = 0x00, uint8_t SP = 0xFF, uint8_t AC = 0x00,
-      uint8_t X = 0x00, uint8_t Y = 0x00, uint8_t SR = 0x00);
+  Cpu(Memory &memory, uint16_t PC = 0x0000, uint8_t SP = 0xFF,
+      uint8_t AC = 0x00, uint8_t X = 0x00, uint8_t Y = 0x00, uint8_t SR = 0x00);
   ~Cpu();
 
   uint16_t getPC();
@@ -162,9 +163,14 @@ public:
   // STY (STore Y register)
   void STY(uint16_t (Cpu::*AddressingMode)());
 
+  void setAsmAddress(uint16_t address);
+
 private:
   // Memoria ram (2Kb)
   Memory &memory;
+
+  // Endereço inicial do assembler
+  uint16_t asmAddress;
 
   // Registradores
   uint16_t PC;

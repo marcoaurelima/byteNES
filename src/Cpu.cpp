@@ -197,6 +197,11 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute); };
 }
 
+void Cpu::setAsmAddress(uint16_t address) {
+  asmAddress = address;
+  PC = address;
+}
+
 Memory &Cpu::getMemory() { return memory; }
 uint16_t Cpu::getPC() { return PC; }
 uint8_t Cpu::getSP() { return SP; }
@@ -225,6 +230,7 @@ uint8_t Cpu::stackPOP() {
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
+  // std::cout << "index: " << std::hex << (int)index << "\n";
   opcodeMapping[index]();
 }
 
@@ -236,26 +242,31 @@ void Cpu::reset() {
 
 // Modos de endereçamento
 uint16_t Cpu::immediate() {
-  uint8_t address = (PC + 1);
+  uint16_t address = (PC + 1);
   incrementPC(0x01);
+  // std::cout << "immediate: " << std::hex << (int)address << "  PC: " <<
+  // (int)PC << "\n";
   return address;
 }
 
 uint16_t Cpu::zeropage() {
-  uint8_t address = memory.read(PC + 1);
+  uint16_t address = memory.read(PC + 1);
   incrementPC(0x01);
+  // std::cout << "zeropage: " << std::hex << (int)address << "\n";
   return address;
 }
 
 uint16_t Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1);
   incrementPC(0x01);
+  // std::cout << "zeropageX: " << std::hex << (int)address << "\n";
   return (address + X);
 }
 
 uint16_t Cpu::zeropageY() {
   uint8_t address = memory.read(PC + 1);
   incrementPC(0x01);
+  // std::cout << "zeropageY: " << std::hex << (int)address << "\n";
   return (address + Y);
 }
 uint16_t Cpu::absolute() {
@@ -264,6 +275,7 @@ uint16_t Cpu::absolute() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x02);
+  // std::cout << "absolute: " << std::hex << (int)address << "\n";
   return address;
 }
 
@@ -273,6 +285,7 @@ uint16_t Cpu::absoluteX() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x02);
+  // std::cout << "absoluteX: " << std::hex << (int)address << "\n";
   return (address + X);
 }
 
@@ -282,6 +295,7 @@ uint16_t Cpu::absoluteY() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x02);
+  // std::cout << "absoluteY: " << std::hex << (int)address << "\n";
   return (address + Y);
 }
 
@@ -291,6 +305,7 @@ uint16_t Cpu::indirect() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x01);
+  // std::cout << "indirect: " << std::hex << (int)address << "\n";
   return address;
 }
 
@@ -300,6 +315,7 @@ uint16_t Cpu::indirectX() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x01);
+  // std::cout << "indirectX: " << std::hex << (int)address << "\n";
   return address;
 }
 
@@ -309,6 +325,7 @@ uint16_t Cpu::indirectY() {
   uint16_t address = (msb << 8) | lsb;
 
   incrementPC(0x01);
+  // std::cout << "indirectY: " << std::hex << (int)address << "\n";
   return (address + Y);
 }
 
@@ -323,7 +340,7 @@ uint16_t Cpu::relative() {
   return (PC - offset);
 }
 // -- verificadores de flags
-// Nwgative
+// Negative
 void Cpu::flagActivationN(uint8_t value) {
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
@@ -659,6 +676,7 @@ void Cpu::JSR(uint16_t (Cpu::*Addressingmode)()) {
 void Cpu::LDA(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
   uint8_t value = memory.read(address);
+  // std::cout << "LDA: " << (int)value << " - ADDR: " << (int)address << "\n";
   flagActivationN(value);
   flagActivationZ(value);
   AC = value;
@@ -842,6 +860,7 @@ void Cpu::SBC(uint16_t (Cpu::*Addressingmode)()) {
 // STA (STore Accumulator)
 void Cpu::STA(uint16_t (Cpu::*Addressingmode)()) {
   uint16_t address = (this->*Addressingmode)();
+  // std::cout << "--- " << std::hex << address << " -----\n";
   memory.write(address, AC);
   incrementPC(0x01);
 }
