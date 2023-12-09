@@ -26,7 +26,7 @@ Memory::~Memory() {}
 void Memory::fillRandomData() {
   srand(time(NULL));
   for (auto &i : data) {
-    i = rand() % 0xFF;
+    i = rand() % 0x0F;
   }
   saveMemoryStatusToFile();
 }

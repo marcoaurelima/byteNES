@@ -7,6 +7,7 @@ int main() {
 
   Memory mem;
   mem.fillZeroData();
+  // mem.fillRandomData();
   mem.loadMemoryFromFile("asm/program.bin");
 
   Cpu cpu(mem);

@@ -1,10 +1,13 @@
 #include "Gui.hpp"
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
@@ -20,7 +23,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   gameScreen->setScale(sf::Vector2f(2, 2));
 
   gameImage = new sf::Image();
-  gameImage->create(256, 240, sf::Color(15, 15, 15));
+  gameImage->create(32, 30, sf::Color(15, 15, 15));
 
   gameTexture = new sf::Texture();
   gameTexture->loadFromImage(*gameImage);
@@ -28,7 +31,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   gameSprite = new sf::Sprite();
   gameSprite->setTexture(*gameTexture);
   gameSprite->setPosition(50, 50);
-  gameSprite->setScale(2, 2);
+  gameSprite->setScale(16, 16);
 
   font = new sf::Font();
   font->loadFromFile("fonts/ProFontWindowsNerdFontMono-Regular.ttf");
@@ -193,6 +196,23 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   buttonsPress[2]->setOutlineColor(sf::Color::Blue);
   buttonsPress[2]->setOutlineThickness(1);
   buttonsPress[2]->setPosition(960, 604);
+
+  colors[0x00] = sf::Color(0, 0, 0);
+  colors[0x01] = sf::Color(255, 255, 255);
+  colors[0x02] = sf::Color(0, 255, 0);
+  colors[0x03] = sf::Color(0, 0, 255);
+  colors[0x04] = sf::Color(255, 255, 0);
+  colors[0x05] = sf::Color(255, 0, 255);
+  colors[0x06] = sf::Color(0, 255, 255);
+  colors[0x07] = sf::Color(255, 165, 0);
+  colors[0x08] = sf::Color(255, 182, 193);
+  colors[0x09] = sf::Color(128, 0, 128);
+  colors[0x0A] = sf::Color(50, 205, 50);
+  colors[0x0B] = sf::Color(64, 224, 208);
+  colors[0x0C] = sf::Color(165, 42, 42);
+  colors[0x0D] = sf::Color(255, 215, 0);
+  colors[0x0E] = sf::Color(65, 105, 225);
+  colors[0x0F] = sf::Color(128, 128, 0);
 }
 
 Gui::~Gui() {}
@@ -290,6 +310,8 @@ void Gui::show() {
     updateRegisters();
     updateZeroPageMemory();
 
+    loadFrameInMemory(0x0200);
+
     window->draw(*flagsBar);
     for (auto &flag : flagsTiles) {
       window->draw(*flag);
@@ -323,5 +345,23 @@ void Gui::show() {
 
     window->display();
     flags++;
+  }
+}
+
+// 256 x 240
+void Gui::loadFrameInMemory(uint16_t begin) {
+  uint16_t i = 0;
+  for (size_t y = 0; y < 30; y++) {
+    for (size_t x = 0; x < 32; x++) {
+      uint8_t value = cpu.getMemory().read(begin + i++);
+      if (value > 0x0F) {
+        value = 0x00;
+      }
+
+      sf::Color color = colors[value];
+      gameImage->setPixel(x, y, color);
+      gameTexture->loadFromImage(*gameImage);
+      gameSprite->setTexture(*gameTexture);
+    }
   }
 }

@@ -1,16 +1,71 @@
-  LDX #$00
-  LDY #$00
-firstloop:
-  TXA
-  STA $0200,Y
-  PHA
-  INX
-  INY
-  CPY #$10
-  BNE firstloop ;loop until Y is $10
-secondloop:
-  PLA
-  STA $0200,Y
-  INY
-  CPY #$20      ;loop until Y is $20
-  BNE secondloop
+LDA #$01
+STA $0200
+LDA #$02
+STA $0201
+LDA #$03
+STA $0202
+LDA #$04
+STA $0203
+LDA #$05
+STA $0204
+
+LDA #$01
+STA $0205
+LDA #$02
+STA $0206
+LDA #$03
+STA $0207
+LDA #$04
+STA $0208
+LDA #$05
+STA $0209
+
+LDA #$01
+STA $020A
+LDA #$02
+STA $020B
+LDA #$03
+STA $020C
+LDA #$04
+STA $020D
+LDA #$05
+STA $020E
+
+LDA #$01
+STA $020F
+LDA #$02
+STA $0210
+LDA #$03
+STA $0211
+LDA #$04
+STA $0212
+LDA #$05
+STA $0213
+
+
+LDA #$01
+STA $0214
+LDA #$02
+STA $0215
+LDA #$03
+STA $0216
+LDA #$04
+STA $0217
+LDA #$05
+STA $0218
+
+LDA #$01
+STA $0219
+LDA #$02
+STA $021A
+LDA #$03
+STA $021B
+LDA #$04
+STA $021C
+LDA #$05
+STA $021D
+
+LDA #$01
+STA $021E
+LDA #$02
+STA $021F
