@@ -28,8 +28,7 @@ const uint16_t STACK_ADDRESS =
 
 class Cpu {
 public:
-  Cpu(Memory &memory, uint16_t PC = 0x0000, uint8_t SP = 0xFF,
-      uint8_t AC = 0x00, uint8_t X = 0x00, uint8_t Y = 0x00, uint8_t SR = 0x00);
+  Cpu(Memory &memory);
   ~Cpu();
 
   uint16_t getPC();
@@ -173,12 +172,12 @@ private:
   uint16_t asmAddress;
 
   // Registradores
-  uint16_t PC;
-  uint8_t SP;
-  uint8_t AC;
-  uint8_t X;
-  uint8_t Y;
-  uint8_t SR;
+  uint16_t PC{};
+  uint8_t SP{0xFF};
+  uint8_t AC{};
+  uint8_t X{};
+  uint8_t Y{};
+  uint8_t SR{0x30};
 
   // Flags
   void setFlag(Flag flag);

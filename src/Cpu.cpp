@@ -3,11 +3,7 @@
 #include <iostream>
 #include <sys/types.h>
 
-Cpu::Cpu(Memory &memory, uint16_t PC, uint8_t SP, uint8_t AC, uint8_t X,
-         uint8_t Y, uint8_t SR)
-    : memory(memory), PC(PC), SP(SP), AC(AC), X(X), Y(Y), SR(SR) {
-  fillOpcodeMapping();
-}
+Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
 Cpu::~Cpu() {}
 
