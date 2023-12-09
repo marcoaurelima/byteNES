@@ -126,11 +126,12 @@ void Memory::loadMemoryFromFile(std::string path, uint16_t addrBegin) {
 
   filePath = path;
   saveMemoryStatusToFile();
+  asmAddress = addrBegin;
 }
 
 void Memory::reset() {
   fillZeroData();
-  loadMemoryFromFile(filePath);
+  loadMemoryFromFile(filePath, asmAddress);
   saveMemoryStatusToFile();
 }
 

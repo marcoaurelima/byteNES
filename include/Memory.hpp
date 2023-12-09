@@ -27,6 +27,7 @@ public:
 private:
   std::array<uint8_t, MEMSIZE> data;
   std::string filePath;
+  uint16_t asmAddress;
 };
 
 #endif
