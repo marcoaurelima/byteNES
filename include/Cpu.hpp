@@ -166,7 +166,8 @@ public:
   void STY(AMResponse (Cpu::*AddressingMode)());
 
   void setAsmAddress(uint16_t address);
-
+  
+  uint64_t getCount();
 private:
   // Memoria ram (2Kb)
   Memory &memory;
@@ -195,6 +196,9 @@ private:
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
   void fillOpcodeMapping();
+
+  // Contador de operações (para debugar)
+  uint64_t count{};
 };
 
 #endif

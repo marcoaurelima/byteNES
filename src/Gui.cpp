@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
@@ -52,7 +53,15 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   ss << "CLOCK " << clock << " Hz";
   gameScreenInfo->setString(ss.str());
   gameScreenInfo->setCharacterSize(20);
-  gameScreenInfo->setPosition(470, 15);
+  gameScreenInfo->setPosition(230, 15);
+
+  // Game screen
+  gameScreenCount = new sf::Text();
+  gameScreenCount->setFont(*font);
+  gameScreenCount->setFillColor(sf::Color::Magenta);
+  gameScreenCount->setString("CONT: 1");
+  gameScreenCount->setCharacterSize(20);
+  gameScreenCount->setPosition(370, 15);
 
   // Flags monitor
   for (size_t i = 0; i < flagsTiles.size(); i++) {
@@ -262,6 +271,13 @@ void Gui::updateZeroPageMemory() {
   zeroPageDataText->setString(zeroPageDataStr);
 }
 
+void Gui::updateCpuCount() {
+  std::stringstream ss;
+  ss << "COUNT: " << cpu.getCount();
+
+  gameScreenCount->setString(ss.str());
+}
+
 void Gui::show() {
 
   while (window->isOpen()) {
@@ -304,11 +320,13 @@ void Gui::show() {
     window->clear();
     window->draw(*gameScreenTitle);
     window->draw(*gameScreenInfo);
+    window->draw(*gameScreenCount);
     window->draw(*gameScreen);
 
     updateFlag();
     updateRegisters();
     updateZeroPageMemory();
+    updateCpuCount();
 
     loadFrameInMemory(0x0200);
 

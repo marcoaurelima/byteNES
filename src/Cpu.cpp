@@ -206,6 +206,10 @@ uint8_t Cpu::getX() { return X; }
 uint8_t Cpu::getY() { return Y; }
 uint8_t Cpu::getSR() { return SR; }
 
+uint64_t Cpu::getCount(){
+  return count;
+}
+
 void Cpu::setFlag(Flag flag) { SR = SR | static_cast<uint8_t>(flag); }
 void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
 bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
@@ -237,6 +241,7 @@ void Cpu::next() {
   std::cout << std::hex << "PC: " << (int)PC << "  OPCode: " << (int)index
             << "\n";
   opcodeMapping[index]();
+  count++;
 }
 
 void Cpu::reset() {

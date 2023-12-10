@@ -25,6 +25,7 @@ private:
   sf::RectangleShape *gameScreen;
   sf::Text *gameScreenTitle;
   sf::Text *gameScreenInfo;
+  sf::Text *gameScreenCount;
   uint64_t clock{1};
 
   sf::Image *gameImage;
@@ -66,6 +67,8 @@ private:
   std::array<sf::Color, 0xFF> colors{};
 
   void loadFrameInMemory(uint16_t begin);
+
+  void updateCpuCount();
 };
 
 #endif
