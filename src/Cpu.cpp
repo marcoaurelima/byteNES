@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <ios>
 #include <iostream>
-// #include <sys/types.h>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
@@ -230,13 +229,12 @@ uint8_t Cpu::stackPOP() {
   SP += 0x01;
   const uint16_t offset = 0x0100;
   int8_t value = memory.read(SP + offset);
-  std::cout << "STACKPOP value: " << (int)value << "\n";
   return value;
 }
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
-  std::cout << std::hex << "----- PC: " << (int)PC << "  index: " << (int)index
+  std::cout << std::hex << "PC: " << (int)PC << "  OPCode: " << (int)index
             << "\n";
   opcodeMapping[index]();
 }
@@ -251,47 +249,30 @@ void Cpu::reset() {
 // Modos de endereçamento
 AMResponse Cpu::immediate() {
   uint16_t address = (PC + 1);
-  // incrementPC(0x01);
-  // std::cout << "immediate address:" << std::hex << (int)address << "  PC: "
-  // << (int)PC
-  //           << "\n";
+
   return {address, 0x01};
-  // return address;
 }
 
 AMResponse Cpu::zeropage() {
   uint8_t address = memory.read(PC + 1);
-  // incrementPC(0x01);
-  std::cout << "zeropage: " << std::hex << (int)address << "\n";
-
   return {address, 0x01};
-  // return address;
 }
 
 AMResponse Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1);
-  // incrementPC(0x01);
-  // std::cout << "zeropageX: " << std::hex << (int)address << "\n";
   return {address, 0x01};
-  // return (address + X);
 }
 
 AMResponse Cpu::zeropageY() {
   uint8_t address = memory.read(PC + 1);
-  // incrementPC(0x01);
-  // std::cout << "zeropageY: " << std::hex << (int)address << "\n";
   return {address, 0x01};
-  // return (address + Y);
 }
 AMResponse Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x02);
-  // std::cout << "absolute: " << std::hex << (int)address << "\n";
   return {address, 0x02};
-  // return address;
 }
 
 AMResponse Cpu::absoluteX() {
@@ -299,10 +280,7 @@ AMResponse Cpu::absoluteX() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x02);
-  // std::cout << "absoluteX: " << std::hex << (int)address << "\n";
   return {address, 0x02};
-  // return (address + X);
 }
 
 AMResponse Cpu::absoluteY() {
@@ -310,10 +288,7 @@ AMResponse Cpu::absoluteY() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x02);
-  // std::cout << "absoluteY: " << std::hex << (int)address << "\n";
   return {address, 0x02};
-  // return (address + Y);
 }
 
 AMResponse Cpu::indirect() {
@@ -321,10 +296,7 @@ AMResponse Cpu::indirect() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x01);
-  // std::cout << "indirect: " << std::hex << (int)address << "\n";
   return {address, 0x01};
-  // return address;
 }
 
 AMResponse Cpu::indirectX() {
@@ -332,10 +304,7 @@ AMResponse Cpu::indirectX() {
   uint8_t lsb = memory.read(PC + X + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x01);
-  // std::cout << "indirectX: " << std::hex << (int)address << "\n";
   return {address, 0x01};
-  // return address;
 }
 
 AMResponse Cpu::indirectY() {
@@ -343,10 +312,7 @@ AMResponse Cpu::indirectY() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  // incrementPC(0x01);
-  // std::cout << "indirectY: " << std::hex << (int)address << "\n";
   return {address, 0x01};
-  // return (address + Y);
 }
 
 AMResponse Cpu::relative() {
@@ -356,12 +322,10 @@ AMResponse Cpu::relative() {
   if ((value & (0x01 << 7)) == 0) {
     uint16_t address = PC + offset;
     return {address, 0x01};
-    // return (PC + offset);
   }
 
   uint16_t address = PC - offset;
   return {address, 0x01};
-  // return (PC - offset);
 }
 
 // -- verificadores de flags
@@ -425,7 +389,6 @@ void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationV(value, result);
   AC = result;
   incrementPC(response.size + 0x01);
-  // incrementPC(0x01);
 }
 // AND (bitwise AND with accumulator)
 void Cpu::AND(AMResponse (Cpu::*Addressingmode)()) {
@@ -436,7 +399,6 @@ void Cpu::AND(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
   AC = result;
   incrementPC(response.size + 0x01);
-  // incrementPC(0x01);
 }
 // ASL (Arithmetic Shift Left)
 void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
@@ -447,7 +409,6 @@ void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationC_Sum(value << 0x01);
   flagActivationZ(result);
   memory.write(PC + 1, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
@@ -487,7 +448,6 @@ void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BMI (Branch on MInus)
@@ -498,7 +458,6 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BVC (Branch on oVerflow Clear)
@@ -509,7 +468,6 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BVS (Branch on oVerflow Set)
@@ -520,7 +478,6 @@ void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BCC (Branch on Carry Clear)
@@ -531,7 +488,6 @@ void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BCS (Branch on Carry Set)
@@ -542,7 +498,6 @@ void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BNE (Branch on Not Equal)
@@ -553,7 +508,6 @@ void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // - BEQ (Branch on EQual)
@@ -564,7 +518,6 @@ void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  // incrementPC(0x02);
   incrementPC(response.size + 0x01);
 }
 // BRK (BReaK)
@@ -596,7 +549,6 @@ void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // CPX (ComPare X register)
@@ -608,7 +560,6 @@ void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // CPY (ComPare Y register)
@@ -620,7 +571,6 @@ void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // DEC (DECrement memory)
@@ -631,7 +581,6 @@ void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // EOR (bitwise Exclusive OR)
@@ -642,7 +591,6 @@ void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // Flag (Processor Status) Instructions
@@ -696,7 +644,6 @@ void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // JMP (JuMP)
@@ -724,11 +671,9 @@ void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::LDA(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  // std::cout << "LDA: " << (int)value << " - ADDR: " << (int)address << "\n";
   flagActivationN(value);
   flagActivationZ(value);
   AC = value;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // LDX (LoaD X register)
@@ -738,7 +683,6 @@ void Cpu::LDX(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(value);
   flagActivationZ(value);
   X = value;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // LDY (LoaD Y register)
@@ -748,7 +692,6 @@ void Cpu::LDY(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(value);
   flagActivationZ(value);
   Y = value;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // LSR (Logical Shift Right)
@@ -760,7 +703,6 @@ void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 void Cpu::LSR_AC(AMResponse (Cpu::*Addressingmode)()) {
@@ -785,7 +727,6 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // Register Instructions
@@ -847,7 +788,6 @@ void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
@@ -870,7 +810,6 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 void Cpu::ROR_AC(AMResponse (Cpu::*Addressingmode)()) {
@@ -911,16 +850,13 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
   flagActivationV(value, result);
   AC = result;
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 
 // STA (STore Accumulator)
 void Cpu::STA(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  // std::cout << "--- " << std::hex << address << " -----\n";
   memory.write(response.address, AC);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // Stack Instructions
@@ -964,13 +900,11 @@ void Cpu::PLP(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::STX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   memory.write(response.address, X);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
 // STY (STore Y register)
 void Cpu::STY(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   memory.write(response.address, Y);
-  // incrementPC(0x01);
   incrementPC(response.size + 0x01);
 }
