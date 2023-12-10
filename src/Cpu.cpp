@@ -646,11 +646,13 @@ void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
   memory.write(response.address, result);
   incrementPC(response.size + 0x01);
 }
-// JMP (JuMP)
+// JMP (JuMP)  [ok]Teste 1
 void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  uint8_t value = memory.read(response.address);
-  PC = value;
+  std::cout << "JMP - addr: " << (int)response.address << "\n";
+  PC = response.address;
+  //uint8_t value = memory.read(response.address);
+  //PC = value;
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
