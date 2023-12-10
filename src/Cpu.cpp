@@ -444,7 +444,7 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if ((AC & (0x01 << 7)) == 0x00) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -454,7 +454,7 @@ void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if ((AC & (0x01 << 7)) > 0x00) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -463,8 +463,9 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
 // - BVC (Branch on oVerflow Clear)
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+  std::cout << "BVC addr: " << (int)response.address << "  size: " << (int)response.size << "\n";
   if (!chkFlag(Flag::V)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -474,7 +475,7 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if (chkFlag(Flag::V)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -494,7 +495,7 @@ void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if (chkFlag(Flag::C)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -504,7 +505,7 @@ void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if (!chkFlag(Flag::Z)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
@@ -514,7 +515,7 @@ void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if (chkFlag(Flag::Z)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
