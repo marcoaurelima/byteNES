@@ -21,10 +21,13 @@ enum class Flag {
 // O endereço inicial da stack é o endereço
 // imediatamente após o último endereço da
 // zero page
-const uint16_t STACK_ADDRESS =
-    0x1000; // 0X1000; o valor correto é 0x1000; o valor 0x00 é provisório para
-            // debugar e testar na UI.
+const uint16_t STACK_ADDRESS = 0x1000;
 
+// Tipo de retorno dos Addressing Modes
+struct AMResponse {
+  uint16_t address; // Endereço calculado
+  uint8_t size;     // Tamanho da operação
+};
 
 class Cpu {
 public:
@@ -46,18 +49,18 @@ public:
   void reset();
 
   // Modos de endereçamento
-  uint16_t immediate();
-  uint16_t zeropage();
-  uint16_t zeropageX();
-  uint16_t zeropageY();
-  uint16_t absolute();
-  uint16_t absoluteX();
-  uint16_t absoluteY();
-  uint16_t indirect();
-  uint16_t indirectX();
-  uint16_t indirectY();
-  uint16_t relative();
-  uint16_t accumulator();
+  AMResponse immediate();
+  AMResponse zeropage();
+  AMResponse zeropageX();
+  AMResponse zeropageY();
+  AMResponse absolute();
+  AMResponse absoluteX();
+  AMResponse absoluteY();
+  AMResponse indirect();
+  AMResponse indirectX();
+  AMResponse indirectY();
+  AMResponse relative();
+  AMResponse accumulator();
 
   // Funções de verificação de ativação de Flags à partir de valores
   void flagActivationN(uint8_t value);
@@ -71,96 +74,96 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void ADC(uint16_t (Cpu::*AddressingMode)());
+  void ADC(AMResponse (Cpu::*AddressingMode)());
   // AND (bitwise AND with accumulator)
-  void AND(uint16_t (Cpu::*AddressingMode)());
+  void AND(AMResponse (Cpu::*AddressingMode)());
   // ASL (Arithmetic Shift Left)
-  void ASL(uint16_t (Cpu::*AddressingMode)());
-  void ASL_AC(uint16_t (Cpu::*AddressingMode)());
+  void ASL(AMResponse (Cpu::*AddressingMode)());
+  void ASL_AC(AMResponse (Cpu::*AddressingMode)());
   // BIT (test BITs)
-  void BIT(uint16_t (Cpu::*AddressingMode)());
+  void BIT(AMResponse (Cpu::*AddressingMode)());
   // Branch Instructions
-  void BPL(uint16_t (Cpu::*AddressingMode)());
-  void BMI(uint16_t (Cpu::*AddressingMode)());
-  void BVC(uint16_t (Cpu::*AddressingMode)());
-  void BVS(uint16_t (Cpu::*AddressingMode)());
-  void BCC(uint16_t (Cpu::*AddressingMode)());
-  void BCS(uint16_t (Cpu::*AddressingMode)());
-  void BNE(uint16_t (Cpu::*AddressingMode)());
-  void BEQ(uint16_t (Cpu::*AddressingMode)());
+  void BPL(AMResponse (Cpu::*AddressingMode)());
+  void BMI(AMResponse (Cpu::*AddressingMode)());
+  void BVC(AMResponse (Cpu::*AddressingMode)());
+  void BVS(AMResponse (Cpu::*AddressingMode)());
+  void BCC(AMResponse (Cpu::*AddressingMode)());
+  void BCS(AMResponse (Cpu::*AddressingMode)());
+  void BNE(AMResponse (Cpu::*AddressingMode)());
+  void BEQ(AMResponse (Cpu::*AddressingMode)());
   // BRK (BReaK)
-  void BRK(uint16_t (Cpu::*AddressingMode)());
+  void BRK(AMResponse (Cpu::*AddressingMode)());
   // CMP (CoMPare accumulator)
-  void CMP(uint16_t (Cpu::*AddressingMode)());
+  void CMP(AMResponse (Cpu::*AddressingMode)());
   // CPX (ComPare X register)
-  void CPX(uint16_t (Cpu::*AddressingMode)());
+  void CPX(AMResponse (Cpu::*AddressingMode)());
   // CPY (ComPare Y register)
-  void CPY(uint16_t (Cpu::*AddressingMode)());
+  void CPY(AMResponse (Cpu::*AddressingMode)());
   // DEC (DECrement memory)
-  void DEC(uint16_t (Cpu::*AddressingMode)());
+  void DEC(AMResponse (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)
-  void EOR(uint16_t (Cpu::*AddressingMode)());
+  void EOR(AMResponse (Cpu::*AddressingMode)());
   // Flag (Processor Status) Instructions
-  void CLC(uint16_t (Cpu::*AddressingMode)());
-  void SEC(uint16_t (Cpu::*AddressingMode)());
-  void CLI(uint16_t (Cpu::*AddressingMode)());
-  void SEI(uint16_t (Cpu::*AddressingMode)());
-  void CLV(uint16_t (Cpu::*AddressingMode)());
-  void CLD(uint16_t (Cpu::*AddressingMode)());
-  void SED(uint16_t (Cpu::*AddressingMode)());
+  void CLC(AMResponse (Cpu::*AddressingMode)());
+  void SEC(AMResponse (Cpu::*AddressingMode)());
+  void CLI(AMResponse (Cpu::*AddressingMode)());
+  void SEI(AMResponse (Cpu::*AddressingMode)());
+  void CLV(AMResponse (Cpu::*AddressingMode)());
+  void CLD(AMResponse (Cpu::*AddressingMode)());
+  void SED(AMResponse (Cpu::*AddressingMode)());
   // INC (INCrement memory)
-  void INC(uint16_t (Cpu::*AddressingMode)());
+  void INC(AMResponse (Cpu::*AddressingMode)());
   // JMP (JuMP)
-  void JMP(uint16_t (Cpu::*AddressingMode)());
+  void JMP(AMResponse (Cpu::*AddressingMode)());
   // JSR (Jump to SubRoutine)
-  void JSR(uint16_t (Cpu::*AddressingMode)());
+  void JSR(AMResponse (Cpu::*AddressingMode)());
   // LDA (LoaD Accumulator)
-  void LDA(uint16_t (Cpu::*AddressingMode)());
+  void LDA(AMResponse (Cpu::*AddressingMode)());
   // LDX (LoaD X register)
-  void LDX(uint16_t (Cpu::*AddressingMode)());
+  void LDX(AMResponse (Cpu::*AddressingMode)());
   // LDY (LoaD Y register)
-  void LDY(uint16_t (Cpu::*AddressingMode)());
+  void LDY(AMResponse (Cpu::*AddressingMode)());
   // LSR (Logical Shift Right)
-  void LSR(uint16_t (Cpu::*AddressingMode)());
-  void LSR_AC(uint16_t (Cpu::*AddressingMode)());
+  void LSR(AMResponse (Cpu::*AddressingMode)());
+  void LSR_AC(AMResponse (Cpu::*AddressingMode)());
   // NOP (No OPeration)
-  void NOP(uint16_t (Cpu::*AddressingMode)());
+  void NOP(AMResponse (Cpu::*AddressingMode)());
   // ORA (bitwise OR with Accumulator)
-  void ORA(uint16_t (Cpu::*AddressingMode)());
+  void ORA(AMResponse (Cpu::*AddressingMode)());
   // Register Instructions
-  void TAX(uint16_t (Cpu::*AddressingMode)());
-  void TXA(uint16_t (Cpu::*AddressingMode)());
-  void DEX(uint16_t (Cpu::*AddressingMode)());
-  void INX(uint16_t (Cpu::*AddressingMode)());
-  void TAY(uint16_t (Cpu::*AddressingMode)());
-  void TYA(uint16_t (Cpu::*AddressingMode)());
-  void DEY(uint16_t (Cpu::*AddressingMode)());
-  void INY(uint16_t (Cpu::*AddressingMode)());
+  void TAX(AMResponse (Cpu::*AddressingMode)());
+  void TXA(AMResponse (Cpu::*AddressingMode)());
+  void DEX(AMResponse (Cpu::*AddressingMode)());
+  void INX(AMResponse (Cpu::*AddressingMode)());
+  void TAY(AMResponse (Cpu::*AddressingMode)());
+  void TYA(AMResponse (Cpu::*AddressingMode)());
+  void DEY(AMResponse (Cpu::*AddressingMode)());
+  void INY(AMResponse (Cpu::*AddressingMode)());
   // ROL (ROtate Left)
-  void ROL(uint16_t (Cpu::*AddressingMode)());
-  void ROL_AC(uint16_t (Cpu::*AddressingMode)());
+  void ROL(AMResponse (Cpu::*AddressingMode)());
+  void ROL_AC(AMResponse (Cpu::*AddressingMode)());
   // ROR (ROtate Right)
-  void ROR(uint16_t (Cpu::*AddressingMode)());
-  void ROR_AC(uint16_t (Cpu::*AddressingMode)());
+  void ROR(AMResponse (Cpu::*AddressingMode)());
+  void ROR_AC(AMResponse (Cpu::*AddressingMode)());
   // RTI (ReTurn from Interrupt)
-  void RTI(uint16_t (Cpu::*AddressingMode)());
+  void RTI(AMResponse (Cpu::*AddressingMode)());
   // RTS (ReTurn from Subroutine)
-  void RTS(uint16_t (Cpu::*AddressingMode)());
+  void RTS(AMResponse (Cpu::*AddressingMode)());
   // SBC (SuBtract with Carry)
-  void SBC(uint16_t (Cpu::*AddressingMode)());
+  void SBC(AMResponse (Cpu::*AddressingMode)());
   // STA (STore Accumulator)
-  void STA(uint16_t (Cpu::*AddressingMode)());
+  void STA(AMResponse (Cpu::*AddressingMode)());
   // Stack Instructions
-  void TXS(uint16_t (Cpu::*AddressingMode)());
-  void TSX(uint16_t (Cpu::*AddressingMode)());
-  void PHA(uint16_t (Cpu::*AddressingMode)());
-  void PLA(uint16_t (Cpu::*AddressingMode)());
-  void PHP(uint16_t (Cpu::*AddressingMode)());
-  void PLP(uint16_t (Cpu::*AddressingMode)());
+  void TXS(AMResponse (Cpu::*AddressingMode)());
+  void TSX(AMResponse (Cpu::*AddressingMode)());
+  void PHA(AMResponse (Cpu::*AddressingMode)());
+  void PLA(AMResponse (Cpu::*AddressingMode)());
+  void PHP(AMResponse (Cpu::*AddressingMode)());
+  void PLP(AMResponse (Cpu::*AddressingMode)());
   // STX (STore X register)
-  void STX(uint16_t (Cpu::*AddressingMode)());
+  void STX(AMResponse (Cpu::*AddressingMode)());
   // STY (STore Y register)
-  void STY(uint16_t (Cpu::*AddressingMode)());
+  void STY(AMResponse (Cpu::*AddressingMode)());
 
   void setAsmAddress(uint16_t address);
 

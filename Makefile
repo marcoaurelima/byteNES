@@ -37,4 +37,4 @@ run:
 	@$(BIN)/emulator
 
 assembly:
-	xa asm/program.asm -c -w -o asm/program.bin
+	asm6f asm/program.asm asm/program.bin

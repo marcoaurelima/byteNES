@@ -30,7 +30,7 @@
 ; define sysRandom    $fe
 ; define sysLastKey   $ff
 
-
+.ORG $0600
   jsr init
   jsr loop
 
