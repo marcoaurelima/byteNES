@@ -1,4 +1,5 @@
 #include "Cpu.hpp"
+#include <bitset>
 #include <cstdint>
 #include <ios>
 #include <iostream>
@@ -238,10 +239,16 @@ uint8_t Cpu::stackPOP() {
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
-  std::cout << std::hex << "PC: " << (int)PC << "  OPCode: " << (int)index
-            << "\n";
+  std::cout << "--[" << count + 1 << "]-----------------------------------------------------\n";
+  // std::cout << std::hex << "| OPCode: " << (int)index << "\n";
+  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) <<  "\n";
+
   opcodeMapping[index]();
   count++;
+
+  std::cout << std::hex << "| OPCode: " << (int)index << "\n";
+  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) <<  "\n\n";
+  // std::cout << "-------------------------------------------------------\n";
 }
 
 void Cpu::reset() {
@@ -468,7 +475,7 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
 // - BVC (Branch on oVerflow Clear)
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  std::cout << "BVC addr: " << (int)response.address << "  size: " << (int)response.size << "\n";
+  // std::cout << "BVC addr: " << (int)response.address << "  size: " << (int)response.size << "\n";
   if (!chkFlag(Flag::V)) {
     PC = response.address + response.size;
     return;
@@ -655,7 +662,7 @@ void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
 // JMP (JuMP)  [ok]Teste 1
 void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  std::cout << "JMP - addr: " << (int)response.address << "\n";
+  // std::cout << "JMP - addr: " << (int)response.address << "\n";
   PC = response.address;
   //uint8_t value = memory.read(response.address);
   //PC = value;
@@ -667,9 +674,9 @@ void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
   uint16_t nextOP = PC + response.size + 0x01;
   uint8_t nextOP_lsb = static_cast<uint8_t>(nextOP & 0x00FF);
   uint8_t nextOP_msb = static_cast<uint8_t>(nextOP >> 0x08);
-  std::cout << "nextOP: " << std::hex << (int)nextOP << "\n";
-  std::cout << "nextOP_lsb: " << std::hex << (int)nextOP_lsb << "\n";
-  std::cout << "nextOP_msb: " << std::hex << (int)nextOP_msb << "\n";
+  // std::cout << "nextOP: " << std::hex << (int)nextOP << "\n";
+  // std::cout << "nextOP_lsb: " << std::hex << (int)nextOP_lsb << "\n";
+  // std::cout << "nextOP_msb: " << std::hex << (int)nextOP_msb << "\n";
   stackPUSH(nextOP_lsb);
   stackPUSH(nextOP_msb);
 
