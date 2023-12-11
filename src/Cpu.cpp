@@ -1,6 +1,7 @@
 #include "Cpu.hpp"
 #include <bitset>
 #include <cstdint>
+#include <cstdlib>
 #include <ios>
 #include <iostream>
 
@@ -232,7 +233,8 @@ void Cpu::fillOpcodeMapping() {
     "CPX #",    "SBC X,ind", "⚠️ ",    "⚠️ ", "CPX zpg",   "SBC zpg",   "INC zpg",   "⚠️ ", "INX impl", "SBC #",     "NOP impl", "⚠️ ", "CPX abs",   "SBC abs",   "INC abs",   "⚠️ ",
     "BEQ rel",  "SBC ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "SBC zpg,X", "INC zpg,X", "⚠️ ", "SED impl", "SBC abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "SBC abs,X", "INC abs,X"  "⚠️ ",
   };
-
+  
+  srand(time(NULL));
 }
 
 void Cpu::setAsmAddress(uint16_t address) {
@@ -264,7 +266,7 @@ void Cpu::stackPUSH(uint8_t value) {
   memory.write(SP + offset, value);
 
   // para debug na zeropage:
-  memory.write(SP, value);
+  // memory.write(SP, value);
 
   SP -= 0x01;
 }
@@ -276,7 +278,18 @@ uint8_t Cpu::stackPOP() {
   return value;
 }
 
+// Específico do emulador do endereço
+// https://skilldrick.github.io/easy6502/
+// O endereço 0xFE é reservado para geração 
+// de numeros aleatórios.
+// IMPORTANTE: Não é comportamente nativo do 6502.
+void Cpu::generateRandomIn0xFE(){
+  uint8_t random = (rand() % 0xFF) + 1;
+  memory.write(0xFE, random); 
+}
+
 void Cpu::next() {
+  generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
   std::cout << "--[" << std::dec << count + 1
             << "]-----------------------------------------------------\n";
