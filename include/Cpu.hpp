@@ -197,6 +197,9 @@ private:
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
   void fillOpcodeMapping();
 
+  // Opcodes Array names 
+  std::array<std::string, 0xFF> opcodesNames{};
+
   // Contador de operações (para debugar)
   uint64_t count{};
 };

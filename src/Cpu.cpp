@@ -192,6 +192,60 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage); };
   opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY); };
   opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute); };
+
+  opcodesNames = {
+      "BRK impl",  "ORA X,ind", "⚠️ ",        "⚠️ ",        "⚠️ ",
+      "ORA zpg",   "ASL zpg",   "⚠️ ",        "PHP impl",  "ORA #",
+      "ASL A",     "⚠️ ",        "⚠️ ",        "ORA abs",   "ASL abs",
+      "⚠️ ",        "BLP rel",   "ORA ind,Y", "⚠️ ",        "⚠️ ",
+      "⚠️ ",        "ORA zpg,X", "ASL zpg,X", "⚠️ ",        "CLC impl",
+      "ORA abs,Y", "⚠️ ",        "⚠️ ",        "⚠️ ",        "ORA abs,X",
+      "ASL abs,X", "⚠️ ",        "JSR abs",   "AND X,ind", "⚠️ ",
+      "⚠️ ",        "BIT zpg",   "AND zpg",   "ROL zpg",   "⚠️ ",
+      "PLP impl",  "AND #",     "ROL A",     "⚠️ ",        "BIT abs",
+      "AND abs",   "ROL abs",   "⚠️ ",        "BMI rel",   "AND ind,Y",
+      "⚠️ ",        "⚠️ ",        "⚠️ ",        "AND zpg,X", "ROL zpg,X",
+      "⚠️ ",        "SEC impl",  "AND abs,Y", "⚠️ ",        "⚠️ ",
+      "⚠️ ",        "AND abs,X", "ROL abs,X", "⚠️ ",        "RTI impl",
+      "EOR X,ind", "⚠️ ",        "⚠️ ",        "⚠️ ",        "EOR zpg",
+      "LSR zpg",   "⚠️ ",        "PHA impl",  "EOR #",     "LSR A",
+      "⚠️ ",        "JMP abs",   "EOR abs",   "LSR abs",   "⚠️ ",
+      "BVC rel",   "EOR ind,Y", "⚠️ ",        "⚠️ ",        "⚠️ ",
+      "EOR zpg,X", "LSR zpg,X", "⚠️ ",        "CLI impl",  "EOR abs,Y",
+      "⚠️ ",        "⚠️ ",        "⚠️ ",        "EOR abs,X", "LSR abs,X",
+      "⚠️ ",        "RTS impl",  "ADC X,ind", "⚠️ ",        "⚠️ ",
+      "⚠️ ",        "ADC zpg",   "ROR zpg",   "⚠️ ",        "PLA impl",
+      "ADC #",     "ROR A",     "⚠️ ",        "JMP ind",   "ADC abs",
+      "ROR abs",   "⚠️ ",        "BVS rel",   "ADC ind,Y", "⚠️ ",
+      "⚠️ ",        "⚠️ ",        "ADC zpg,X", "ROR zpg,X", "⚠️ ",
+      "SEI impl",  "ADC abs,Y", "⚠️ ",        "⚠️ ",        "⚠️ ",
+      "ADC abs,X", "ROR abs,X", "⚠️ ",        "⚠️ ",        "STA X,ind",
+      "⚠️ ",        "⚠️ ",        "STY zpg",   "STA zpg",   "STX zpg",
+      "⚠️ ",        "DEY impl",  "⚠️ ",        "TXA impl",  "⚠️ ",
+      "STY abs",   "STA abs",   "STX abs",   "⚠️ ",        "BCC rel",
+      "STA ind,Y", "⚠️ ",        "⚠️ ",        "STY zpg,X", "STA zpg,X",
+      "STX zpg,Y", "⚠️ ",        "TYA impl",  "STA abs,Y", "TXS impl",
+      "⚠️ ",        "⚠️ ",        "STA abs,X", "",          "⚠️ ",
+      "LDY #",     "LDA X,ind", "LDX #",     "⚠️ ",        "LDY zpg",
+      "LDA zpg",   "LDX zpg",   "⚠️ ",        "TAy impl",  "LDA #",
+      "TAX impl",  "⚠️ ",        "LDY abs",   "LDX abs",   "⚠️ ",
+      "BCS rel",   "LDA ind,Y", "⚠️ ",        "⚠️ ",        "LDY zpg,X",
+      "LDA zpg,X", "LDX zpg,Y", "⚠️ ",        "CLV impl",  "LDA abs,Y",
+      "TSX impl",  "⚠️ ",        "LDY abs,X", "LDA abs,X", "LDX abs,Y",
+      "⚠️ ",        "CPY #",     "CMP X,ind", "⚠️ ",        "⚠️ ",
+      "CPY zpg",   "CMP zpg",   "DEC zpg",   "⚠️ ",        "INY impl",
+      "CMP #",     "DEX impl",  "⚠️ ",        "CPY abs",   "CMP abs",
+      "DEC abs",   "⚠️ ",        "BNE rel",   "CMP ind,Y", "⚠️ ",
+      "⚠️ ",        "⚠️ ",        "CMP zpg,X", "DEC zpg,X", "⚠️ ",
+      "CLD impl",  "CMP abs,Y", "⚠️ ",        "⚠️ ",        "⚠️ ",
+      "CMP abs,X", "DEC abs,X", "⚠️ ",        "CPX #",     "SBC X,ind",
+      "⚠️ ",        "⚠️ ",        "CPX zpg",   "SBC zpg",   "INC zpg",
+      "⚠️ ",        "INX impl",  "SBC #",     "NOP impl",  "⚠️ ",
+      "CPX abs",   "SBC abs",   "INC abs",   "⚠️ ",        "BEQ rel",
+      "SBC ind,Y", "⚠️ ",        "⚠️ ",        "⚠️ ",        "SBC zpg,X",
+      "INC zpg,X", "⚠️ ",        "SED impl",  "SBC abs,Y", "⚠️ ",
+      "⚠️ ",        "⚠️ ",        "SBC abs,X", "⚠️ ",
+  };
 }
 
 void Cpu::setAsmAddress(uint16_t address) {
@@ -207,9 +261,7 @@ uint8_t Cpu::getX() { return X; }
 uint8_t Cpu::getY() { return Y; }
 uint8_t Cpu::getSR() { return SR; }
 
-uint64_t Cpu::getCount(){
-  return count;
-}
+uint64_t Cpu::getCount() { return count; }
 
 void Cpu::setFlag(Flag flag) { SR = SR | static_cast<uint8_t>(flag); }
 void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
@@ -239,15 +291,20 @@ uint8_t Cpu::stackPOP() {
 
 void Cpu::next() {
   uint8_t index = memory.read(PC);
-  std::cout << "--[" << count + 1 << "]-----------------------------------------------------\n";
-  // std::cout << std::hex << "| OPCode: " << (int)index << "\n";
-  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) <<  "\n";
+  std::cout << "--[" << count + 1
+            << "]-----------------------------------------------------\n";
+  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
+            << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y
+            << " | SR: " << std::bitset<8>(SR) << "\n";
 
   opcodeMapping[index]();
   count++;
 
-  std::cout << std::hex << "| OPCode: " << (int)index << "\n";
-  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) <<  "\n\n";
+  std::cout << std::hex << "| OPCode: " << (int)index << " ("
+            << opcodesNames[index] << ")\n";
+  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
+            << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y
+            << " | SR: " << std::bitset<8>(SR) << "\n\n";
   // std::cout << "-------------------------------------------------------\n";
 }
 
@@ -475,7 +532,8 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
 // - BVC (Branch on oVerflow Clear)
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  // std::cout << "BVC addr: " << (int)response.address << "  size: " << (int)response.size << "\n";
+  // std::cout << "BVC addr: " << (int)response.address << "  size: " <<
+  // (int)response.size << "\n";
   if (!chkFlag(Flag::V)) {
     PC = response.address + response.size;
     return;
@@ -664,8 +722,8 @@ void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   // std::cout << "JMP - addr: " << (int)response.address << "\n";
   PC = response.address;
-  //uint8_t value = memory.read(response.address);
-  //PC = value;
+  // uint8_t value = memory.read(response.address);
+  // PC = value;
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
