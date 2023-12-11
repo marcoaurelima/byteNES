@@ -372,15 +372,33 @@ AMResponse Cpu::indirectY() {
   return {address, 0x01};
 }
 
+// AMResponse Cpu::relative() {
+//   uint16_t value = memory.read(PC + 1);
+//   uint8_t offset = ~(0x01 << 7) & value;
+//
+//   if ((value & (0x01 << 7)) == 0) {
+//     uint16_t address = PC + offset;
+//     return {address, 0x01};
+//   }
+//
+//   uint16_t address = PC - offset;
+//   return {address, 0x01};
+// }
 AMResponse Cpu::relative() {
   uint16_t value = memory.read(PC + 1);
-  uint8_t offset = ~(0x01 << 7) & value;
+  
+  std::cout << "AM-Relative value: " << std::bitset<8>(value);
+
 
   if ((value & (0x01 << 7)) == 0) {
+    uint8_t offset = value;
+    std::cout << "  ADDR " << std::hex << (PC + offset) << "\n";
     uint16_t address = PC + offset;
     return {address, 0x01};
   }
 
+  uint8_t offset = (~value) + 1; // Compl 2
+  std::cout << "  addr -" << std::hex << (PC + offset) << "\n";
   uint16_t address = PC - offset;
   return {address, 0x01};
 }
@@ -497,27 +515,29 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // Branch Instructions
-// - BPL (Branch on PLus)
+// - BPL (Branch on PLus) - Desvio quando FlagN = 0
 void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if ((AC & (0x01 << 7)) == 0x00) {
+  
+  if(!chkFlag(Flag::N)){
     PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BMI (Branch on MInus)
+// - BMI (Branch on MInus) - Desvio quando FlagN = 1
 void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if ((AC & (0x01 << 7)) > 0x00) {
+  
+  if(chkFlag(Flag::N)){
     PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BVC (Branch on oVerflow Clear)
+// - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   // std::cout << "BVC addr: " << (int)response.address << "  size: " <<
@@ -529,50 +549,55 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
 
   incrementPC(response.size + 0x01);
 }
-// - BVS (Branch on oVerflow Set)
+// - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
 void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if (chkFlag(Flag::V)) {
+  
+  if(chkFlag(Flag::V)){
     PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BCC (Branch on Carry Clear)
+// - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
 void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if (!chkFlag(Flag::C)) {
-    PC = response.address;
+  
+  if(!chkFlag(Flag::C)){
+    PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BCS (Branch on Carry Set)
+// - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
 void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if (chkFlag(Flag::C)) {
+  
+  if(chkFlag(Flag::C)){
     PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BNE (Branch on Not Equal)
+// - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
 void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if (!chkFlag(Flag::Z)) {
+  
+  if(!chkFlag(Flag::Z)){
     PC = response.address + response.size;
     return;
   }
 
   incrementPC(response.size + 0x01);
 }
-// - BEQ (Branch on EQual)
+// - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
 void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if (chkFlag(Flag::Z)) {
+  
+  if(chkFlag(Flag::Z)){
     PC = response.address + response.size;
     return;
   }
