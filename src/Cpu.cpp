@@ -307,6 +307,11 @@ void Cpu::next() {
             << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y
             << " | SR: " << std::bitset<8>(SR) << "\n\n";
   // std::cout << "-------------------------------------------------------\n";
+
+  if(index == 0){
+    std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
+    exit(-1);
+  }
 }
 
 void Cpu::reset() {
@@ -399,21 +404,16 @@ AMResponse Cpu::indirectY() {
 // }
 AMResponse Cpu::relative() {
   uint16_t value = memory.read(PC + 1);
-  
-  std::cout << "AM-Relative value: " << std::bitset<8>(value);
-
 
   if ((value & (0x01 << 7)) == 0) {
     uint8_t offset = value;
-    std::cout << "  ADDR " << std::hex << (PC + offset) << "\n";
     uint16_t address = PC + offset;
-    return {address, 0x01};
+    return {address, 0x02};
   }
 
   uint8_t offset = (~value) + 1; // Compl 2
-  std::cout << "  addr -" << std::hex << (PC + offset) << "\n";
   uint16_t address = PC - offset;
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 // -- verificadores de flags
@@ -457,10 +457,11 @@ void Cpu::flagActivationC_Sum(uint16_t value) {
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
 void Cpu::flagActivationC_Sub(uint16_t result, uint8_t value) {
+  std::cout << "flagActivationC_Sub: " << (int)result << " | " << (int)value << "\n";
   if (result >= value) {
-    setFlag(Flag::C);
-  } else {
     remFlag(Flag::C);
+  } else {
+    setFlag(Flag::C);
   }
 }
 
@@ -537,7 +538,7 @@ void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BMI (Branch on MInus) - Desvio quando FlagN = 1
 void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
@@ -548,7 +549,7 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
@@ -560,7 +561,7 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
 void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
@@ -571,7 +572,7 @@ void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
 void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
@@ -582,7 +583,7 @@ void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
 void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
@@ -593,7 +594,7 @@ void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
 void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
@@ -604,7 +605,7 @@ void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
 void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
@@ -615,7 +616,7 @@ void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // BRK (BReaK)
 void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
@@ -645,7 +646,7 @@ void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationC_Sub(result, value);
   flagActivationN(result);
   flagActivationZ(result);
-  AC = result;
+  // AC = result;
   incrementPC(response.size + 0x01);
 }
 // CPX (ComPare X register)
@@ -656,7 +657,7 @@ void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationC_Sub(result, value);
   flagActivationN(result);
   flagActivationZ(result);
-  AC = result;
+  // AC = result;
   incrementPC(response.size + 0x01);
 }
 // CPY (ComPare Y register)
@@ -667,7 +668,7 @@ void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationC_Sub(result, value);
   flagActivationN(result);
   flagActivationZ(result);
-  AC = result;
+  // AC = result;
   incrementPC(response.size + 0x01);
 }
 // DEC (DECrement memory)

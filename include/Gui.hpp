@@ -69,6 +69,11 @@ private:
   void loadFrameInMemory(uint16_t begin);
 
   void updateCpuCount();
+
+  // Se for false, significa que está em modo 
+  // de passo a passo; se não,
+  // está em modo de R(E)sume.
+  bool isDebugMode {true};
 };
 
 #endif

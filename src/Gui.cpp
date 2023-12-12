@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <ctime>
@@ -280,6 +281,9 @@ void Gui::updateCpuCount() {
 
 void Gui::show() {
 
+  sf::Clock clock;
+  clock.restart();
+
   while (window->isOpen()) {
     sf::Event event;
     while (window->pollEvent(event)) {
@@ -310,6 +314,7 @@ void Gui::show() {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2]) {
         buttonsLock[2] = true;
         buttonsPress[2]->setFillColor(sf::Color::Blue);
+        isDebugMode = false;
       } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::E) &&
                  buttonsLock[2]) {
         buttonsLock[2] = false;
@@ -363,6 +368,13 @@ void Gui::show() {
 
     window->display();
     flags++;
+
+    if (clock.getElapsedTime().asMilliseconds() > 100) {
+      if (!isDebugMode) {
+        clock.restart();
+        cpu.next();
+      }
+    }
   }
 }
 
