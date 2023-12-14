@@ -1,5 +1,6 @@
 #include "Cpu.hpp"
 #include <bitset>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <ios>
@@ -194,46 +195,6 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY); };
   opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute); };
 
-  /*
-  opcodesNames = {
-    "BRK impl", "ORA X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "ORA zpg",   "ASL zpg",   "⚠️ ", "PHP impl", "ORA #",     "ASL A",    "⚠️ ", "⚠️ ",        "ORA abs",   "ASL abs",   "⚠️ ",
-    "BPL rel",  "ORA ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "ORA zpg,X", "ASL zpg,X", "⚠️ ", "CLC impl", "ORA abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "ORA abs,X", "ASL abs,X", "⚠️ ",
-    "JSR abs",  "AND X,ind", "⚠️ ",    "⚠️ ", "BIT zpg",   "AND zpg",   "ROL zpg",   "⚠️ ", "PLP impl", "AND #",     "ROL A",    "⚠️ ", "BIT abs",   "AND abs",   "ROL abs",   "⚠️ ",
-    "BMI rel",  "AND ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "AND zpg,X", "ROL zpg,X", "⚠️ ", "SEC impl", "AND abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "AND abs,X", "ROL abs,X", "⚠️ ",
-    "RTI impl", "EOR X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "EOR zpg",   "LSR zpg",   "⚠️ ", "PHA impl", "EOR #",     "LSR A",    "⚠️ ", "JMP abs",   "EOR abs",   "LSR abs",   "⚠️ ",
-    "BVC rel",  "EOR ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "EOR zpg,X", "LSR zpg,X", "⚠️ ", "CLI impl", "EOR abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "EOR abs,X", "LSR abs,X", "⚠️ ",
-    "RTS impl", "ADC X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "ADC zpg",   "ROR zpg",   "⚠️ ", "PLA impl", "ADC #",     "ROR A",    "⚠️ ", "JMP ind",   "ADC abs",   "ROR abs",   "⚠️ ",
-    "BVS rel",  "ADC ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "ADC zpg,X", "ROR zpg,X", "⚠️ ", "SEI impl", "ADC abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "ADC abs,X", "ROR abs,X", "⚠️ ",
-    "⚠️ ",       "STA X,ind", "⚠️ ",    "⚠️ ", "STY zpg",   "STA zpg",   "STX zpg",   "⚠️ ", "DEY impl", "⚠️ ",        "TXA impl", "⚠️ ", "STY abs",   "STA abs",   "STX abs",   "⚠️ ",
-    "BCC rel",  "STA ind,Y", "⚠️ ",    "⚠️ ", "STY zpg,X", "STA zpg,X", "STX zpg,Y", "⚠️ ", "TYA impl", "STA abs,Y", "TXS impl", "⚠️ ", "⚠️ ",        "STA abs,X", "⚠️ ",        "⚠️ ",
-    "LDY #",    "LDA X,ind", "LDX #", "⚠️ ", "LDY zpg",   "LDA zpg",   "LDX zpg",   "⚠️ ", "TAY impl", "LDA #",     "TAX impl", "⚠️ ", "LDY abs",   "LDA abs,X", "LDX abs",   "⚠️ ",
-    "BCS rel",  "LDA ind,Y", "⚠️ ",    "⚠️ ", "LDY zpg,X", "LDA zpg,X", "LDX zpg,Y", "⚠️ ", "CLV impl", "LDA abs,Y", "TSX impl", "⚠️ ", "LDY abs,X", "LDA abs,X", "LDX abs,Y", "⚠️ ",
-    "CPY #",    "CMP X,ind", "⚠️ ",    "⚠️ ", "CPY zpg",   "CMP zpg",   "DEC zpg",   "⚠️ ", "INY impl", "CMP #",     "DEX impl", "⚠️ ", "CPY abs",   "CMP abs",   "DEC abs",   "⚠️ ",
-    "BNE rel",  "CMP ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "CMP zpg,X", "DEC zpg,X", "⚠️ ", "CLD impl", "CMP abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "CMP abs,X", "DEC abs,X", "⚠️ ",
-    "CPX #",    "SBC X,ind", "⚠️ ",    "⚠️ ", "CPX zpg",   "SBC zpg",   "INC zpg",   "⚠️ ", "INX impl", "SBC #",     "NOP impl", "⚠️ ", "CPX abs",   "SBC abs",   "INC abs",   "⚠️ ",
-    "BEQ rel",  "SBC ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "SBC zpg,X", "INC zpg,X", "⚠️ ", "SED impl", "SBC abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "SBC abs,X", "INC abs,X"  "⚠️ ",
-  };
-  */
-  
-  opcodesNames = {
-    "BRK impl", "ORA X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "ORA zpg",   "ASL zpg",   "⚠️ ", "PHP impl", "ORA #",     "ASL A",    "⚠️ ", "⚠️ ",        "ORA abs",   "ASL abs",   "⚠️ ",
-    "BPL rel",  "ORA ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "ORA zpg,X", "ASL zpg,X", "⚠️ ", "CLC impl", "ORA abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "ORA abs,X", "ASL abs,X", "⚠️ ",
-    "JSR abs",  "AND X,ind", "⚠️ ",    "⚠️ ", "BIT zpg",   "AND zpg",   "ROL zpg",   "⚠️ ", "PLP impl", "AND #",     "ROL A",    "⚠️ ", "BIT abs",   "AND abs",   "ROL abs",   "⚠️ ",
-    "BMI rel",  "AND ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "AND zpg,X", "ROL zpg,X", "⚠️ ", "SEC impl", "AND abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "AND abs,X", "ROL abs,X", "⚠️ ",
-    "RTI impl", "EOR X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "EOR zpg",   "LSR zpg",   "⚠️ ", "PHA impl", "EOR #",     "LSR A",    "⚠️ ", "JMP abs",   "EOR abs",   "LSR abs",   "⚠️ ",
-    "BVC rel",  "EOR ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "EOR zpg,X", "LSR zpg,X", "⚠️ ", "CLI impl", "EOR abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "EOR abs,X", "LSR abs,X", "⚠️ ",
-    "RTS impl", "ADC X,ind", "⚠️ ",    "⚠️ ", "⚠️ ",        "ADC zpg",   "ROR zpg",   "⚠️ ", "PLA impl", "ADC #",     "ROR A",    "⚠️ ", "JMP ind",   "ADC abs",   "ROR abs",   "⚠️ ",
-    "BVS rel",  "ADC ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "ADC zpg,X", "ROR zpg,X", "⚠️ ", "SEI impl", "ADC abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "ADC abs,X", "ROR abs,X", "⚠️ ",
-    "⚠️ ",       "STA X,ind", "⚠️ ",    "⚠️ ", "STY zpg",   "STA zpg",   "STX zpg",   "⚠️ ", "DEY impl", "⚠️ ",        "TXA impl", "⚠️ ", "STY abs",   "STA abs",   "STX abs",   "⚠️ ",
-    "BCC rel",  "STA ind,Y", "⚠️ ",    "⚠️ ", "STY zpg,X", "STA zpg,X", "STX zpg,Y", "⚠️ ", "TYA impl", "STA abs,Y", "TXS impl", "⚠️ ", "⚠️ ",        "STA abs,X", "⚠️ ",        "⚠️ ",
-    "LDY #",    "LDA X,ind", "LDX #", "⚠️ ", "LDY zpg",   "LDA zpg",   "LDX zpg",   "⚠️ ", "TAY impl", "LDA #",     "TAX impl", "⚠️ ", "LDY abs",   "LDA abs,X", "LDX abs",   "⚠️ ",
-    "BCS rel",  "LDA ind,Y", "⚠️ ",    "⚠️ ", "LDY zpg,X", "LDA zpg,X", "LDX zpg,Y", "⚠️ ", "CLV impl", "LDA abs,Y", "TSX impl", "⚠️ ", "LDY abs,X", "LDA abs,X", "LDX abs,Y", "⚠️ ",
-    "CPY #",    "CMP X,ind", "⚠️ ",    "⚠️ ", "CPY zpg",   "CMP zpg",   "DEC zpg",   "⚠️ ", "INY impl", "CMP #",     "DEX impl", "⚠️ ", "CPY abs",   "CMP abs",   "DEC abs",   "⚠️ ",
-    "BNE rel",  "CMP ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "CMP zpg,X", "DEC zpg,X", "⚠️ ", "CLD impl", "CMP abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "CMP abs,X", "DEC abs,X", "⚠️ ",
-    "CPX #",    "SBC X,ind", "⚠️ ",    "⚠️ ", "CPX zpg",   "SBC zpg",   "INC zpg",   "⚠️ ", "INX impl", "SBC #",     "NOP impl", "⚠️ ", "CPX abs",   "SBC abs",   "INC abs",   "⚠️ ",
-    "BEQ rel",  "SBC ind,Y", "⚠️ ",    "⚠️ ", "⚠️ ",        "SBC zpg,X", "INC zpg,X", "⚠️ ", "SED impl", "SBC abs,Y", "⚠️ ",       "⚠️ ", "⚠️ ",        "SBC abs,X", "INC abs,X"  "⚠️ ",
-  };
-  
   srand(time(NULL));
 }
 
@@ -280,12 +241,12 @@ uint8_t Cpu::stackPOP() {
 
 // Específico do emulador do endereço
 // https://skilldrick.github.io/easy6502/
-// O endereço 0xFE é reservado para geração 
+// O endereço 0xFE é reservado para geração
 // de numeros aleatórios.
 // IMPORTANTE: Não é comportamente nativo do 6502.
-void Cpu::generateRandomIn0xFE(){
+void Cpu::generateRandomIn0xFE() {
   uint8_t random = (rand() % 0xFF) + 1;
-  memory.write(0xFE, random); 
+  memory.write(0xFE, random);
 }
 
 void Cpu::next() {
@@ -308,9 +269,9 @@ void Cpu::next() {
             << " | SR: " << std::bitset<8>(SR) << "\n\n";
   // std::cout << "-------------------------------------------------------\n";
 
-  if(index == 0){
+  if (STOP_BRK && index == 0) {
     std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
-    // exit(-1);
+    exit(-1);
   }
 }
 
@@ -334,12 +295,12 @@ AMResponse Cpu::zeropage() {
 }
 
 AMResponse Cpu::zeropageX() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t address = memory.read(PC + X);
   return {address, 0x01};
 }
 
 AMResponse Cpu::zeropageY() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t address = memory.read(PC + Y);
   return {address, 0x01};
 }
 AMResponse Cpu::absolute() {
@@ -371,7 +332,7 @@ AMResponse Cpu::indirect() {
   uint8_t msb_op = memory.read(PC + 2);
   uint8_t lsb_op = memory.read(PC + 1);
   uint16_t address_op = (msb_op << 8) | lsb_op;
-  
+
   uint8_t lsb = memory.read(address_op + 0);
   uint8_t msb = memory.read(address_op + 1);
 
@@ -389,11 +350,11 @@ AMResponse Cpu::indirectX() {
   uint8_t msb = memory.read(zpAddress + X + 1);
   uint8_t lsb = memory.read(zpAddress + X);
   uint16_t address = (msb << 8) | lsb;
-  
-  // std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
-  // std::cout << "indirectX msb: " << (int)msb << "\n";
-  // std::cout << "indirectX lsb:" << (int)lsb << "\n";
-  // std::cout << "indirectX: " << (int)address << "\n";
+
+  // std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X
+  // << "\n"; std::cout << "indirectX msb: " << (int)msb << "\n"; std::cout <<
+  // "indirectX lsb:" << (int)lsb << "\n"; std::cout << "indirectX: " <<
+  // (int)address << "\n";
 
   return {address, 0x01};
 }
@@ -404,16 +365,16 @@ AMResponse Cpu::indirectY() {
   // uint16_t address = (msb << 8) | lsb;
   //
   // return {address, 0x01};
-  
+
   uint8_t zpAddress = memory.read(PC + 1);
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = ((msb << 8) | lsb) + Y;
-  
-  // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
-  // std::cout << "indirectY msb: " << (int)msb << "\n";
-  // std::cout << "indirectY lsb:" << (int)lsb << "\n";
-  // std::cout << "indirectY: " << (int)address << "\n";
+
+  // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X
+  // << "\n"; std::cout << "indirectY msb: " << (int)msb << "\n"; std::cout <<
+  // "indirectY lsb:" << (int)lsb << "\n"; std::cout << "indirectY: " <<
+  // (int)address << "\n";
 
   return {address, 0x01};
 }
@@ -449,14 +410,18 @@ AMResponse Cpu::relative() {
 void Cpu::flagActivationN(uint8_t value) {
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
+    return;
   }
+  setFlag(Flag::N);
 }
 
 // Overflow
 void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
   if (((AC ^ value_orig) & (0x01 << 7)) && ((AC ^ value_new) & (0x01 << 7))) {
     setFlag(Flag::V);
+    return;
   }
+  remFlag(Flag::V);
 }
 
 // Break
@@ -472,24 +437,46 @@ void Cpu::flagActivationI() {}
 void Cpu::flagActivationZ(uint8_t value) {
   if (value == 0) {
     setFlag(Flag::Z);
+    return;
   }
+  setFlag(Flag::Z);
 }
 
 // Carry (sum)
 void Cpu::flagActivationC_Sum(uint16_t value) {
   if (value > 0xFF) {
     setFlag(Flag::C);
+    return;
   }
+  setFlag(Flag::C);
 }
 
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
-void Cpu::flagActivationC_Sub(uint16_t result, uint8_t value) {
-  std::cout << "flagActivationC_Sub: " << (int)result << " | " << (int)value << "\n";
-  if (result >= value) {
+void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
+
+  std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
+            << "\n";
+
+  if (value_1 < value_2) {
+    remFlag(Flag::Z);
     remFlag(Flag::C);
-  } else {
+    flagActivationN(value_1 - value_2);
+    return;
+  }
+
+  if (value_1 == value_2) {
+    setFlag(Flag::Z);
     setFlag(Flag::C);
+    remFlag(Flag::N);
+    return;
+  }
+
+  if (value_1 > value_2) {
+    remFlag(Flag::Z);
+    setFlag(Flag::C);
+    flagActivationN(value_1 - value_2);
+    return;
   }
 }
 
@@ -560,8 +547,8 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
 // - BPL (Branch on PLus) - Desvio quando FlagN = 0
 void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(!chkFlag(Flag::N)){
+
+  if (!chkFlag(Flag::N)) {
     PC = response.address + response.size;
     return;
   }
@@ -571,8 +558,8 @@ void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
 // - BMI (Branch on MInus) - Desvio quando FlagN = 1
 void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(chkFlag(Flag::N)){
+
+  if (chkFlag(Flag::N)) {
     PC = response.address + response.size;
     return;
   }
@@ -594,8 +581,8 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
 // - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
 void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(chkFlag(Flag::V)){
+
+  if (chkFlag(Flag::V)) {
     PC = response.address + response.size;
     return;
   }
@@ -605,8 +592,8 @@ void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
 // - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
 void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(!chkFlag(Flag::C)){
+
+  if (!chkFlag(Flag::C)) {
     PC = response.address + response.size;
     return;
   }
@@ -616,8 +603,8 @@ void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
 // - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
 void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(chkFlag(Flag::C)){
+
+  if (chkFlag(Flag::C)) {
     PC = response.address + response.size;
     return;
   }
@@ -627,8 +614,8 @@ void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
 // - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
 void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(!chkFlag(Flag::Z)){
+
+  if (!chkFlag(Flag::Z)) {
     PC = response.address + response.size;
     return;
   }
@@ -638,8 +625,8 @@ void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
 // - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
 void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  
-  if(chkFlag(Flag::Z)){
+
+  if (chkFlag(Flag::Z)) {
     PC = response.address + response.size;
     return;
   }
@@ -670,10 +657,10 @@ void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = AC - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
+  // uint8_t result = AC - value;
+  flagActivationCMP(AC, value);
+  // flagActivationN(result);
+  // flagActivationZ(result);
   // AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -681,10 +668,10 @@ void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = X - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
+  // uint8_t result = X - value;
+  flagActivationCMP(X, value);
+  // flagActivationN(result);
+  // flagActivationZ(result);
   // AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -692,10 +679,10 @@ void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = Y - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
+  // uint8_t result = Y - value;
+  flagActivationCMP(Y, value);
+  // flagActivationN(result);
+  // flagActivationZ(result);
   // AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -972,8 +959,14 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = AC - value - carry;
-  flagActivationC_Sub(result, value);
+  uint8_t result = AC - value + carry;
+  // ATENÇÃO
+  // -flagActivationC_Sub---------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // flagActivationC_Sub(result, value);
+  if ((AC - value + carry) >= 0x0100) {
+    setFlag(Flag::C); // Ativa a flag de carry se houver empréstimo
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   flagActivationV(value, result);
