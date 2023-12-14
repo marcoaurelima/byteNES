@@ -310,7 +310,7 @@ void Cpu::next() {
 
   if(index == 0){
     std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
-    exit(-1);
+    // exit(-1);
   }
 }
 
@@ -367,17 +367,33 @@ AMResponse Cpu::absoluteY() {
 }
 
 AMResponse Cpu::indirect() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
+
+  uint8_t msb_op = memory.read(PC + 2);
+  uint8_t lsb_op = memory.read(PC + 1);
+  uint16_t address_op = (msb_op << 8) | lsb_op;
+  
+  uint8_t lsb = memory.read(address_op + 0);
+  uint8_t msb = memory.read(address_op + 1);
+
   uint16_t address = (msb << 8) | lsb;
 
   return {address, 0x01};
 }
 
 AMResponse Cpu::indirectX() {
-  uint8_t msb = memory.read(PC + X + 2);
-  uint8_t lsb = memory.read(PC + X + 1);
+  // uint8_t msb = memory.read((PC + 1) + X);
+  // uint8_t lsb = memory.read((PC + 1) + X + 1);
+  // uint16_t address = (msb << 8) | lsb;
+  //
+  uint8_t zpAddress = memory.read(PC + 1);
+  uint8_t msb = memory.read(zpAddress + X + 1);
+  uint8_t lsb = memory.read(zpAddress + X);
   uint16_t address = (msb << 8) | lsb;
+  
+  std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
+  std::cout << "indirectX msb: " << (int)msb << "\n";
+  std::cout << "indirectX lsb:" << (int)lsb << "\n";
+  std::cout << "indirectX: " << (int)address << "\n";
 
   return {address, 0x01};
 }
