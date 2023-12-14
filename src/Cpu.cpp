@@ -390,18 +390,30 @@ AMResponse Cpu::indirectX() {
   uint8_t lsb = memory.read(zpAddress + X);
   uint16_t address = (msb << 8) | lsb;
   
-  std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
-  std::cout << "indirectX msb: " << (int)msb << "\n";
-  std::cout << "indirectX lsb:" << (int)lsb << "\n";
-  std::cout << "indirectX: " << (int)address << "\n";
+  // std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
+  // std::cout << "indirectX msb: " << (int)msb << "\n";
+  // std::cout << "indirectX lsb:" << (int)lsb << "\n";
+  // std::cout << "indirectX: " << (int)address << "\n";
 
   return {address, 0x01};
 }
 
 AMResponse Cpu::indirectY() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
+  // uint8_t msb = memory.read(PC + 2);
+  // uint8_t lsb = memory.read(PC + 1);
+  // uint16_t address = (msb << 8) | lsb;
+  //
+  // return {address, 0x01};
+  
+  uint8_t zpAddress = memory.read(PC + 1);
+  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t lsb = memory.read(zpAddress);
+  uint16_t address = ((msb << 8) | lsb) + Y;
+  
+  // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X << "\n";
+  // std::cout << "indirectY msb: " << (int)msb << "\n";
+  // std::cout << "indirectY lsb:" << (int)lsb << "\n";
+  // std::cout << "indirectY: " << (int)address << "\n";
 
   return {address, 0x01};
 }
