@@ -534,13 +534,20 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
 
   if ((result & (0x01 << 7)) > 0x00) {
     setFlag(Flag::N);
+  } else {
+    remFlag(Flag::N);
   }
   if ((result & (0x01 << 6)) > 0x00) {
     setFlag(Flag::V);
+  } else {
+    remFlag(Flag::V);
   }
   if (result == 0x00) {
     setFlag(Flag::Z);
+  } else {
+    remFlag(Flag::Z);
   }
+
   incrementPC(response.size + 0x01);
 }
 // Branch Instructions
@@ -965,6 +972,8 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   // flagActivationC_Sub(result, value);
   if ((AC - value + carry) >= 0x0100) {
     setFlag(Flag::C); // Ativa a flag de carry se houver empréstimo
+  } else {
+    remFlag(Flag::C);
   }
 
   flagActivationN(result);
