@@ -26,7 +26,7 @@ private:
   sf::Text *gameScreenTitle;
   sf::Text *gameScreenInfo;
   sf::Text *gameScreenCount;
-  uint64_t clock{1};
+  int64_t clock{1};
 
   sf::Image *gameImage;
   sf::Texture *gameTexture;
@@ -59,7 +59,7 @@ private:
   sf::Text *filePathText;
   sf::Text *keyMappingText;
 
-  std::array<bool, 3> buttonsLock{};
+  std::array<bool, 5> buttonsLock{};
   std::array<sf::RectangleShape *, 3> buttonsPress;
 
   Cpu &cpu;

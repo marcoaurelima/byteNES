@@ -281,8 +281,8 @@ void Gui::updateCpuCount() {
 
 void Gui::show() {
 
-  sf::Clock clock;
-  clock.restart();
+  sf::Clock timer;
+  timer.restart();
 
   while (window->isOpen()) {
     sf::Event event;
@@ -319,6 +319,28 @@ void Gui::show() {
                  buttonsLock[2]) {
         buttonsLock[2] = false;
         buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        buttonsLock[3] = true;
+        clock += 10;
+        std::stringstream ss;
+        ss << "CLOCK " << clock << " Hz";
+        gameScreenInfo->setString(ss.str());
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
+                 buttonsLock[3]) {
+        buttonsLock[3] = false;
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        buttonsLock[4] = true;
+        clock -= 10;
+        std::stringstream ss;
+        ss << "CLOCK " << clock << " Hz";
+        gameScreenInfo->setString(ss.str());
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+                 buttonsLock[4]) {
+        buttonsLock[4] = false;
       }
     }
 
@@ -369,9 +391,9 @@ void Gui::show() {
     window->display();
     flags++;
 
-    if (clock.getElapsedTime().asMilliseconds() > 100) {
+    if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
       if (!isDebugMode) {
-        clock.restart();
+        timer.restart();
         cpu.next();
       }
     }

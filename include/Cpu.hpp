@@ -74,7 +74,8 @@ public:
   void flagActivationD();
   void flagActivationI();
   void flagActivationZ(uint8_t value);
-  void flagActivationC_Sum(uint16_t value);
+  void flagActivationC_ovflw(uint16_t value);
+  void flagActivationC_unflw(uint16_t value, uint16_t result);
   void flagActivationCMP(uint16_t value_1, uint8_t value_2);
 
   // Implementações das instruções

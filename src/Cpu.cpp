@@ -252,22 +252,30 @@ void Cpu::generateRandomIn0xFE() {
 void Cpu::next() {
   generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
-  std::cout << "--[" << std::dec << count + 1
-            << "]-----------------------------------------------------\n";
-  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
-            << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y
-            << " | SR: " << std::bitset<8>(SR) << "\n";
 
-  std::cout << std::hex << "| OPCode: " << (int)index << " ("
-            << opcodesNames[index] << ")\n";
+  bool ENABLE_LOGS = true;
+
+  if (ENABLE_LOGS) {
+    std::cout << "--[" << std::dec << count + 1
+              << "]-----------------------------------------------------\n";
+    std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
+              << " | AC: " << (int)AC << " | X: " << (int)X
+              << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) << "\n";
+
+    std::cout << std::hex << "| OPCode: " << (int)index << " ("
+              << opcodesNames[index] << ")\n";
+  }
 
   opcodeMapping[index]();
   count++;
 
-  std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
-            << " | AC: " << (int)AC << " | X: " << (int)X << " | Y: " << (int)Y
-            << " | SR: " << std::bitset<8>(SR) << "\n\n";
-  // std::cout << "-------------------------------------------------------\n";
+  if (ENABLE_LOGS) {
+    std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
+              << " | AC: " << (int)AC << " | X: " << (int)X
+              << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << "\n\n";
+    // std::cout << "-------------------------------------------------------\n";
+  }
 
   if (STOP_BRK && index == 0) {
     std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
@@ -412,7 +420,7 @@ void Cpu::flagActivationN(uint8_t value) {
     setFlag(Flag::N);
     return;
   }
-  setFlag(Flag::N);
+  remFlag(Flag::N);
 }
 
 // Overflow
@@ -439,16 +447,24 @@ void Cpu::flagActivationZ(uint8_t value) {
     setFlag(Flag::Z);
     return;
   }
-  setFlag(Flag::Z);
+  remFlag(Flag::Z);
 }
 
 // Carry (sum)
-void Cpu::flagActivationC_Sum(uint16_t value) {
+void Cpu::flagActivationC_ovflw(uint16_t value) {
   if (value > 0xFF) {
     setFlag(Flag::C);
     return;
   }
-  setFlag(Flag::C);
+  remFlag(Flag::C);
+}
+
+void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
+  if (value_2 > value_1) {
+    setFlag(Flag::C);
+    return;
+  }
+  remFlag(Flag::C);
 }
 
 // Carry (subtraction)
@@ -487,7 +503,7 @@ void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = AC + value + carry;
-  flagActivationC_Sum(AC + value + carry);
+  flagActivationC_ovflw(AC + value + carry);
   flagActivationN(result);
   flagActivationZ(result);
   flagActivationV(value, result);
@@ -509,8 +525,11 @@ void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
+
+  (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
-  flagActivationC_Sum(value << 0x01);
+  // flagActivationC_ovflw(value << 0x01);
   flagActivationZ(result);
   memory.write(PC + 1, result);
   incrementPC(response.size + 0x01);
@@ -520,8 +539,11 @@ void Cpu::ASL_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t value = AC;
   uint8_t result = (AC << 0x01);
+
+  (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
-  flagActivationC_Sum(AC << 0x01);
+  // flagActivationC_ovflw(AC << 0x01);
   flagActivationZ(result);
   AC = value;
   incrementPC(0x01);
@@ -970,11 +992,13 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   // ATENÇÃO
   // -flagActivationC_Sub---------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // flagActivationC_Sub(result, value);
-  if ((AC - value + carry) >= 0x0100) {
-    setFlag(Flag::C); // Ativa a flag de carry se houver empréstimo
-  } else {
-    remFlag(Flag::C);
-  }
+  // if ((AC - value + carry) >= 0x0100) {
+  //   setFlag(Flag::C); // Ativa a flag de carry se houver empréstimo
+  // } else {
+  //   remFlag(Flag::C);
+  // }
+
+  flagActivationC_unflw(AC, value + carry);
 
   flagActivationN(result);
   flagActivationZ(result);
