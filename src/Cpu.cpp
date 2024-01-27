@@ -322,7 +322,7 @@ AMResponse Cpu::absolute() {
 AMResponse Cpu::absoluteX() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
+  uint16_t address = ((msb << 8) | lsb) + X;
 
   return {address, 0x02};
 }
@@ -330,7 +330,7 @@ AMResponse Cpu::absoluteX() {
 AMResponse Cpu::absoluteY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
+  uint16_t address = ((msb << 8) | lsb) + Y;
 
   return {address, 0x02};
 }
@@ -878,48 +878,65 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::TAX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X = AC;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - TXA (Transfer X to A)
 void Cpu::TXA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = X;
+  std::cout << "\n-----\n" << "TAX: " << (int)AC << "\n------\n\n";
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - DEX (DEcrement X)
 void Cpu::DEX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X -= 0x01;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - INX (INcrement X)
 void Cpu::INX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X += 0x01;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - TAY (Transfer A to Y)
 void Cpu::TAY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y = AC;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // - TYA (Transfer Y to A)
 void Cpu::TYA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = Y;
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - DEY (DEcrement Y)
 void Cpu::DEY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y -= 0x01;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // - INY (INcrement Y)
 void Cpu::INY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y += 0x01;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // ROL (ROtate Left)
