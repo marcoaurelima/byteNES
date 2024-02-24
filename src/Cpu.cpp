@@ -420,7 +420,7 @@ void Cpu::flagActivationN(uint8_t value) {
     setFlag(Flag::N);
     return;
   }
-  remFlag(Flag::N);
+  // remFlag(Flag::N);
 }
 
 // Overflow
@@ -429,7 +429,7 @@ void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
     setFlag(Flag::V);
     return;
   }
-  remFlag(Flag::V);
+  // remFlag(Flag::V);
 }
 
 // Break
@@ -447,7 +447,7 @@ void Cpu::flagActivationZ(uint8_t value) {
     setFlag(Flag::Z);
     return;
   }
-  remFlag(Flag::Z);
+  // remFlag(Flag::Z);
 }
 
 // Carry (sum)
@@ -456,7 +456,7 @@ void Cpu::flagActivationC_ovflw(uint16_t value) {
     setFlag(Flag::C);
     return;
   }
-  remFlag(Flag::C);
+  // remFlag(Flag::C);
 }
 
 void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
@@ -464,7 +464,7 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
     setFlag(Flag::C);
     return;
   }
-  remFlag(Flag::C);
+  // remFlag(Flag::C);
 }
 
 // Carry (subtraction)
