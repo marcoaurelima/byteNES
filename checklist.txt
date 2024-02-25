@@ -1,4 +1,9 @@
 emulador checklist:
+
+urgente:
+[ ] remover as funções flagActivation()
+	explicação: aparentemente cada opcode lida de forma diferente com as ativações de flag; algumas precisam somente ativar a flag no mesmo processo, outras precisam ativar ou desativar no mesmo processo. Isso impossibilita ter 1 função única para doois comportamentos diferentes.
+
 [ ] verificar funções de branch
 [ ] verificar funções de jump
 [ ] verificar opcode BRK

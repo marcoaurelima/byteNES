@@ -416,11 +416,12 @@ AMResponse Cpu::relative() {
 // -- verificadores de flags
 // Negative
 void Cpu::flagActivationN(uint8_t value) {
+  std::cout << "flagActivationN: " << (int)value << " : " << std::bitset<8>(value) << std::endl;
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
     return;
   }
-  // remFlag(Flag::N);
+  remFlag(Flag::N);
 }
 
 // Overflow
