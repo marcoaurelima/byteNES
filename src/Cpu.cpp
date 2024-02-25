@@ -474,25 +474,39 @@ void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
   std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
             << "\n";
 
-  if (value_1 < value_2) {
-    remFlag(Flag::Z);
-    remFlag(Flag::C);
-    flagActivationN(value_1 - value_2);
-    return;
-  }
+  // if (value_1 < value_2) {
+  //   remFlag(Flag::Z);
+  //   remFlag(Flag::C);
+  //   flagActivationN(value_1 - value_2);
+  //   return;
+  // }
+  //
+  // if (value_1 == value_2) {
+  //   setFlag(Flag::Z);
+  //   setFlag(Flag::C);
+  //   remFlag(Flag::N);
+  //   return;
+  // }
+  //
+  // if (value_1 > value_2) {
+  //   remFlag(Flag::Z);
+  //   setFlag(Flag::C);
+  //   flagActivationN(value_1 - value_2);
+  //   return;
+  // }
 
   if (value_1 == value_2) {
     setFlag(Flag::Z);
-    setFlag(Flag::C);
-    remFlag(Flag::N);
-    return;
+  } else {
+    remFlag(Flag::Z);
   }
 
-  if (value_1 > value_2) {
-    remFlag(Flag::Z);
+  flagActivationN(value_1 - value_2);
+
+  if (value_1 >= value_2) {
     setFlag(Flag::C);
-    flagActivationN(value_1 - value_2);
-    return;
+  } else {
+    remFlag(Flag::C);
   }
 }
 
@@ -554,12 +568,12 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   uint8_t result = (AC & value);
 
-  if ((result & (0x01 << 7)) > 0x00) {
+  if ((result & (0x01 << 7))) {
     setFlag(Flag::N);
   } else {
     remFlag(Flag::N);
   }
-  if ((result & (0x01 << 6)) > 0x00) {
+  if ((result & (0x01 << 6))) {
     setFlag(Flag::V);
   } else {
     remFlag(Flag::V);
@@ -719,7 +733,7 @@ void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value - 1;
+  uint8_t result = value - 0x01;
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -729,10 +743,11 @@ void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value ^ AC;
+  uint8_t result = AC ^ value;
   flagActivationN(result);
   flagActivationZ(result);
-  memory.write(response.address, result);
+  // memory.write(response.address, result);
+  AC = result;
   incrementPC(response.size + 0x01);
 }
 // Flag (Processor Status) Instructions
@@ -782,7 +797,7 @@ void Cpu::SED(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value + 1;
+  uint8_t result = value + 0x01;
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -842,7 +857,7 @@ void Cpu::LDY(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  (value & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (value >> 0x01);
   flagActivationN(result);
   flagActivationZ(result);
@@ -851,7 +866,7 @@ void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
 }
 void Cpu::LSR_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  (AC & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (AC >> 0x01);
   flagActivationN(result);
   flagActivationZ(result);
@@ -867,10 +882,11 @@ void Cpu::NOP(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value | AC;
+  uint8_t result = AC | value;
   flagActivationN(result);
   flagActivationZ(result);
-  memory.write(response.address, result);
+  // memory.write(response.address, result);
+  AC = result;
   incrementPC(response.size + 0x01);
 }
 // Register Instructions
@@ -878,17 +894,16 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::TAX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X = AC;
-  flagActivationN(X);
-  flagActivationZ(X);
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - TXA (Transfer X to A)
 void Cpu::TXA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = X;
-  std::cout << "\n-----\n" << "TAX: " << (int)AC << "\n------\n\n";
-  flagActivationN(AC);
-  flagActivationZ(AC);
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - DEX (DEcrement X)
@@ -911,16 +926,16 @@ void Cpu::INX(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::TAY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y = AC;
-  flagActivationN(Y);
-  flagActivationZ(Y);
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - TYA (Transfer Y to A)
 void Cpu::TYA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = Y;
-  flagActivationN(AC);
-  flagActivationZ(AC);
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // - DEY (DEcrement Y)
@@ -943,9 +958,18 @@ void Cpu::INY(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (value << 0x01) + carry;
-  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (value & (0x01 << 7));
+
+  uint8_t result = (value << 0x01) | old_carry;
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+  // (result & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -953,9 +977,19 @@ void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
 }
 void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (AC << 0x01) + carry;
-  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (AC & (0x01 << 7));
+
+  uint8_t result = (AC << 0x01) | old_carry;
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
+  // (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
@@ -966,8 +1000,18 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (value >> 0x01) + (carry << 0x07);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (value & 0x01);
+
+  uint8_t result = (value >> 0x01) | (old_carry << 0x07);
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -976,8 +1020,18 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::ROR_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (AC >> 0x01) + (carry << 0x07);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (AC & 0x01);
+
+  uint8_t result = (AC >> 0x01) | (old_carry << 0x07);
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;

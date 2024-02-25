@@ -1,0 +1,4 @@
+emulador checklist:
+[ ] verificar funções de branch
+[ ] verificar funções de jump
+[ ] verificar opcode BRK
