@@ -430,7 +430,7 @@ void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
     setFlag(Flag::V);
     return;
   }
-  // remFlag(Flag::V);
+  remFlag(Flag::V);
 }
 
 // Break
@@ -448,7 +448,7 @@ void Cpu::flagActivationZ(uint8_t value) {
     setFlag(Flag::Z);
     return;
   }
-  // remFlag(Flag::Z);
+  remFlag(Flag::Z);
 }
 
 // Carry (sum)
@@ -457,7 +457,7 @@ void Cpu::flagActivationC_ovflw(uint16_t value) {
     setFlag(Flag::C);
     return;
   }
-  // remFlag(Flag::C);
+  remFlag(Flag::C);
 }
 
 void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
@@ -465,7 +465,7 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
     setFlag(Flag::C);
     return;
   }
-  // remFlag(Flag::C);
+  remFlag(Flag::C);
 }
 
 // Carry (subtraction)
@@ -521,7 +521,7 @@ void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
   flagActivationC_ovflw(AC + value + carry);
   flagActivationN(result);
   flagActivationZ(result);
-  flagActivationV(value, result);
+  flagActivationV(AC, result);
   AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -544,7 +544,6 @@ void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
   (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
 
   flagActivationN(result);
-  // flagActivationC_ovflw(value << 0x01);
   flagActivationZ(result);
   memory.write(PC + 1, result);
   incrementPC(response.size + 0x01);
@@ -558,7 +557,6 @@ void Cpu::ASL_AC(AMResponse (Cpu::*Addressingmode)()) {
   (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
 
   flagActivationN(result);
-  // flagActivationC_ovflw(AC << 0x01);
   flagActivationZ(result);
   AC = value;
   incrementPC(0x01);
@@ -836,7 +834,7 @@ void Cpu::LDA(AMResponse (Cpu::*Addressingmode)()) {
   AC = value;
   incrementPC(response.size + 0x01);
 }
-// LDX (LoaD X register)
+// LDX (LoaD X register)ADC #$0F
 void Cpu::LDX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
@@ -1060,6 +1058,7 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  // uint8_t result = AC - value + carry;
   uint8_t result = AC - value + carry;
   // ATENÇÃO
   // -flagActivationC_Sub---------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1070,11 +1069,11 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   //   remFlag(Flag::C);
   // }
 
-  flagActivationC_unflw(AC, value + carry);
+  flagActivationC_unflw(AC, AC - value + carry);
 
   flagActivationN(result);
   flagActivationZ(result);
-  flagActivationV(value, result);
+  flagActivationV(AC, result);
   AC = result;
   incrementPC(response.size + 0x01);
 }
