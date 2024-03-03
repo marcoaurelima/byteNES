@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <iomanip>
 #include <ios>
 #include <iostream>
 
@@ -256,11 +257,17 @@ void Cpu::next() {
   bool ENABLE_LOGS = true;
 
   if (ENABLE_LOGS) {
-    std::cout << "--[" << std::dec << count + 1
-              << "]-----------------------------------------------------\n";
-    std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
-              << " | AC: " << (int)AC << " | X: " << (int)X
-              << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR) << "\n";
+    std::cout
+        << "--[" << std::dec << count + 1
+        << "]--------------------------------------------------------------\n";
+    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)PC << " | SP: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+              << std::hex << std::setw(4) << (int)AC
+              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)X << " | Y: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << "\n";
 
     std::cout << std::hex << "| OPCode: " << (int)index << " ("
               << opcodesNames[index] << ")\n";
@@ -270,11 +277,19 @@ void Cpu::next() {
   count++;
 
   if (ENABLE_LOGS) {
-    std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
-              << " | AC: " << (int)AC << " | X: " << (int)X
-              << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << "\n\n";
+    // std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
+    //           << " | AC: " << (int)AC << " | X: " << (int)X
+    //           << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR)
+    //           << "\n\n";
     // std::cout << "-------------------------------------------------------\n";
+    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)PC << " | SP: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+              << std::hex << std::setw(4) << (int)AC
+              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)X << " | Y: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << "\n\n";
   }
 
   if (STOP_BRK && index == 0) {
@@ -416,7 +431,8 @@ AMResponse Cpu::relative() {
 // -- verificadores de flags
 // Negative
 void Cpu::flagActivationN(uint8_t value) {
-  std::cout << "flagActivationN: " << (int)value << " : " << std::bitset<8>(value) << std::endl;
+  // std::cout << "flagActivationN: " << (int)value << " : "
+            // << std::bitset<8>(value) << std::endl;
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
     return;
@@ -472,8 +488,8 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
 // Este flag é definido se não houver empréstimo durante a subtração.
 void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
 
-  std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
-            << "\n";
+  // std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
+            // << "\n";
 
   // if (value_1 < value_2) {
   //   remFlag(Flag::Z);
