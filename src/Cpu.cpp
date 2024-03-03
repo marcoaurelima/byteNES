@@ -254,12 +254,12 @@ void Cpu::next() {
   generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
 
-  bool ENABLE_LOGS = true;
+  bool ENABLE_LOG_BEFORE_OPCODE = true;
+  bool ENABLE_LOG_OPCODE = false;
+  bool ENABLE_LOGS_AFTER_OPCODE = false;
 
-  if (ENABLE_LOGS) {
-    std::cout
-        << "--[" << std::dec << count + 1
-        << "]--------------------------------------------------------------\n";
+  if (ENABLE_LOG_BEFORE_OPCODE) {
+    std::cout << "-- [" << std::dec << count + 1 << "] -------------\n";
     std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
               << (int)PC << " | SP: " << std::setfill('0') << std::hex
               << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
@@ -267,16 +267,17 @@ void Cpu::next() {
               << " | X: " << std::setfill('0') << std::hex << std::setw(4)
               << (int)X << " | Y: " << std::setfill('0') << std::hex
               << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << "\n";
+              << "\n\n";
 
-    std::cout << std::hex << "| OPCode: " << (int)index << " ("
-              << opcodesNames[index] << ")\n";
+    if (ENABLE_LOG_OPCODE)
+      std::cout << std::hex << "| OPCode: " << (int)index << " ("
+                << opcodesNames[index] << ")\n";
   }
 
   opcodeMapping[index]();
   count++;
 
-  if (ENABLE_LOGS) {
+  if (ENABLE_LOGS_AFTER_OPCODE) {
     // std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
     //           << " | AC: " << (int)AC << " | X: " << (int)X
     //           << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR)
@@ -432,7 +433,7 @@ AMResponse Cpu::relative() {
 // Negative
 void Cpu::flagActivationN(uint8_t value) {
   // std::cout << "flagActivationN: " << (int)value << " : "
-            // << std::bitset<8>(value) << std::endl;
+  // << std::bitset<8>(value) << std::endl;
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
     return;
@@ -489,7 +490,7 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
 void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
 
   // std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
-            // << "\n";
+  // << "\n";
 
   // if (value_1 < value_2) {
   //   remFlag(Flag::Z);
