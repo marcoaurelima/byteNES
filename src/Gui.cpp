@@ -3,17 +3,19 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
-  window->setVerticalSyncEnabled(true);
+  // window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256, 240));
   gameScreen->setPosition(50, 50);
@@ -52,7 +54,15 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   ss << "CLOCK " << clock << " Hz";
   gameScreenInfo->setString(ss.str());
   gameScreenInfo->setCharacterSize(20);
-  gameScreenInfo->setPosition(470, 15);
+  gameScreenInfo->setPosition(230, 15);
+
+  // Game screen
+  gameScreenCount = new sf::Text();
+  gameScreenCount->setFont(*font);
+  gameScreenCount->setFillColor(sf::Color::Magenta);
+  gameScreenCount->setString("CONT: 1");
+  gameScreenCount->setCharacterSize(20);
+  gameScreenCount->setPosition(370, 15);
 
   // Flags monitor
   for (size_t i = 0; i < flagsTiles.size(); i++) {
@@ -262,7 +272,17 @@ void Gui::updateZeroPageMemory() {
   zeroPageDataText->setString(zeroPageDataStr);
 }
 
+void Gui::updateCpuCount() {
+  std::stringstream ss;
+  ss << "COUNT: " << cpu.getCount();
+
+  gameScreenCount->setString(ss.str());
+}
+
 void Gui::show() {
+
+  sf::Clock timer;
+  timer.restart();
 
   while (window->isOpen()) {
     sf::Event event;
@@ -294,21 +314,46 @@ void Gui::show() {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2]) {
         buttonsLock[2] = true;
         buttonsPress[2]->setFillColor(sf::Color::Blue);
+        isDebugMode = false;
       } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::E) &&
                  buttonsLock[2]) {
         buttonsLock[2] = false;
         buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        buttonsLock[3] = true;
+        clock += 10;
+        std::stringstream ss;
+        ss << "CLOCK " << clock << " Hz";
+        gameScreenInfo->setString(ss.str());
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
+                 buttonsLock[3]) {
+        buttonsLock[3] = false;
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        buttonsLock[4] = true;
+        clock -= 10;
+        std::stringstream ss;
+        ss << "CLOCK " << clock << " Hz";
+        gameScreenInfo->setString(ss.str());
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+                 buttonsLock[4]) {
+        buttonsLock[4] = false;
       }
     }
 
     window->clear();
     window->draw(*gameScreenTitle);
     window->draw(*gameScreenInfo);
+    window->draw(*gameScreenCount);
     window->draw(*gameScreen);
 
     updateFlag();
     updateRegisters();
     updateZeroPageMemory();
+    updateCpuCount();
 
     loadFrameInMemory(0x0200);
 
@@ -345,6 +390,13 @@ void Gui::show() {
 
     window->display();
     flags++;
+
+    if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
+      if (!isDebugMode) {
+        timer.restart();
+        cpu.next();
+      }
+    }
   }
 }
 
@@ -354,11 +406,9 @@ void Gui::loadFrameInMemory(uint16_t begin) {
   for (size_t y = 0; y < 30; y++) {
     for (size_t x = 0; x < 32; x++) {
       uint8_t value = cpu.getMemory().read(begin + i++);
-      if (value > 0x0F) {
-        value = 0x00;
-      }
 
-      sf::Color color = colors[value];
+      uint8_t index = value & 0x0F;
+      sf::Color color = colors[index];
       gameImage->setPixel(x, y, color);
       gameTexture->loadFromImage(*gameImage);
       gameSprite->setTexture(*gameTexture);

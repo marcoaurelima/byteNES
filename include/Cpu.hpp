@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <functional>
 
+#include "constants.hpp"
+
 #include "Memory.hpp"
 
 enum class Flag {
@@ -22,6 +24,9 @@ enum class Flag {
 // imediatamente após o último endereço da
 // zero page
 const uint16_t STACK_ADDRESS = 0x1000;
+
+// Parar quando tiver BRK
+const bool STOP_BRK = false;
 
 // Tipo de retorno dos Addressing Modes
 struct AMResponse {
@@ -69,8 +74,9 @@ public:
   void flagActivationD();
   void flagActivationI();
   void flagActivationZ(uint8_t value);
-  void flagActivationC_Sum(uint16_t value);
-  void flagActivationC_Sub(uint16_t result, uint8_t value);
+  void flagActivationC_ovflw(uint16_t value);
+  void flagActivationC_unflw(uint16_t value, uint16_t result);
+  void flagActivationCMP(uint16_t value_1, uint8_t value_2);
 
   // Implementações das instruções
   // ADC (ADd with Carry)
@@ -167,6 +173,8 @@ public:
 
   void setAsmAddress(uint16_t address);
 
+  uint64_t getCount();
+
 private:
   // Memoria ram (2Kb)
   Memory &memory;
@@ -195,6 +203,14 @@ private:
   // Opcodes Mapping
   std::array<std::function<void()>, 0xFF> opcodeMapping{};
   void fillOpcodeMapping();
+
+  // Opcodes Array names
+  std::array<std::string, 0xFF> opcodesNames{opcodesList};
+
+  // Contador de operações (para debugar)
+  uint64_t count{};
+
+  void generateRandomIn0xFE();
 };
 
 #endif

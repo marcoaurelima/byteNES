@@ -1,7 +1,12 @@
 #include "Cpu.hpp"
+#include <bitset>
+#include <cstddef>
 #include <cstdint>
+#include <cstdlib>
+#include <iomanip>
 #include <ios>
 #include <iostream>
+#include <ostream>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
@@ -191,6 +196,8 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage); };
   opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY); };
   opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute); };
+
+  srand(time(NULL));
 }
 
 void Cpu::setAsmAddress(uint16_t address) {
@@ -206,6 +213,8 @@ uint8_t Cpu::getX() { return X; }
 uint8_t Cpu::getY() { return Y; }
 uint8_t Cpu::getSR() { return SR; }
 
+uint64_t Cpu::getCount() { return count; }
+
 void Cpu::setFlag(Flag flag) { SR = SR | static_cast<uint8_t>(flag); }
 void Cpu::remFlag(Flag flag) { SR = SR & ~(static_cast<uint8_t>(flag)); }
 bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
@@ -220,7 +229,7 @@ void Cpu::stackPUSH(uint8_t value) {
   memory.write(SP + offset, value);
 
   // para debug na zeropage:
-  memory.write(SP, value);
+  // memory.write(SP, value);
 
   SP -= 0x01;
 }
@@ -232,11 +241,58 @@ uint8_t Cpu::stackPOP() {
   return value;
 }
 
+// Específico do emulador do endereço
+// https://skilldrick.github.io/easy6502/
+// O endereço 0xFE é reservado para geração
+// de numeros aleatórios.
+// IMPORTANTE: Não é comportamente nativo do 6502.
+void Cpu::generateRandomIn0xFE() {
+  uint8_t random = (rand() % 0xFF) + 1;
+  memory.write(0xFE, random);
+}
+
 void Cpu::next() {
+  generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
-  std::cout << std::hex << "PC: " << (int)PC << "  OPCode: " << (int)index
-            << "\n";
+
+  bool ENABLE_LOG_BEFORE_OPCODE = true;
+  bool ENABLE_LOG_OPCODE = false;
+  bool ENABLE_LOGS_AFTER_OPCODE = false;
+
+  if (ENABLE_LOG_BEFORE_OPCODE) {
+    std::cout << "-- [" << std::dec << count + 1 << "] -------------\n";
+    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)PC << " | SP: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+              << std::hex << std::setw(4) << (int)AC
+              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)X << " | Y: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << "\n\n";
+
+    if (ENABLE_LOG_OPCODE)
+      std::cout << std::hex << "| OPCode: " << (int)index << " ("
+                << opcodesNames[index] << ")\n";
+  }
+
   opcodeMapping[index]();
+  count++;
+
+  if (ENABLE_LOGS_AFTER_OPCODE) {
+    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)PC << " | SP: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+              << std::hex << std::setw(4) << (int)AC
+              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)X << " | Y: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << "\n\n";
+  }
+
+  if (STOP_BRK && index == 0) {
+    std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
+    exit(-1);
+  }
 }
 
 void Cpu::reset() {
@@ -259,12 +315,12 @@ AMResponse Cpu::zeropage() {
 }
 
 AMResponse Cpu::zeropageX() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t address = memory.read(PC + 1) + X;
   return {address, 0x01};
 }
 
 AMResponse Cpu::zeropageY() {
-  uint8_t address = memory.read(PC + 1);
+  uint8_t address = memory.read(PC + 1) + Y;
   return {address, 0x01};
 }
 AMResponse Cpu::absolute() {
@@ -278,7 +334,7 @@ AMResponse Cpu::absolute() {
 AMResponse Cpu::absoluteX() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
+  uint16_t address = ((msb << 8) | lsb) + X;
 
   return {address, 0x02};
 }
@@ -286,46 +342,55 @@ AMResponse Cpu::absoluteX() {
 AMResponse Cpu::absoluteY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
+  uint16_t address = ((msb << 8) | lsb) + Y;
 
   return {address, 0x02};
 }
 
 AMResponse Cpu::indirect() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
+
+  uint8_t msb_op = memory.read(PC + 2);
+  uint8_t lsb_op = memory.read(PC + 1);
+  uint16_t address_op = (msb_op << 8) | lsb_op;
+
+  uint8_t lsb = memory.read(address_op + 0);
+  uint8_t msb = memory.read(address_op + 1);
+
   uint16_t address = (msb << 8) | lsb;
 
   return {address, 0x01};
 }
 
 AMResponse Cpu::indirectX() {
-  uint8_t msb = memory.read(PC + X + 2);
-  uint8_t lsb = memory.read(PC + X + 1);
+  uint8_t zpAddress = memory.read(PC + 1) + X;
+  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
 
   return {address, 0x01};
 }
 
 AMResponse Cpu::indirectY() {
-  uint8_t msb = memory.read(PC + 2);
-  uint8_t lsb = memory.read(PC + 1);
-  uint16_t address = (msb << 8) | lsb;
-
+  uint8_t zpAddress = memory.read(PC + 1);
+  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t lsb = memory.read(zpAddress + 0);
+  uint16_t address = ((msb << 8) | lsb) + Y;
+  
   return {address, 0x01};
 }
 
 AMResponse Cpu::relative() {
   uint16_t value = memory.read(PC + 1);
-  uint8_t offset = ~(0x01 << 7) & value;
 
   if ((value & (0x01 << 7)) == 0) {
+    uint8_t offset = value;
     uint16_t address = PC + offset;
-    return {address, 0x01};
+    return {address, 0x02};
   }
 
+  uint8_t offset = (~value) + 1; // Compl 2
   uint16_t address = PC - offset;
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 // -- verificadores de flags
@@ -333,14 +398,18 @@ AMResponse Cpu::relative() {
 void Cpu::flagActivationN(uint8_t value) {
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
+    return;
   }
+  remFlag(Flag::N);
 }
 
 // Overflow
 void Cpu::flagActivationV(uint8_t value_orig, uint8_t value_new) {
   if (((AC ^ value_orig) & (0x01 << 7)) && ((AC ^ value_new) & (0x01 << 7))) {
     setFlag(Flag::V);
+    return;
   }
+  remFlag(Flag::V);
 }
 
 // Break
@@ -356,20 +425,40 @@ void Cpu::flagActivationI() {}
 void Cpu::flagActivationZ(uint8_t value) {
   if (value == 0) {
     setFlag(Flag::Z);
+    return;
   }
+  remFlag(Flag::Z);
 }
 
 // Carry (sum)
-void Cpu::flagActivationC_Sum(uint16_t value) {
+void Cpu::flagActivationC_ovflw(uint16_t value) {
   if (value > 0xFF) {
     setFlag(Flag::C);
+    return;
   }
+  remFlag(Flag::C);
+}
+
+void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
+  if (value_2 > value_1) {
+    setFlag(Flag::C);
+    return;
+  }
+  remFlag(Flag::C);
 }
 
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
-void Cpu::flagActivationC_Sub(uint16_t result, uint8_t value) {
-  if (result >= value) {
+void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
+  if (value_1 == value_2) {
+    setFlag(Flag::Z);
+  } else {
+    remFlag(Flag::Z);
+  }
+
+  flagActivationN(value_1 - value_2);
+
+  if (value_1 >= value_2) {
     setFlag(Flag::C);
   } else {
     remFlag(Flag::C);
@@ -383,10 +472,10 @@ void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = AC + value + carry;
-  flagActivationC_Sum(AC + value + carry);
+  flagActivationC_ovflw(AC + value + carry);
   flagActivationN(result);
   flagActivationZ(result);
-  flagActivationV(value, result);
+  flagActivationV(AC, result);
   AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -405,8 +494,10 @@ void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
+
+  (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
-  flagActivationC_Sum(value << 0x01);
   flagActivationZ(result);
   memory.write(PC + 1, result);
   incrementPC(response.size + 0x01);
@@ -416,8 +507,10 @@ void Cpu::ASL_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t value = AC;
   uint8_t result = (AC << 0x01);
+
+  (value & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
-  flagActivationC_Sum(AC << 0x01);
   flagActivationZ(result);
   AC = value;
   incrementPC(0x01);
@@ -428,97 +521,111 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   uint8_t result = (AC & value);
 
-  if ((result & (0x01 << 7)) > 0x00) {
+  if ((result & (0x01 << 7))) {
     setFlag(Flag::N);
+  } else {
+    remFlag(Flag::N);
   }
-  if ((result & (0x01 << 6)) > 0x00) {
+  if ((result & (0x01 << 6))) {
     setFlag(Flag::V);
+  } else {
+    remFlag(Flag::V);
   }
   if (result == 0x00) {
     setFlag(Flag::Z);
+  } else {
+    remFlag(Flag::Z);
   }
+
   incrementPC(response.size + 0x01);
 }
 // Branch Instructions
-// - BPL (Branch on PLus)
+// - BPL (Branch on PLus) - Desvio quando FlagN = 0
 void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if ((AC & (0x01 << 7)) == 0x00) {
-    PC = response.address;
+
+  if (!chkFlag(Flag::N)) {
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BMI (Branch on MInus)
+// - BMI (Branch on MInus) - Desvio quando FlagN = 1
 void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  if ((AC & (0x01 << 7)) > 0x00) {
-    PC = response.address;
+
+  if (chkFlag(Flag::N)) {
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BVC (Branch on oVerflow Clear)
+// - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   if (!chkFlag(Flag::V)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BVS (Branch on oVerflow Set)
+// - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
 void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+
   if (chkFlag(Flag::V)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BCC (Branch on Carry Clear)
+// - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
 void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+
   if (!chkFlag(Flag::C)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BCS (Branch on Carry Set)
+// - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
 void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+
   if (chkFlag(Flag::C)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BNE (Branch on Not Equal)
+// - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
 void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+
   if (!chkFlag(Flag::Z)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
-// - BEQ (Branch on EQual)
+// - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
 void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
+
   if (chkFlag(Flag::Z)) {
-    PC = response.address;
+    PC = response.address + response.size;
     return;
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // BRK (BReaK)
 void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
@@ -544,40 +651,31 @@ void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = AC - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
-  AC = result;
+  flagActivationCMP(AC, value);
+
   incrementPC(response.size + 0x01);
 }
 // CPX (ComPare X register)
 void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = X - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
-  AC = result;
+  flagActivationCMP(X, value);
+
   incrementPC(response.size + 0x01);
 }
 // CPY (ComPare Y register)
 void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = Y - value;
-  flagActivationC_Sub(result, value);
-  flagActivationN(result);
-  flagActivationZ(result);
-  AC = result;
+  flagActivationCMP(Y, value);
+
   incrementPC(response.size + 0x01);
 }
 // DEC (DECrement memory)
 void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value - 1;
+  uint8_t result = value - 0x01;
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -587,10 +685,11 @@ void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value ^ AC;
+  uint8_t result = AC ^ value;
   flagActivationN(result);
   flagActivationZ(result);
-  memory.write(response.address, result);
+
+  AC = result;
   incrementPC(response.size + 0x01);
 }
 // Flag (Processor Status) Instructions
@@ -640,17 +739,16 @@ void Cpu::SED(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value + 1;
+  uint8_t result = value + 0x01;
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
   incrementPC(response.size + 0x01);
 }
-// JMP (JuMP)
+// JMP (JuMP)  [ok]Teste 1
 void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  uint8_t value = memory.read(response.address);
-  PC = value;
+  PC = response.address;
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
@@ -659,9 +757,7 @@ void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
   uint16_t nextOP = PC + response.size + 0x01;
   uint8_t nextOP_lsb = static_cast<uint8_t>(nextOP & 0x00FF);
   uint8_t nextOP_msb = static_cast<uint8_t>(nextOP >> 0x08);
-  std::cout << "nextOP: " << std::hex << (int)nextOP << "\n";
-  std::cout << "nextOP_lsb: " << std::hex << (int)nextOP_lsb << "\n";
-  std::cout << "nextOP_msb: " << std::hex << (int)nextOP_msb << "\n";
+
   stackPUSH(nextOP_lsb);
   stackPUSH(nextOP_msb);
 
@@ -676,7 +772,7 @@ void Cpu::LDA(AMResponse (Cpu::*Addressingmode)()) {
   AC = value;
   incrementPC(response.size + 0x01);
 }
-// LDX (LoaD X register)
+// LDX (LoaD X register)ADC #$0F
 void Cpu::LDX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
@@ -698,7 +794,7 @@ void Cpu::LDY(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  (value & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (value >> 0x01);
   flagActivationN(result);
   flagActivationZ(result);
@@ -707,7 +803,7 @@ void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
 }
 void Cpu::LSR_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+  (AC & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (AC >> 0x01);
   flagActivationN(result);
   flagActivationZ(result);
@@ -723,10 +819,11 @@ void Cpu::NOP(AMResponse (Cpu::*AddressingMode)()) {
 void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t result = value | AC;
+  uint8_t result = AC | value;
   flagActivationN(result);
   flagActivationZ(result);
-  memory.write(response.address, result);
+
+  AC = result;
   incrementPC(response.size + 0x01);
 }
 // Register Instructions
@@ -734,57 +831,82 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::TAX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X = AC;
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - TXA (Transfer X to A)
 void Cpu::TXA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = X;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - DEX (DEcrement X)
 void Cpu::DEX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X -= 0x01;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - INX (INcrement X)
 void Cpu::INX(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X += 0x01;
+  flagActivationN(X);
+  flagActivationZ(X);
   incrementPC(0x01);
 }
 // - TAY (Transfer A to Y)
 void Cpu::TAY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y = AC;
+  flagActivationN(AC);
+  flagActivationZ(AC);
   incrementPC(0x01);
 }
 // - TYA (Transfer Y to A)
 void Cpu::TYA(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = Y;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // - DEY (DEcrement Y)
 void Cpu::DEY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y -= 0x01;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // - INY (INcrement Y)
 void Cpu::INY(AMResponse (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y += 0x01;
+  flagActivationN(Y);
+  flagActivationZ(Y);
   incrementPC(0x01);
 }
 // ROL (ROtate Left)
 void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (value << 0x01) + carry;
-  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (value & (0x01 << 7));
+
+  uint8_t result = (value << 0x01) | old_carry;
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -792,9 +914,19 @@ void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
 }
 void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (AC << 0x01) + carry;
-  (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (AC & (0x01 << 7));
+
+  uint8_t result = (AC << 0x01) | old_carry;
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
+
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
@@ -805,8 +937,18 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (value >> 0x01) + (carry << 0x07);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (value & 0x01);
+
+  uint8_t result = (value >> 0x01) | (old_carry << 0x07);
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -815,8 +957,18 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::ROR_AC(AMResponse (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
-  uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = (AC >> 0x01) + (carry << 0x07);
+
+  uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
+  uint8_t new_carry = (AC & 0x01);
+
+  uint8_t result = (AC >> 0x01) | (old_carry << 0x07);
+
+  if (new_carry) {
+    setFlag(Flag::C);
+  } else {
+    remFlag(Flag::C);
+  }
+
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
@@ -844,11 +996,14 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  uint8_t result = AC - value - carry;
-  flagActivationC_Sub(result, value);
+
+  uint8_t result = AC - value + carry;
+
+  flagActivationC_unflw(AC, AC - value + carry);
+
   flagActivationN(result);
   flagActivationZ(result);
-  flagActivationV(value, result);
+  flagActivationV(AC, result);
   AC = result;
   incrementPC(response.size + 0x01);
 }

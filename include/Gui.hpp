@@ -25,7 +25,8 @@ private:
   sf::RectangleShape *gameScreen;
   sf::Text *gameScreenTitle;
   sf::Text *gameScreenInfo;
-  uint64_t clock{1};
+  sf::Text *gameScreenCount;
+  int64_t clock{1};
 
   sf::Image *gameImage;
   sf::Texture *gameTexture;
@@ -58,7 +59,7 @@ private:
   sf::Text *filePathText;
   sf::Text *keyMappingText;
 
-  std::array<bool, 3> buttonsLock{};
+  std::array<bool, 5> buttonsLock{};
   std::array<sf::RectangleShape *, 3> buttonsPress;
 
   Cpu &cpu;
@@ -66,6 +67,13 @@ private:
   std::array<sf::Color, 0xFF> colors{};
 
   void loadFrameInMemory(uint16_t begin);
+
+  void updateCpuCount();
+
+  // Se for false, significa que está em modo 
+  // de passo a passo; se não,
+  // está em modo de R(E)sume.
+  bool isDebugMode {true};
 };
 
 #endif
