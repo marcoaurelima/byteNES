@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <ostream>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
@@ -373,10 +374,16 @@ AMResponse Cpu::indirectX() {
   // uint8_t lsb = memory.read((PC + 1) + X + 1);
   // uint16_t address = (msb << 8) | lsb;
   //
-  uint8_t zpAddress = memory.read(PC + 1);
-  uint8_t msb = memory.read(zpAddress + X + 1);
-  uint8_t lsb = memory.read(zpAddress + X);
+  uint8_t zpAddress = memory.read(PC + 1) + X;
+  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
+
+  std::cout << "----------------- indirectX ------------------------\n";
+  std::cout << "zpAddress: " << zpAddress << std::endl;
+  std::cout << "msb: " << msb << std::endl;
+  std::cout << "lsb: " << lsb << std::endl;
+  std::cout << "address: " << address << std::endl;
 
   // std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X
   // << "\n"; std::cout << "indirectX msb: " << (int)msb << "\n"; std::cout <<
@@ -394,9 +401,15 @@ AMResponse Cpu::indirectY() {
   // return {address, 0x01};
 
   uint8_t zpAddress = memory.read(PC + 1);
-  uint8_t msb = memory.read(zpAddress + 1) + Y;
-  uint8_t lsb = memory.read(zpAddress);
-  uint16_t address = ((msb << 8) | lsb);
+  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t lsb = memory.read(zpAddress + 0);
+  uint16_t address = ((msb << 8) | lsb) + Y;
+  
+  std::cout << "----------------- indirectY ------------------------\n";
+  std::cout << "zpAddress: " << zpAddress << std::endl;
+  std::cout << "msb: " << msb << std::endl;
+  std::cout << "lsb: " << lsb << std::endl;
+  std::cout << "address: " << address << std::endl;
 
   // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X
   // << "\n"; std::cout << "indirectY msb: " << (int)msb << "\n"; std::cout <<

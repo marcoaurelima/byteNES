@@ -406,11 +406,9 @@ void Gui::loadFrameInMemory(uint16_t begin) {
   for (size_t y = 0; y < 30; y++) {
     for (size_t x = 0; x < 32; x++) {
       uint8_t value = cpu.getMemory().read(begin + i++);
-      if (value > 0x0F) {
-        value = 0x00;
-      }
 
-      sf::Color color = colors[value];
+      uint8_t index = value & 0x0F;
+      sf::Color color = colors[index];
       gameImage->setPixel(x, y, color);
       gameTexture->loadFromImage(*gameImage);
       gameSprite->setTexture(*gameTexture);
