@@ -279,11 +279,6 @@ void Cpu::next() {
   count++;
 
   if (ENABLE_LOGS_AFTER_OPCODE) {
-    // std::cout << std::hex << "| PC: " << (int)PC << " | SP: " << (int)SP
-    //           << " | AC: " << (int)AC << " | X: " << (int)X
-    //           << " | Y: " << (int)Y << " | SR: " << std::bitset<8>(SR)
-    //           << "\n\n";
-    // std::cout << "-------------------------------------------------------\n";
     std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
               << (int)PC << " | SP: " << std::setfill('0') << std::hex
               << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
@@ -320,9 +315,6 @@ AMResponse Cpu::zeropage() {
 }
 
 AMResponse Cpu::zeropageX() {
-  // std::cout << "| zeropageX" << std::endl;
-  // std::cout << "|   address: " << std::hex << (int)memory.read(PC + 1) <<
-  // std::endl; std::cout << "|         X: " << std::hex << (int)X << std::endl;
   uint8_t address = memory.read(PC + 1) + X;
   return {address, 0x01};
 }
@@ -370,67 +362,23 @@ AMResponse Cpu::indirect() {
 }
 
 AMResponse Cpu::indirectX() {
-  // uint8_t msb = memory.read((PC + 1) + X);
-  // uint8_t lsb = memory.read((PC + 1) + X + 1);
-  // uint16_t address = (msb << 8) | lsb;
-  //
   uint8_t zpAddress = memory.read(PC + 1) + X;
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
 
-  std::cout << "----------------- indirectX ------------------------\n";
-  std::cout << "zpAddress: " << zpAddress << std::endl;
-  std::cout << "msb: " << msb << std::endl;
-  std::cout << "lsb: " << lsb << std::endl;
-  std::cout << "address: " << address << std::endl;
-
-  // std::cout << "indirectX ZPADD | X: " << (int)zpAddress << " | " << (int)X
-  // << "\n"; std::cout << "indirectX msb: " << (int)msb << "\n"; std::cout <<
-  // "indirectX lsb:" << (int)lsb << "\n"; std::cout << "indirectX: " <<
-  // (int)address << "\n";
-
   return {address, 0x01};
 }
 
 AMResponse Cpu::indirectY() {
-  // uint8_t msb = memory.read(PC + 2);
-  // uint8_t lsb = memory.read(PC + 1);
-  // uint16_t address = (msb << 8) | lsb;
-  //
-  // return {address, 0x01};
-
   uint8_t zpAddress = memory.read(PC + 1);
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress + 0);
   uint16_t address = ((msb << 8) | lsb) + Y;
   
-  std::cout << "----------------- indirectY ------------------------\n";
-  std::cout << "zpAddress: " << zpAddress << std::endl;
-  std::cout << "msb: " << msb << std::endl;
-  std::cout << "lsb: " << lsb << std::endl;
-  std::cout << "address: " << address << std::endl;
-
-  // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X
-  // << "\n"; std::cout << "indirectY msb: " << (int)msb << "\n"; std::cout <<
-  // "indirectY lsb:" << (int)lsb << "\n"; std::cout << "indirectY: " <<
-  // (int)address << "\n";
-
   return {address, 0x01};
 }
 
-// AMResponse Cpu::relative() {
-//   uint16_t value = memory.read(PC + 1);
-//   uint8_t offset = ~(0x01 << 7) & value;
-//
-//   if ((value & (0x01 << 7)) == 0) {
-//     uint16_t address = PC + offset;
-//     return {address, 0x01};
-//   }
-//
-//   uint16_t address = PC - offset;
-//   return {address, 0x01};
-// }
 AMResponse Cpu::relative() {
   uint16_t value = memory.read(PC + 1);
 
@@ -448,8 +396,6 @@ AMResponse Cpu::relative() {
 // -- verificadores de flags
 // Negative
 void Cpu::flagActivationN(uint8_t value) {
-  // std::cout << "flagActivationN: " << (int)value << " : "
-  // << std::bitset<8>(value) << std::endl;
   if (value & (0x01 << 7)) {
     setFlag(Flag::N);
     return;
@@ -504,31 +450,6 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
 void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
-
-  // std::cout << "flagActivationCMP: " << (int)value_1 << " | " << (int)value_2
-  // << "\n";
-
-  // if (value_1 < value_2) {
-  //   remFlag(Flag::Z);
-  //   remFlag(Flag::C);
-  //   flagActivationN(value_1 - value_2);
-  //   return;
-  // }
-  //
-  // if (value_1 == value_2) {
-  //   setFlag(Flag::Z);
-  //   setFlag(Flag::C);
-  //   remFlag(Flag::N);
-  //   return;
-  // }
-  //
-  // if (value_1 > value_2) {
-  //   remFlag(Flag::Z);
-  //   setFlag(Flag::C);
-  //   flagActivationN(value_1 - value_2);
-  //   return;
-  // }
-
   if (value_1 == value_2) {
     setFlag(Flag::Z);
   } else {
@@ -644,8 +565,6 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
 // - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
 void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  // std::cout << "BVC addr: " << (int)response.address << "  size: " <<
-  // (int)response.size << "\n";
   if (!chkFlag(Flag::V)) {
     PC = response.address + response.size;
     return;
@@ -732,33 +651,24 @@ void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
 void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  // uint8_t result = AC - value;
   flagActivationCMP(AC, value);
-  // flagActivationN(result);
-  // flagActivationZ(result);
-  // AC = result;
+
   incrementPC(response.size + 0x01);
 }
 // CPX (ComPare X register)
 void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  // uint8_t result = X - value;
   flagActivationCMP(X, value);
-  // flagActivationN(result);
-  // flagActivationZ(result);
-  // AC = result;
+
   incrementPC(response.size + 0x01);
 }
 // CPY (ComPare Y register)
 void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
-  // uint8_t result = Y - value;
   flagActivationCMP(Y, value);
-  // flagActivationN(result);
-  // flagActivationZ(result);
-  // AC = result;
+
   incrementPC(response.size + 0x01);
 }
 // DEC (DECrement memory)
@@ -778,7 +688,7 @@ void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t result = AC ^ value;
   flagActivationN(result);
   flagActivationZ(result);
-  // memory.write(response.address, result);
+
   AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -838,10 +748,7 @@ void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
 // JMP (JuMP)  [ok]Teste 1
 void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
-  // std::cout << "JMP - addr: " << (int)response.address << "\n";
   PC = response.address;
-  // uint8_t value = memory.read(response.address);
-  // PC = value;
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
 void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
@@ -850,9 +757,7 @@ void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
   uint16_t nextOP = PC + response.size + 0x01;
   uint8_t nextOP_lsb = static_cast<uint8_t>(nextOP & 0x00FF);
   uint8_t nextOP_msb = static_cast<uint8_t>(nextOP >> 0x08);
-  // std::cout << "nextOP: " << std::hex << (int)nextOP << "\n";
-  // std::cout << "nextOP_lsb: " << std::hex << (int)nextOP_lsb << "\n";
-  // std::cout << "nextOP_msb: " << std::hex << (int)nextOP_msb << "\n";
+
   stackPUSH(nextOP_lsb);
   stackPUSH(nextOP_msb);
 
@@ -917,7 +822,7 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t result = AC | value;
   flagActivationN(result);
   flagActivationZ(result);
-  // memory.write(response.address, result);
+
   AC = result;
   incrementPC(response.size + 0x01);
 }
@@ -1001,7 +906,7 @@ void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
   } else {
     remFlag(Flag::C);
   }
-  // (result & (0x01 << 7)) ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
@@ -1021,7 +926,7 @@ void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
     remFlag(Flag::C);
   }
 
-  // (result & (0x01 << 7)) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
+
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
@@ -1091,16 +996,8 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   AMResponse response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
-  // uint8_t result = AC - value + carry;
+
   uint8_t result = AC - value + carry;
-  // ATENÇÃO
-  // -flagActivationC_Sub---------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // flagActivationC_Sub(result, value);
-  // if ((AC - value + carry) >= 0x0100) {
-  //   setFlag(Flag::C); // Ativa a flag de carry se houver empréstimo
-  // } else {
-  //   remFlag(Flag::C);
-  // }
 
   flagActivationC_unflw(AC, AC - value + carry);
 
