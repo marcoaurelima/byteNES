@@ -319,12 +319,15 @@ AMResponse Cpu::zeropage() {
 }
 
 AMResponse Cpu::zeropageX() {
-  uint8_t address = memory.read(PC + X);
+  // std::cout << "| zeropageX" << std::endl;
+  // std::cout << "|   address: " << std::hex << (int)memory.read(PC + 1) <<
+  // std::endl; std::cout << "|         X: " << std::hex << (int)X << std::endl;
+  uint8_t address = memory.read(PC + 1) + X;
   return {address, 0x01};
 }
 
 AMResponse Cpu::zeropageY() {
-  uint8_t address = memory.read(PC + Y);
+  uint8_t address = memory.read(PC + 1) + Y;
   return {address, 0x01};
 }
 AMResponse Cpu::absolute() {
@@ -391,9 +394,9 @@ AMResponse Cpu::indirectY() {
   // return {address, 0x01};
 
   uint8_t zpAddress = memory.read(PC + 1);
-  uint8_t msb = memory.read(zpAddress + 1);
+  uint8_t msb = memory.read(zpAddress + 1) + Y;
   uint8_t lsb = memory.read(zpAddress);
-  uint16_t address = ((msb << 8) | lsb) + Y;
+  uint16_t address = ((msb << 8) | lsb);
 
   // std::cout << "indirectY ZPADD | X: " << (int)zpAddress << " | " << (int)X
   // << "\n"; std::cout << "indirectY msb: " << (int)msb << "\n"; std::cout <<

@@ -15,7 +15,7 @@
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
-  window->setVerticalSyncEnabled(true);
+  // window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256, 240));
   gameScreen->setPosition(50, 50);
