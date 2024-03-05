@@ -2,3 +2,33 @@ emulador checklist:
 
 BUGS:
 [ ] No Snake, todas as direções funcionam, menos o UP. Quando pressionado W, de código 0x77, ocorre um erro na renderização da cabeça da ccobrinha, que aparece em um local completamente aleatório da tela. Outro comportamento interessante é que se for pressionado o UP, a cobrinha só consegue mexer mais 2 vezes antes do programa crashar. O crash ocorre por que por algum motivo o PC recebe um endereço inválido. 
+
+CONFERIR:
+[ ] jsr
+[ ] rts
+[ ] lda
+[ ] sta
+[ ] and
+[ ] clc
+[ ] adc
+[ ] jmp
+[ ] cmp
+[ ] beq
+
+[ ] bit
+[ ] bne
+[ ] inc
+[ ] ldx
+[ ] inx
+[ ] cpx
+[ ] dex
+[ ] txa
+[ ] bpl
+[ ] lsr
+[ ] bcs
+[ ] sec
+[ ] sbc
+[ ] bcc
+[ ] dec
+[ ] ldy
+[ ] nop
