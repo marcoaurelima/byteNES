@@ -1,9 +1,4 @@
 emulador checklist:
 
-urgente:
-[ ] remover as funções flagActivation()
-	explicação: aparentemente cada opcode lida de forma diferente com as ativações de flag; algumas precisam somente ativar a flag no mesmo processo, outras precisam ativar ou desativar no mesmo processo. Isso impossibilita ter 1 função única para doois comportamentos diferentes.
-
-[ ] verificar funções de branch
-[ ] verificar funções de jump
-[ ] verificar opcode BRK
+BUGS:
+[ ] No Snake, todas as direções funcionam, menos o UP. Quando pressionado W, de código 0x77, ocorre um erro na renderização da cabeça da ccobrinha, que aparece em um local completamente aleatório da tela. Outro comportamento interessante é que se for pressionado o UP, a cobrinha só consegue mexer mais 2 vezes antes do programa crashar. O crash ocorre por que por algum motivo o PC recebe um endereço inválido. 

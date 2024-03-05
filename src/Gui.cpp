@@ -17,7 +17,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
   // window->setVerticalSyncEnabled(true);
 
-  gameScreen = new sf::RectangleShape(sf::Vector2f(256, 240));
+  gameScreen = new sf::RectangleShape(sf::Vector2f(256, 256));
   gameScreen->setPosition(50, 50);
   gameScreen->setFillColor(sf::Color(30, 30, 30));
   gameScreen->setOutlineColor(sf::Color(80, 80, 80));
@@ -25,7 +25,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   gameScreen->setScale(sf::Vector2f(2, 2));
 
   gameImage = new sf::Image();
-  gameImage->create(32, 30, sf::Color(15, 15, 15));
+  gameImage->create(32, 32, sf::Color(15, 15, 15));
 
   gameTexture = new sf::Texture();
   gameTexture->loadFromImage(*gameImage);
@@ -70,11 +70,11 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
     flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     flagsTiles[i]->setOutlineColor(sf::Color::Black);
     flagsTiles[i]->setOutlineThickness(2);
-    flagsTiles[i]->setPosition(130 + ((flagsTiles.size() - i - 1) * 19.8), 543);
+    flagsTiles[i]->setPosition(130 + ((flagsTiles.size() - i - 1) * 19.8), 573);
   }
 
   flagsBar = new sf::RectangleShape(sf::Vector2f(242, 25));
-  flagsBar->setPosition(50, 540);
+  flagsBar->setPosition(50, 570);
   flagsBar->setFillColor(sf::Color(20, 20, 20));
   flagsBar->setOutlineColor(sf::Color(80, 80, 80));
   flagsBar->setOutlineThickness(1);
@@ -84,7 +84,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   flagsText->setFillColor(sf::Color::White);
   flagsText->setString("FLAG    N V   B D I Z C");
   flagsText->setCharacterSize(20);
-  flagsText->setPosition(55, 538);
+  flagsText->setPosition(55, 568);
 
   // Registers monitor
   for (size_t i = 0; i < registersTiles.size(); i++) {
@@ -106,7 +106,7 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   }
 
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
-  RegistersBar->setPosition(300, 540);
+  RegistersBar->setPosition(300, 570);
   RegistersBar->setFillColor(sf::Color(20, 20, 20));
   RegistersBar->setOutlineColor(sf::Color(80, 80, 80));
   RegistersBar->setOutlineThickness(1);
@@ -116,14 +116,14 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
   registersLabelText->setFillColor(sf::Color::White);
   registersLabelText->setString("REG    PC SP AC X  Y  SR");
   registersLabelText->setCharacterSize(20);
-  registersLabelText->setPosition(310, 538);
+  registersLabelText->setPosition(310, 568);
 
   registersText = new sf::Text();
   registersText->setFont(*font);
   registersText->setFillColor(sf::Color::Green);
   registersText->setString(registerSStr.str());
   registersText->setCharacterSize(20);
-  registersText->setPosition(359, 558);
+  registersText->setPosition(359, 588);
 
   // Zero Page monitor
   zeroPageScreenTitle = new sf::Text();
@@ -314,7 +314,7 @@ void Gui::show() {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2]) {
         buttonsLock[2] = true;
         buttonsPress[2]->setFillColor(sf::Color::Blue);
-        isDebugMode = false;
+        isDebugMode = !isDebugMode;
       } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::E) &&
                  buttonsLock[2]) {
         buttonsLock[2] = false;
@@ -417,7 +417,7 @@ void Gui::show() {
 // 256 x 240
 void Gui::loadFrameInMemory(uint16_t begin) {
   uint16_t i = 0;
-  for (size_t y = 0; y < 30; y++) {
+  for (size_t y = 0; y < 32; y++) {
     for (size_t x = 0; x < 32; x++) {
       uint8_t value = cpu.getMemory().read(begin + i++);
 
