@@ -342,6 +342,20 @@ void Gui::show() {
                  buttonsLock[4]) {
         buttonsLock[4] = false;
       }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+       cpu.getMemory().write(0xFF, 0x77);
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+       cpu.getMemory().write(0xFF, 0x64);
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+       cpu.getMemory().write(0xFF, 0x73);
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+       cpu.getMemory().write(0xFF, 0x61);
+      }
+
     }
 
     window->clear();
