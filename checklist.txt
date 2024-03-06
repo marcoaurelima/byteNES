@@ -15,9 +15,9 @@ CONFERIR:
 [ ] cmp
 [ ] beq
 
-[ ] bit
+[x] bit
 [ ] bne
-[ ] inc
+[x] inc
 [ ] ldx
 [ ] inx
 [ ] cpx

@@ -281,8 +281,8 @@ void Gui::updateCpuCount() {
 
 void Gui::show() {
 
-  sf::Clock timer;
-  timer.restart();
+  // sf::Clock timer;
+  // timer.restart();
 
   while (window->isOpen()) {
     sf::Event event;
@@ -405,12 +405,12 @@ void Gui::show() {
     window->display();
     flags++;
 
-    if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
+    // if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
       if (!isDebugMode) {
-        timer.restart();
+        // timer.restart();
         cpu.next();
       }
-    }
+    // }
   }
 }
 
