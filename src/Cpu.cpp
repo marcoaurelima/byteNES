@@ -997,9 +997,9 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
 
-  uint8_t result = AC - value + carry;
+  uint16_t result = AC - value - carry;
 
-  flagActivationC_unflw(AC, AC - value + carry);
+  flagActivationC_unflw(AC, AC - value - carry);
 
   flagActivationN(result);
   flagActivationZ(result);
