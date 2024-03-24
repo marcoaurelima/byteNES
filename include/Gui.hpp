@@ -26,7 +26,7 @@ private:
   sf::Text *gameScreenTitle;
   sf::Text *gameScreenInfo;
   sf::Text *gameScreenCount;
-  int64_t clock{1};
+  int64_t clock{60};
 
   sf::Image *gameImage;
   sf::Texture *gameTexture;
