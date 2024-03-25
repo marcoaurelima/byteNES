@@ -32,6 +32,7 @@ $(OBJ)/Gui.o: $(SRC)/Gui.cpp
 clean:
 	@rm -rf obj
 	@mkdir obj
+	@mkdir bin
 	
 run:
 	@$(BIN)/emulator
