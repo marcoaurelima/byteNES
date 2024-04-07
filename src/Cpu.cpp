@@ -40,7 +40,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr); };
   // BIT (test BITs)
   opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage); };
-  opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::zeropage); };
+  opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::absolute); };
   // Branch Instructions
   opcodeMapping[0x10] = [this]() { this->BPL(&Cpu::relative); };
   opcodeMapping[0x30] = [this]() { this->BMI(&Cpu::relative); };
@@ -255,9 +255,9 @@ void Cpu::next() {
   generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
 
-  bool ENABLE_LOG_BEFORE_OPCODE = true;
+  bool ENABLE_LOG_BEFORE_OPCODE = false;
   bool ENABLE_LOG_OPCODE = false;
-  bool ENABLE_LOGS_AFTER_OPCODE = false;
+  bool ENABLE_LOGS_AFTER_OPCODE = true;
 
   if (ENABLE_LOG_BEFORE_OPCODE) {
     std::cout << "-- [" << std::dec << count + 1 << "] -------------\n";
