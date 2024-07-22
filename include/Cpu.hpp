@@ -29,7 +29,7 @@ const uint16_t STACK_ADDRESS = 0x1000;
 const bool STOP_BRK = false;
 
 // Tipo de retorno dos Addressing Modes
-struct AMResponse {
+struct MemoryAccessResult {
   uint16_t address; // Endereço calculado
   uint8_t size;     // Tamanho da operação
 };
@@ -54,18 +54,18 @@ public:
   void reset();
 
   // Modos de endereçamento
-  AMResponse immediate();
-  AMResponse zeropage();
-  AMResponse zeropageX();
-  AMResponse zeropageY();
-  AMResponse absolute();
-  AMResponse absoluteX();
-  AMResponse absoluteY();
-  AMResponse indirect();
-  AMResponse indirectX();
-  AMResponse indirectY();
-  AMResponse relative();
-  AMResponse accumulator();
+  MemoryAccessResult immediate();
+  MemoryAccessResult zeropage();
+  MemoryAccessResult zeropageX();
+  MemoryAccessResult zeropageY();
+  MemoryAccessResult absolute();
+  MemoryAccessResult absoluteX();
+  MemoryAccessResult absoluteY();
+  MemoryAccessResult indirect();
+  MemoryAccessResult indirectX();
+  MemoryAccessResult indirectY();
+  MemoryAccessResult relative();
+  MemoryAccessResult accumulator();
 
   // Funções de verificação de ativação de Flags à partir de valores
   void flagActivationN(uint8_t value);
@@ -80,96 +80,96 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void ADC(AMResponse (Cpu::*AddressingMode)());
+  void ADC(MemoryAccessResult (Cpu::*AddressingMode)());
   // AND (bitwise AND with accumulator)
-  void AND(AMResponse (Cpu::*AddressingMode)());
+  void AND(MemoryAccessResult (Cpu::*AddressingMode)());
   // ASL (Arithmetic Shift Left)
-  void ASL(AMResponse (Cpu::*AddressingMode)());
-  void ASL_AC(AMResponse (Cpu::*AddressingMode)());
+  void ASL(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ASL_AC(MemoryAccessResult (Cpu::*AddressingMode)());
   // BIT (test BITs)
-  void BIT(AMResponse (Cpu::*AddressingMode)());
+  void BIT(MemoryAccessResult (Cpu::*AddressingMode)());
   // Branch Instructions
-  void BPL(AMResponse (Cpu::*AddressingMode)());
-  void BMI(AMResponse (Cpu::*AddressingMode)());
-  void BVC(AMResponse (Cpu::*AddressingMode)());
-  void BVS(AMResponse (Cpu::*AddressingMode)());
-  void BCC(AMResponse (Cpu::*AddressingMode)());
-  void BCS(AMResponse (Cpu::*AddressingMode)());
-  void BNE(AMResponse (Cpu::*AddressingMode)());
-  void BEQ(AMResponse (Cpu::*AddressingMode)());
+  void BPL(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BMI(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BVC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BVS(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BCC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BCS(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BNE(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BEQ(MemoryAccessResult (Cpu::*AddressingMode)());
   // BRK (BReaK)
-  void BRK(AMResponse (Cpu::*AddressingMode)());
+  void BRK(MemoryAccessResult (Cpu::*AddressingMode)());
   // CMP (CoMPare accumulator)
-  void CMP(AMResponse (Cpu::*AddressingMode)());
+  void CMP(MemoryAccessResult (Cpu::*AddressingMode)());
   // CPX (ComPare X register)
-  void CPX(AMResponse (Cpu::*AddressingMode)());
+  void CPX(MemoryAccessResult (Cpu::*AddressingMode)());
   // CPY (ComPare Y register)
-  void CPY(AMResponse (Cpu::*AddressingMode)());
+  void CPY(MemoryAccessResult (Cpu::*AddressingMode)());
   // DEC (DECrement memory)
-  void DEC(AMResponse (Cpu::*AddressingMode)());
+  void DEC(MemoryAccessResult (Cpu::*AddressingMode)());
   // EOR (bitwise Exclusive OR)
-  void EOR(AMResponse (Cpu::*AddressingMode)());
+  void EOR(MemoryAccessResult (Cpu::*AddressingMode)());
   // Flag (Processor Status) Instructions
-  void CLC(AMResponse (Cpu::*AddressingMode)());
-  void SEC(AMResponse (Cpu::*AddressingMode)());
-  void CLI(AMResponse (Cpu::*AddressingMode)());
-  void SEI(AMResponse (Cpu::*AddressingMode)());
-  void CLV(AMResponse (Cpu::*AddressingMode)());
-  void CLD(AMResponse (Cpu::*AddressingMode)());
-  void SED(AMResponse (Cpu::*AddressingMode)());
+  void CLC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void SEC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CLI(MemoryAccessResult (Cpu::*AddressingMode)());
+  void SEI(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CLV(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CLD(MemoryAccessResult (Cpu::*AddressingMode)());
+  void SED(MemoryAccessResult (Cpu::*AddressingMode)());
   // INC (INCrement memory)
-  void INC(AMResponse (Cpu::*AddressingMode)());
+  void INC(MemoryAccessResult (Cpu::*AddressingMode)());
   // JMP (JuMP)
-  void JMP(AMResponse (Cpu::*AddressingMode)());
+  void JMP(MemoryAccessResult (Cpu::*AddressingMode)());
   // JSR (Jump to SubRoutine)
-  void JSR(AMResponse (Cpu::*AddressingMode)());
+  void JSR(MemoryAccessResult (Cpu::*AddressingMode)());
   // LDA (LoaD Accumulator)
-  void LDA(AMResponse (Cpu::*AddressingMode)());
+  void LDA(MemoryAccessResult (Cpu::*AddressingMode)());
   // LDX (LoaD X register)
-  void LDX(AMResponse (Cpu::*AddressingMode)());
+  void LDX(MemoryAccessResult (Cpu::*AddressingMode)());
   // LDY (LoaD Y register)
-  void LDY(AMResponse (Cpu::*AddressingMode)());
+  void LDY(MemoryAccessResult (Cpu::*AddressingMode)());
   // LSR (Logical Shift Right)
-  void LSR(AMResponse (Cpu::*AddressingMode)());
-  void LSR_AC(AMResponse (Cpu::*AddressingMode)());
+  void LSR(MemoryAccessResult (Cpu::*AddressingMode)());
+  void LSR_AC(MemoryAccessResult (Cpu::*AddressingMode)());
   // NOP (No OPeration)
-  void NOP(AMResponse (Cpu::*AddressingMode)());
+  void NOP(MemoryAccessResult (Cpu::*AddressingMode)());
   // ORA (bitwise OR with Accumulator)
-  void ORA(AMResponse (Cpu::*AddressingMode)());
+  void ORA(MemoryAccessResult (Cpu::*AddressingMode)());
   // Register Instructions
-  void TAX(AMResponse (Cpu::*AddressingMode)());
-  void TXA(AMResponse (Cpu::*AddressingMode)());
-  void DEX(AMResponse (Cpu::*AddressingMode)());
-  void INX(AMResponse (Cpu::*AddressingMode)());
-  void TAY(AMResponse (Cpu::*AddressingMode)());
-  void TYA(AMResponse (Cpu::*AddressingMode)());
-  void DEY(AMResponse (Cpu::*AddressingMode)());
-  void INY(AMResponse (Cpu::*AddressingMode)());
+  void TAX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TXA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void DEX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void INX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TAY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TYA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void DEY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void INY(MemoryAccessResult (Cpu::*AddressingMode)());
   // ROL (ROtate Left)
-  void ROL(AMResponse (Cpu::*AddressingMode)());
-  void ROL_AC(AMResponse (Cpu::*AddressingMode)());
+  void ROL(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ROL_AC(MemoryAccessResult (Cpu::*AddressingMode)());
   // ROR (ROtate Right)
-  void ROR(AMResponse (Cpu::*AddressingMode)());
-  void ROR_AC(AMResponse (Cpu::*AddressingMode)());
+  void ROR(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ROR_AC(MemoryAccessResult (Cpu::*AddressingMode)());
   // RTI (ReTurn from Interrupt)
-  void RTI(AMResponse (Cpu::*AddressingMode)());
+  void RTI(MemoryAccessResult (Cpu::*AddressingMode)());
   // RTS (ReTurn from Subroutine)
-  void RTS(AMResponse (Cpu::*AddressingMode)());
+  void RTS(MemoryAccessResult (Cpu::*AddressingMode)());
   // SBC (SuBtract with Carry)
-  void SBC(AMResponse (Cpu::*AddressingMode)());
+  void SBC(MemoryAccessResult (Cpu::*AddressingMode)());
   // STA (STore Accumulator)
-  void STA(AMResponse (Cpu::*AddressingMode)());
+  void STA(MemoryAccessResult (Cpu::*AddressingMode)());
   // Stack Instructions
-  void TXS(AMResponse (Cpu::*AddressingMode)());
-  void TSX(AMResponse (Cpu::*AddressingMode)());
-  void PHA(AMResponse (Cpu::*AddressingMode)());
-  void PLA(AMResponse (Cpu::*AddressingMode)());
-  void PHP(AMResponse (Cpu::*AddressingMode)());
-  void PLP(AMResponse (Cpu::*AddressingMode)());
+  void TXS(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TSX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void PHA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void PLA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void PHP(MemoryAccessResult (Cpu::*AddressingMode)());
+  void PLP(MemoryAccessResult (Cpu::*AddressingMode)());
   // STX (STore X register)
-  void STX(AMResponse (Cpu::*AddressingMode)());
+  void STX(MemoryAccessResult (Cpu::*AddressingMode)());
   // STY (STore Y register)
-  void STY(AMResponse (Cpu::*AddressingMode)());
+  void STY(MemoryAccessResult (Cpu::*AddressingMode)());
 
   void setAsmAddress(uint16_t address);
 

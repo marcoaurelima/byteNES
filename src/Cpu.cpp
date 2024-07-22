@@ -297,33 +297,33 @@ void Cpu::next() {
 
 void Cpu::reset() {
   memory.reset();
-  PC = AC = X = Y = 0X00;
+  PC = AC = X = Y = 0x00;
   SR = 0x30;
   SP = 0xFF;
 }
 
 // Modos de endereçamento
-AMResponse Cpu::immediate() {
+MemoryAccessResult Cpu::immediate() {
   uint16_t address = (PC + 1);
 
   return {address, 0x01};
 }
 
-AMResponse Cpu::zeropage() {
+MemoryAccessResult Cpu::zeropage() {
   uint8_t address = memory.read(PC + 1);
   return {address, 0x01};
 }
 
-AMResponse Cpu::zeropageX() {
+MemoryAccessResult Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1) + X;
   return {address, 0x01};
 }
 
-AMResponse Cpu::zeropageY() {
+MemoryAccessResult Cpu::zeropageY() {
   uint8_t address = memory.read(PC + 1) + Y;
   return {address, 0x01};
 }
-AMResponse Cpu::absolute() {
+MemoryAccessResult Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
@@ -331,7 +331,7 @@ AMResponse Cpu::absolute() {
   return {address, 0x02};
 }
 
-AMResponse Cpu::absoluteX() {
+MemoryAccessResult Cpu::absoluteX() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + X;
@@ -339,7 +339,7 @@ AMResponse Cpu::absoluteX() {
   return {address, 0x02};
 }
 
-AMResponse Cpu::absoluteY() {
+MemoryAccessResult Cpu::absoluteY() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + Y;
@@ -347,7 +347,7 @@ AMResponse Cpu::absoluteY() {
   return {address, 0x02};
 }
 
-AMResponse Cpu::indirect() {
+MemoryAccessResult Cpu::indirect() {
 
   uint8_t msb_op = memory.read(PC + 2);
   uint8_t lsb_op = memory.read(PC + 1);
@@ -361,7 +361,7 @@ AMResponse Cpu::indirect() {
   return {address, 0x01};
 }
 
-AMResponse Cpu::indirectX() {
+MemoryAccessResult Cpu::indirectX() {
   uint8_t zpAddress = memory.read(PC + 1) + X;
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress);
@@ -370,7 +370,7 @@ AMResponse Cpu::indirectX() {
   return {address, 0x01};
 }
 
-AMResponse Cpu::indirectY() {
+MemoryAccessResult Cpu::indirectY() {
   uint8_t zpAddress = memory.read(PC + 1);
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress + 0);
@@ -379,7 +379,7 @@ AMResponse Cpu::indirectY() {
   return {address, 0x01};
 }
 
-AMResponse Cpu::relative() {
+MemoryAccessResult Cpu::relative() {
   uint16_t value = memory.read(PC + 1);
 
   if ((value & (0x01 << 7)) == 0) {
@@ -467,8 +467,8 @@ void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
 
 // Implementações das instruções
 // ADC (ADd with Carry)
-void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = AC + value + carry;
@@ -480,8 +480,8 @@ void Cpu::ADC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // AND (bitwise AND with accumulator)
-void Cpu::AND(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value & AC;
   flagActivationN(result);
@@ -490,8 +490,8 @@ void Cpu::AND(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // ASL (Arithmetic Shift Left)
-void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
 
@@ -503,7 +503,7 @@ void Cpu::ASL(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
-void Cpu::ASL_AC(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t value = AC;
   uint8_t result = (AC << 0x01);
@@ -516,8 +516,8 @@ void Cpu::ASL_AC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // BIT (test BITs)
-void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BIT(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = (AC & value);
 
@@ -541,8 +541,8 @@ void Cpu::BIT(AMResponse (Cpu::*Addressingmode)()) {
 }
 // Branch Instructions
 // - BPL (Branch on PLus) - Desvio quando FlagN = 0
-void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BPL(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::N)) {
     PC = response.address + response.size;
@@ -552,8 +552,8 @@ void Cpu::BPL(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BMI (Branch on MInus) - Desvio quando FlagN = 1
-void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BMI(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::N)) {
     PC = response.address + response.size;
@@ -563,8 +563,8 @@ void Cpu::BMI(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
-void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BVC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   if (!chkFlag(Flag::V)) {
     PC = response.address + response.size;
     return;
@@ -573,8 +573,8 @@ void Cpu::BVC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
-void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BVS(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::V)) {
     PC = response.address + response.size;
@@ -584,8 +584,8 @@ void Cpu::BVS(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
-void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BCC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::C)) {
     PC = response.address + response.size;
@@ -595,8 +595,8 @@ void Cpu::BCC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
-void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BCS(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::C)) {
     PC = response.address + response.size;
@@ -606,8 +606,8 @@ void Cpu::BCS(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
-void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BNE(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::Z)) {
     PC = response.address + response.size;
@@ -617,8 +617,8 @@ void Cpu::BNE(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
-void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::BEQ(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::Z)) {
     PC = response.address + response.size;
@@ -628,7 +628,7 @@ void Cpu::BEQ(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size);
 }
 // BRK (BReaK)
-void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::BRK(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   incrementPC(0x01);
   uint8_t PC_lsb = static_cast<uint8_t>(PC & 0xFF);
@@ -648,32 +648,32 @@ void Cpu::BRK(AMResponse (Cpu::*Addressingmode)()) {
   PC = address;
 }
 // CMP (CoMPare accumulator)
-void Cpu::CMP(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::CMP(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(AC, value);
 
   incrementPC(response.size + 0x01);
 }
 // CPX (ComPare X register)
-void Cpu::CPX(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(X, value);
 
   incrementPC(response.size + 0x01);
 }
 // CPY (ComPare Y register)
-void Cpu::CPY(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(Y, value);
 
   incrementPC(response.size + 0x01);
 }
 // DEC (DECrement memory)
-void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value - 0x01;
   flagActivationN(result);
@@ -682,8 +682,8 @@ void Cpu::DEC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // EOR (bitwise Exclusive OR)
-void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = AC ^ value;
   flagActivationN(result);
@@ -694,50 +694,50 @@ void Cpu::EOR(AMResponse (Cpu::*Addressingmode)()) {
 }
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
-void Cpu::CLC(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::CLC(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::C);
   incrementPC(0x01);
 }
 // - SEC (SEt Carry)
-void Cpu::SEC(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::SEC(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
 }
 // - CLI (CLear Interrupt)
-void Cpu::CLI(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::CLI(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
 }
 // - SEI (SEt Interrupt)
-void Cpu::SEI(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::SEI(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
 }
 // - CLV (CLear oVerflow)
-void Cpu::CLV(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::CLV(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
 }
 // - CLD (CLear Decimal)
-void Cpu::CLD(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::CLD(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
 }
 // - SED (SEt Decimal)
-void Cpu::SED(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::SED(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
 }
 // INC (INCrement memory)
-void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::INC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value + 0x01;
   flagActivationN(result);
@@ -746,13 +746,13 @@ void Cpu::INC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // JMP (JuMP)  [ok]Teste 1
-void Cpu::JMP(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::JMP(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   PC = response.address;
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
-void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::JSR(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
 
   uint16_t nextOP = PC + response.size + 0x01;
   uint8_t nextOP_lsb = static_cast<uint8_t>(nextOP & 0x00FF);
@@ -764,8 +764,8 @@ void Cpu::JSR(AMResponse (Cpu::*Addressingmode)()) {
   PC = response.address;
 }
 // LDA (LoaD Accumulator)
-void Cpu::LDA(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::LDA(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
   flagActivationZ(value);
@@ -773,8 +773,8 @@ void Cpu::LDA(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // LDX (LoaD X register)ADC #$0F
-void Cpu::LDX(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
   flagActivationZ(value);
@@ -782,8 +782,8 @@ void Cpu::LDX(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // LDY (LoaD Y register)
-void Cpu::LDY(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
   flagActivationZ(value);
@@ -791,8 +791,8 @@ void Cpu::LDY(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(response.size + 0x01);
 }
 // LSR (Logical Shift Right)
-void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (value >> 0x01);
@@ -801,7 +801,7 @@ void Cpu::LSR(AMResponse (Cpu::*Addressingmode)()) {
   memory.write(response.address, result);
   incrementPC(response.size + 0x01);
 }
-void Cpu::LSR_AC(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::LSR_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (AC >> 0x01);
@@ -811,13 +811,13 @@ void Cpu::LSR_AC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // NOP (No OPeration)
-void Cpu::NOP(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::NOP(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   incrementPC(0x01);
 }
 // ORA (bitwise OR with Accumulator)
-void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::ORA(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = AC | value;
   flagActivationN(result);
@@ -828,7 +828,7 @@ void Cpu::ORA(AMResponse (Cpu::*Addressingmode)()) {
 }
 // Register Instructions
 // - TAX (Transfer A to X)
-void Cpu::TAX(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::TAX(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X = AC;
   flagActivationN(AC);
@@ -836,7 +836,7 @@ void Cpu::TAX(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - TXA (Transfer X to A)
-void Cpu::TXA(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::TXA(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = X;
   flagActivationN(X);
@@ -844,7 +844,7 @@ void Cpu::TXA(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - DEX (DEcrement X)
-void Cpu::DEX(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::DEX(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X -= 0x01;
   flagActivationN(X);
@@ -852,7 +852,7 @@ void Cpu::DEX(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - INX (INcrement X)
-void Cpu::INX(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::INX(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   X += 0x01;
   flagActivationN(X);
@@ -860,7 +860,7 @@ void Cpu::INX(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - TAY (Transfer A to Y)
-void Cpu::TAY(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::TAY(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y = AC;
   flagActivationN(AC);
@@ -868,7 +868,7 @@ void Cpu::TAY(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - TYA (Transfer Y to A)
-void Cpu::TYA(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::TYA(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   AC = Y;
   flagActivationN(Y);
@@ -876,7 +876,7 @@ void Cpu::TYA(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - DEY (DEcrement Y)
-void Cpu::DEY(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::DEY(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y -= 0x01;
   flagActivationN(Y);
@@ -884,7 +884,7 @@ void Cpu::DEY(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // - INY (INcrement Y)
-void Cpu::INY(AMResponse (Cpu::*AddressingMode)()) {
+void Cpu::INY(MemoryAccessResult (Cpu::*AddressingMode)()) {
   static_cast<void>(AddressingMode);
   Y += 0x01;
   flagActivationN(Y);
@@ -892,8 +892,8 @@ void Cpu::INY(AMResponse (Cpu::*AddressingMode)()) {
   incrementPC(0x01);
 }
 // ROL (ROtate Left)
-void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::ROL(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
 
   uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -912,7 +912,7 @@ void Cpu::ROL(AMResponse (Cpu::*Addressingmode)()) {
   memory.write(response.address, result);
   incrementPC(response.size + 0x01);
 }
-void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
 
   uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -933,8 +933,8 @@ void Cpu::ROL_AC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // ROR (ROtate Right)
-void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::ROR(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
 
@@ -954,7 +954,7 @@ void Cpu::ROR(AMResponse (Cpu::*Addressingmode)()) {
   memory.write(response.address, result);
   incrementPC(response.size + 0x01);
 }
-void Cpu::ROR_AC(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::ROR_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
 
@@ -975,7 +975,7 @@ void Cpu::ROR_AC(AMResponse (Cpu::*Addressingmode)()) {
   incrementPC(0x01);
 }
 // RTI (ReTurn from Interrupt)
-void Cpu::RTI(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::RTI(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t PC_msb = stackPOP();
   uint8_t PC_lsb = stackPOP();
@@ -984,7 +984,7 @@ void Cpu::RTI(AMResponse (Cpu::*Addressingmode)()) {
   PC = (PC_msb << 8) | PC_lsb;
 }
 // RTS (ReTurn from Subroutine)
-void Cpu::RTS(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::RTS(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   uint8_t address_msb = stackPOP();
   uint8_t address_lsb = stackPOP();
@@ -992,8 +992,8 @@ void Cpu::RTS(AMResponse (Cpu::*Addressingmode)()) {
   PC = address;
 }
 // SBC (SuBtract with Carry)
-void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
 
@@ -1009,57 +1009,57 @@ void Cpu::SBC(AMResponse (Cpu::*Addressingmode)()) {
 }
 
 // STA (STore Accumulator)
-void Cpu::STA(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::STA(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, AC);
   incrementPC(response.size + 0x01);
 }
 // Stack Instructions
 // - TXS (Transfer X to Stack ptr)
-void Cpu::TXS(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::TXS(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   SP = X;
   incrementPC(0x01);
 }
 // - TSX (Transfer Stack ptr to X)
-void Cpu::TSX(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::TSX(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   X = SP;
   incrementPC(0x01);
 }
 // - PHA (PusH Accumulator)
-void Cpu::PHA(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::PHA(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   stackPUSH(AC);
   incrementPC(0x01);
 }
 // - PLA (PuLl Accumulator)
-void Cpu::PLA(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::PLA(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   AC = stackPOP();
   incrementPC(0x01);
 }
 // - PHP (PusH Processor status)
-void Cpu::PHP(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::PHP(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   stackPUSH(SR);
   incrementPC(0x01);
 }
 // - PLP (PuLl Processor status)
-void Cpu::PLP(AMResponse (Cpu::*Addressingmode)()) {
+void Cpu::PLP(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
   SR = stackPOP();
   incrementPC(0x01);
 }
 // STX (STore X register)
-void Cpu::STX(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::STX(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, X);
   incrementPC(response.size + 0x01);
 }
 // STY (STore Y register)
-void Cpu::STY(AMResponse (Cpu::*Addressingmode)()) {
-  AMResponse response = (this->*Addressingmode)();
+void Cpu::STY(MemoryAccessResult (Cpu::*Addressingmode)()) {
+  MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, Y);
   incrementPC(response.size + 0x01);
 }
