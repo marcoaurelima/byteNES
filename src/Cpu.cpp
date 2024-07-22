@@ -306,29 +306,29 @@ void Cpu::reset() {
 MemoryAccessResult Cpu::immediate() {
   uint16_t address = (PC + 1);
 
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::zeropage() {
   uint8_t address = memory.read(PC + 1);
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1) + X;
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::zeropageY() {
   uint8_t address = memory.read(PC + 1) + Y;
-  return {address, 0x01};
+  return {address, 0x02};
 }
 MemoryAccessResult Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x02};
+  return {address, 0x03};
 }
 
 MemoryAccessResult Cpu::absoluteX() {
@@ -336,7 +336,7 @@ MemoryAccessResult Cpu::absoluteX() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + X;
 
-  return {address, 0x02};
+  return {address, 0x03};
 }
 
 MemoryAccessResult Cpu::absoluteY() {
@@ -344,7 +344,7 @@ MemoryAccessResult Cpu::absoluteY() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + Y;
 
-  return {address, 0x02};
+  return {address, 0x03};
 }
 
 MemoryAccessResult Cpu::indirect() {
@@ -358,7 +358,7 @@ MemoryAccessResult Cpu::indirect() {
 
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::indirectX() {
@@ -367,7 +367,7 @@ MemoryAccessResult Cpu::indirectX() {
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::indirectY() {
@@ -376,7 +376,7 @@ MemoryAccessResult Cpu::indirectY() {
   uint8_t lsb = memory.read(zpAddress + 0);
   uint16_t address = ((msb << 8) | lsb) + Y;
   
-  return {address, 0x01};
+  return {address, 0x02};
 }
 
 MemoryAccessResult Cpu::relative() {
@@ -477,7 +477,7 @@ void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
   flagActivationV(AC, result);
   AC = result;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // AND (bitwise AND with accumulator)
 void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -487,7 +487,7 @@ void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // ASL (Arithmetic Shift Left)
 void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -500,7 +500,7 @@ void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(PC + 1, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
 void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -537,7 +537,7 @@ void Cpu::BIT(MemoryAccessResult (Cpu::*Addressingmode)()) {
     remFlag(Flag::Z);
   }
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // Branch Instructions
 // - BPL (Branch on PLus) - Desvio quando FlagN = 0
@@ -653,7 +653,7 @@ void Cpu::CMP(MemoryAccessResult (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   flagActivationCMP(AC, value);
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // CPX (ComPare X register)
 void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -661,7 +661,7 @@ void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   flagActivationCMP(X, value);
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // CPY (ComPare Y register)
 void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -669,7 +669,7 @@ void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)()) {
   uint8_t value = memory.read(response.address);
   flagActivationCMP(Y, value);
 
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // DEC (DECrement memory)
 void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -679,7 +679,7 @@ void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // EOR (bitwise Exclusive OR)
 void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -690,7 +690,7 @@ void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
 
   AC = result;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
@@ -743,7 +743,7 @@ void Cpu::INC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // JMP (JuMP)  [ok]Teste 1
 void Cpu::JMP(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -754,7 +754,7 @@ void Cpu::JMP(MemoryAccessResult (Cpu::*Addressingmode)()) {
 void Cpu::JSR(MemoryAccessResult (Cpu::*Addressingmode)()) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
-  uint16_t nextOP = PC + response.size + 0x01;
+  uint16_t nextOP = PC + response.size;
   uint8_t nextOP_lsb = static_cast<uint8_t>(nextOP & 0x00FF);
   uint8_t nextOP_msb = static_cast<uint8_t>(nextOP >> 0x08);
 
@@ -770,7 +770,7 @@ void Cpu::LDA(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(value);
   flagActivationZ(value);
   AC = value;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // LDX (LoaD X register)ADC #$0F
 void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -779,7 +779,7 @@ void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(value);
   flagActivationZ(value);
   X = value;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // LDY (LoaD Y register)
 void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -788,7 +788,7 @@ void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(value);
   flagActivationZ(value);
   Y = value;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // LSR (Logical Shift Right)
 void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)()) {
@@ -799,7 +799,7 @@ void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 void Cpu::LSR_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
@@ -824,7 +824,7 @@ void Cpu::ORA(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
 
   AC = result;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // Register Instructions
 // - TAX (Transfer A to X)
@@ -910,7 +910,7 @@ void Cpu::ROL(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
@@ -952,7 +952,7 @@ void Cpu::ROR(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationN(result);
   flagActivationZ(result);
   memory.write(response.address, result);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 void Cpu::ROR_AC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   static_cast<void>(Addressingmode);
@@ -1005,14 +1005,14 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)()) {
   flagActivationZ(result);
   flagActivationV(AC, result);
   AC = result;
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 
 // STA (STore Accumulator)
 void Cpu::STA(MemoryAccessResult (Cpu::*Addressingmode)()) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, AC);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // Stack Instructions
 // - TXS (Transfer X to Stack ptr)
@@ -1055,11 +1055,11 @@ void Cpu::PLP(MemoryAccessResult (Cpu::*Addressingmode)()) {
 void Cpu::STX(MemoryAccessResult (Cpu::*Addressingmode)()) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, X);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
 // STY (STore Y register)
 void Cpu::STY(MemoryAccessResult (Cpu::*Addressingmode)()) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, Y);
-  incrementPC(response.size + 0x01);
+  incrementPC(response.size);
 }
