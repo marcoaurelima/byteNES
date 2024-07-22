@@ -80,96 +80,96 @@ public:
 
   // Implementações das instruções
   // ADC (ADd with Carry)
-  void ADC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ADC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // AND (bitwise AND with accumulator)
-  void AND(MemoryAccessResult (Cpu::*AddressingMode)());
+  void AND(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // ASL (Arithmetic Shift Left)
-  void ASL(MemoryAccessResult (Cpu::*AddressingMode)());
-  void ASL_AC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ASL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void ASL_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // BIT (test BITs)
-  void BIT(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BIT(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // Branch Instructions
-  void BPL(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BMI(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BVC(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BVS(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BCC(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BCS(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BNE(MemoryAccessResult (Cpu::*AddressingMode)());
-  void BEQ(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BPL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BMI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BVC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BVS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BCC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BCS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BNE(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void BEQ(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // BRK (BReaK)
-  void BRK(MemoryAccessResult (Cpu::*AddressingMode)());
+  void BRK(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // CMP (CoMPare accumulator)
-  void CMP(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CMP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // CPX (ComPare X register)
-  void CPX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CPX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // CPY (ComPare Y register)
-  void CPY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CPY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // DEC (DECrement memory)
-  void DEC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void DEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // EOR (bitwise Exclusive OR)
-  void EOR(MemoryAccessResult (Cpu::*AddressingMode)());
+  void EOR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // Flag (Processor Status) Instructions
-  void CLC(MemoryAccessResult (Cpu::*AddressingMode)());
-  void SEC(MemoryAccessResult (Cpu::*AddressingMode)());
-  void CLI(MemoryAccessResult (Cpu::*AddressingMode)());
-  void SEI(MemoryAccessResult (Cpu::*AddressingMode)());
-  void CLV(MemoryAccessResult (Cpu::*AddressingMode)());
-  void CLD(MemoryAccessResult (Cpu::*AddressingMode)());
-  void SED(MemoryAccessResult (Cpu::*AddressingMode)());
+  void CLC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void SEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void CLI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void SEI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void CLV(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void CLD(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void SED(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // INC (INCrement memory)
-  void INC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void INC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // JMP (JuMP)
-  void JMP(MemoryAccessResult (Cpu::*AddressingMode)());
+  void JMP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // JSR (Jump to SubRoutine)
-  void JSR(MemoryAccessResult (Cpu::*AddressingMode)());
+  void JSR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // LDA (LoaD Accumulator)
-  void LDA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void LDA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // LDX (LoaD X register)
-  void LDX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void LDX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // LDY (LoaD Y register)
-  void LDY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void LDY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // LSR (Logical Shift Right)
-  void LSR(MemoryAccessResult (Cpu::*AddressingMode)());
-  void LSR_AC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void LSR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void LSR_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // NOP (No OPeration)
-  void NOP(MemoryAccessResult (Cpu::*AddressingMode)());
+  void NOP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // ORA (bitwise OR with Accumulator)
-  void ORA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ORA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // Register Instructions
-  void TAX(MemoryAccessResult (Cpu::*AddressingMode)());
-  void TXA(MemoryAccessResult (Cpu::*AddressingMode)());
-  void DEX(MemoryAccessResult (Cpu::*AddressingMode)());
-  void INX(MemoryAccessResult (Cpu::*AddressingMode)());
-  void TAY(MemoryAccessResult (Cpu::*AddressingMode)());
-  void TYA(MemoryAccessResult (Cpu::*AddressingMode)());
-  void DEY(MemoryAccessResult (Cpu::*AddressingMode)());
-  void INY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TAX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void TXA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void DEX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void INX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void TAY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void TYA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void DEY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void INY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // ROL (ROtate Left)
-  void ROL(MemoryAccessResult (Cpu::*AddressingMode)());
-  void ROL_AC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ROL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void ROL_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // ROR (ROtate Right)
-  void ROR(MemoryAccessResult (Cpu::*AddressingMode)());
-  void ROR_AC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void ROR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void ROR_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // RTI (ReTurn from Interrupt)
-  void RTI(MemoryAccessResult (Cpu::*AddressingMode)());
+  void RTI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // RTS (ReTurn from Subroutine)
-  void RTS(MemoryAccessResult (Cpu::*AddressingMode)());
+  void RTS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // SBC (SuBtract with Carry)
-  void SBC(MemoryAccessResult (Cpu::*AddressingMode)());
+  void SBC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // STA (STore Accumulator)
-  void STA(MemoryAccessResult (Cpu::*AddressingMode)());
+  void STA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // Stack Instructions
-  void TXS(MemoryAccessResult (Cpu::*AddressingMode)());
-  void TSX(MemoryAccessResult (Cpu::*AddressingMode)());
-  void PHA(MemoryAccessResult (Cpu::*AddressingMode)());
-  void PLA(MemoryAccessResult (Cpu::*AddressingMode)());
-  void PHP(MemoryAccessResult (Cpu::*AddressingMode)());
-  void PLP(MemoryAccessResult (Cpu::*AddressingMode)());
+  void TXS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void TSX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void PHA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void PLA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void PHP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
+  void PLP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // STX (STore X register)
-  void STX(MemoryAccessResult (Cpu::*AddressingMode)());
+  void STX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
   // STY (STore Y register)
-  void STY(MemoryAccessResult (Cpu::*AddressingMode)());
+  void STY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, bool pageBoundaryCrossCycle);
 
   void setAsmAddress(uint16_t address);
 
