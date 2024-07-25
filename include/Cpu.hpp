@@ -29,9 +29,13 @@ const uint16_t STACK_ADDRESS = 0x1000;
 const bool STOP_BRK = false;
 
 // Tipo de retorno dos Addressing Modes
+// Evento do tipo "page boundary crossed" ocorre quando
+// o endereço calculado pelo modo de endereçamento está
+// em uma página diferente da atual (PC)
 struct MemoryAccessResult {
   uint16_t address; // Endereço calculado
   uint8_t size;     // Tamanho da operação
+  bool pageCrossed; // indica se houve evento do tipo "page boundary crossed"
 };
 
 class Cpu {

@@ -302,33 +302,36 @@ void Cpu::reset() {
   SP = 0xFF;
 }
 
+bool isSamePage(uint16_t addr1, uint16_t addr2) {
+  return (addr1 / 0xFF) == (addr2 / 0xFF);
+}
+
 // Modos de endereçamento
 MemoryAccessResult Cpu::immediate() {
   uint16_t address = (PC + 1);
-
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 
 MemoryAccessResult Cpu::zeropage() {
   uint8_t address = memory.read(PC + 1);
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 
 MemoryAccessResult Cpu::zeropageX() {
   uint8_t address = memory.read(PC + 1) + X;
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 
 MemoryAccessResult Cpu::zeropageY() {
   uint8_t address = memory.read(PC + 1) + Y;
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 MemoryAccessResult Cpu::absolute() {
   uint8_t msb = memory.read(PC + 2);
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x03};
+  return {address, 0x03, true};
 }
 
 MemoryAccessResult Cpu::absoluteX() {
@@ -336,7 +339,9 @@ MemoryAccessResult Cpu::absoluteX() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + X;
 
-  return {address, 0x03};
+  bool pageCrossed = isSamePage(((msb << 8) | lsb), address);
+  
+  return {address, 0x03, pageCrossed};
 }
 
 MemoryAccessResult Cpu::absoluteY() {
@@ -344,7 +349,9 @@ MemoryAccessResult Cpu::absoluteY() {
   uint8_t lsb = memory.read(PC + 1);
   uint16_t address = ((msb << 8) | lsb) + Y;
 
-  return {address, 0x03};
+  bool pageCrossed = isSamePage(((msb << 8) | lsb), address);
+
+  return {address, 0x03, pageCrossed};
 }
 
 MemoryAccessResult Cpu::indirect() {
@@ -358,7 +365,7 @@ MemoryAccessResult Cpu::indirect() {
 
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 
 MemoryAccessResult Cpu::indirectX() {
@@ -367,7 +374,7 @@ MemoryAccessResult Cpu::indirectX() {
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
 
-  return {address, 0x02};
+  return {address, 0x02, true};
 }
 
 MemoryAccessResult Cpu::indirectY() {
@@ -376,7 +383,9 @@ MemoryAccessResult Cpu::indirectY() {
   uint8_t lsb = memory.read(zpAddress + 0);
   uint16_t address = ((msb << 8) | lsb) + Y;
   
-  return {address, 0x02};
+  bool pageCrossed = isSamePage(((msb << 8) | lsb), address);
+
+  return {address, 0x02, pageCrossed};
 }
 
 MemoryAccessResult Cpu::relative() {
