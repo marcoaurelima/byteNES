@@ -3,6 +3,7 @@
 #include "Gui.hpp"
 #include "Memory.hpp"
 
+
 int main() {
 
   Memory mem;
@@ -12,6 +13,7 @@ int main() {
 
   Cpu cpu(mem);
   cpu.setAsmAddress(0x0600);
+  cpu.setInternalClockValue(KHz);
 
   Gui gui(cpu);
   gui.show();

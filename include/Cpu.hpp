@@ -28,6 +28,11 @@ const uint16_t STACK_ADDRESS = 0x1000;
 // Parar quando tiver BRK
 const bool STOP_BRK = false;
 
+// Constantes de frequencia de clock
+const uint64_t KHz = 1000;
+const uint64_t MHz = 1000000;
+const uint64_t GHz = 1000000000;
+
 // Tipo de retorno dos Addressing Modes
 // Evento do tipo "page boundary crossed" ocorre quando
 // o endereço calculado pelo modo de endereçamento está
@@ -50,6 +55,9 @@ public:
   uint8_t getX();
   uint8_t getY();
   Memory &getMemory();
+
+  // Mostra o status da CPU no termial
+  void showCpuStatus(uint8_t index, bool showOpcodes);
 
   // Executa a próxima instrução do programa
   void next();
@@ -184,6 +192,8 @@ public:
 
   void setAsmAddress(uint16_t address);
 
+  void setInternalClockValue(uint64_t clock);
+
   uint64_t getCount();
 
 private:
@@ -192,6 +202,16 @@ private:
 
   // Endereço inicial do assembler
   uint16_t asmAddress{};
+
+  // Clock interno do processador
+  uint64_t clock{};
+
+  // Contador de ciclos.
+  // Ele começa com o mesmo valor de `clock` e vai sendo incrementado a
+  // medida que as instruções vão gastando ciclos de CPU, até (cyclesCounter >= clock).
+  // Quando (cyclesCounter >= clock), se passou 1 segundo e o valor de clock é atribuido novamente
+  // a cyclesCounter para reiniciar a contagem de ciclos novamente.
+  uint64_t cyclesCounter{};
 
   // Registradores
   uint16_t PC{};
@@ -207,6 +227,7 @@ private:
   bool chkFlag(Flag flag);
   void incrementPC(uint16_t value);
   void decrementPC(uint16_t value);
+  void useCpuCicles(uint8_t qtd);
 
   void stackPUSH(uint8_t value);
   uint8_t stackPOP();

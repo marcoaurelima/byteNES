@@ -205,6 +205,10 @@ void Cpu::setAsmAddress(uint16_t address) {
   PC = address;
 }
 
+void Cpu::setInternalClockValue(uint64_t clock){
+  this->clock = clock;
+}
+
 Memory &Cpu::getMemory() { return memory; }
 uint16_t Cpu::getPC() { return PC; }
 uint8_t Cpu::getSP() { return SP; }
@@ -221,6 +225,16 @@ bool Cpu::chkFlag(Flag flag) { return (SR & static_cast<uint8_t>(flag)) != 0; }
 
 void Cpu::incrementPC(uint16_t value) { PC += value; }
 void Cpu::decrementPC(uint16_t value) { PC -= value; }
+
+void Cpu::useCpuCicles(uint8_t qtd) {
+  cyclesCounter += qtd;
+
+  // Verificar os ciclos
+    if (cyclesCounter >= clock) {
+      std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter... +++++++++\n";
+      cyclesCounter = clock;
+    }
+}
 
 void Cpu::stackPUSH(uint8_t value) {
   // a stack tem offset por que ela começa em 10FF,
@@ -251,43 +265,30 @@ void Cpu::generateRandomIn0xFE() {
   memory.write(0xFE, random);
 }
 
+void Cpu::showCpuStatus(uint8_t index, bool showOpcodes) {
+  std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)PC << " | SP: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+              << std::hex << std::setw(4) << (int)AC
+              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+              << (int)X << " | Y: " << std::setfill('0') << std::hex
+              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+              << std::dec << " | CLOCK: [" << cyclesCounter << "/" << clock << "]"
+              << "\n\n";
+  if (showOpcodes) {
+    std::cout << std::hex << "| OPCode: " << (int)index << " ("
+                << opcodesNames[index] << ")\n";
+  }
+}
+
 void Cpu::next() {
   generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
 
-  bool ENABLE_LOG_BEFORE_OPCODE = false;
-  bool ENABLE_LOG_OPCODE = false;
-  bool ENABLE_LOGS_AFTER_OPCODE = true;
-
-  if (ENABLE_LOG_BEFORE_OPCODE) {
-    std::cout << "-- [" << std::dec << count + 1 << "] -------------\n";
-    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)PC << " | SP: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
-              << std::hex << std::setw(4) << (int)AC
-              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)X << " | Y: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << "\n\n";
-
-    if (ENABLE_LOG_OPCODE)
-      std::cout << std::hex << "| OPCode: " << (int)index << " ("
-                << opcodesNames[index] << ")\n";
-  }
-
   opcodeMapping[index]();
   count++;
 
-  if (ENABLE_LOGS_AFTER_OPCODE) {
-    std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)PC << " | SP: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
-              << std::hex << std::setw(4) << (int)AC
-              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)X << " | Y: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << "\n\n";
-  }
+  showCpuStatus(index, false);
 
   if (STOP_BRK && index == 0) {
     std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
@@ -780,6 +781,7 @@ void Cpu::LDA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   flagActivationZ(value);
   AC = value;
   incrementPC(response.size);
+  useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // LDX (LoaD X register)ADC #$0F
 void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
