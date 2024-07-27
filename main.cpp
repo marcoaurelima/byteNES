@@ -13,7 +13,7 @@ int main() {
 
   Cpu cpu(mem);
   cpu.setAsmAddress(0x0600);
-  cpu.setInternalClockValue(KHz);
+  cpu.setInternalClockValue(MHz);
 
   Gui gui(cpu);
   gui.show();
