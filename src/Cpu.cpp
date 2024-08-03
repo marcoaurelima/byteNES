@@ -267,8 +267,10 @@ void Cpu::generateRandomIn0xFE() {
 
 void Cpu::showCpuStatus(uint8_t index, bool showOpcodes) {
   if (showOpcodes) {
-    std::cout << std::hex << "| OPCode: " << (int)index << " ("
+    std::cout << "| [" << count << "] " << std::dec;
+    std::cout << std::hex << "OPCode: " << (int)index << " ("
                 << opcodesNames[index] << ")\n";
+                //| PC: 0619 | SP: 00fb | AC: 0011 | X: 0000 | Y: 0000 | SR: 
   }
   std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
               << (int)PC << " | SP: " << std::setfill('0') << std::hex
@@ -277,9 +279,8 @@ void Cpu::showCpuStatus(uint8_t index, bool showOpcodes) {
               << " | X: " << std::setfill('0') << std::hex << std::setw(4)
               << (int)X << " | Y: " << std::setfill('0') << std::hex
               << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << std::dec << " | CLOCK: [" << cyclesCounter << "/" << clock << "]"
-              << "\n\n";
-  
+              << std::dec << " | CLOCK: [" << cyclesCounter << "/" << clock << "]\n";
+    std::cout << "                                                           NV_BDIZC\n";
 }
 
 void Cpu::next() {
@@ -379,6 +380,12 @@ MemoryAccessResult Cpu::indirectX() {
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
 
+  std::cout << "\033[32m[LOG] indirectX: " << "   (PC + 1):" << std::hex << (int)memory.read(PC + 1) << "\n";
+  std::cout << "\033[32m[LOG] indirectX: " << "        (X):" << std::hex << (int)X << "\n";
+  std::cout << "\033[32m[LOG] indirectX: " << "(zpAddress):" << std::hex << (int)zpAddress << "\n";
+  std::cout << "\033[32m[LOG] indirectX: " << "  (address):" << std::hex << (int)address << "]\n\n\033[0m";
+  
+
   return {address, 0x02, true};
 }
 
@@ -464,6 +471,9 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
 void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
+  // "\033[33m[INFO]  "]\033[0m\n\n";
+  std::cout << "\033[32m[LOG] flagActivationCMP: " << "[" << std::hex << (int)value_1 << "/" << (int)value_2 << "]\n\n\033[0m";
+  
   if (value_1 == value_2) {
     setFlag(Flag::Z);
   } else {
@@ -1061,9 +1071,9 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
 
-  uint16_t result = AC - value - carry;
+  uint16_t result = AC - value - (1- carry);
 
-  flagActivationC_unflw(AC, AC - value - carry);
+  flagActivationC_unflw(AC, AC - value - (1- carry));
 
   flagActivationN(result);
   flagActivationZ(result);
@@ -1071,6 +1081,7 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   AC = result;
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
+  std::cout << "\n\n\n\n";
 }
 
 // STA (STore Accumulator)
