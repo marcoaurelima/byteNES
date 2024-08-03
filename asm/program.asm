@@ -441,7 +441,7 @@ drawSnake:
 
 spinWheels:
   ;slow the game down by wasting cycles
-  ldx #0       ;load zero in the X register
+  ldx #$1       ;load zero in the X register
 spinloop:
   nop          ;no operation, just skip a cycle
   nop          ;no operation, just skip a cycle
