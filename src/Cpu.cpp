@@ -231,7 +231,7 @@ void Cpu::useCpuCicles(uint8_t qtd) {
 
   // Verificar os ciclos
     if (cyclesCounter >= clock) {
-      std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter... +++++++++\n";
+      /*std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter... +++++++++\n";*/
       cyclesCounter = 0;
     }
 }
@@ -306,9 +306,6 @@ void Cpu::reset() {
 }
 
 bool isDifferentPage(uint16_t addr1, uint16_t addr2) {
-  if (!((addr1 & 0xFF00) == (addr2 & 0xFF00))) {
-    std::cout << "\033[33m[INFO] Add 1 to cycles if page boundary is crossed: [" << std::hex << addr1 << "] -> [" << addr2 << "]\033[0m\n\n";
-  }
   return !((addr1 & 0xFF00) == (addr2 & 0xFF00));
 }
 
@@ -379,12 +376,6 @@ MemoryAccessResult Cpu::indirectX() {
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress);
   uint16_t address = (msb << 8) | lsb;
-
-  std::cout << "\033[32m[LOG] indirectX: " << "   (PC + 1):" << std::hex << (int)memory.read(PC + 1) << "\n";
-  std::cout << "\033[32m[LOG] indirectX: " << "        (X):" << std::hex << (int)X << "\n";
-  std::cout << "\033[32m[LOG] indirectX: " << "(zpAddress):" << std::hex << (int)zpAddress << "\n";
-  std::cout << "\033[32m[LOG] indirectX: " << "  (address):" << std::hex << (int)address << "]\n\n\033[0m";
-  
 
   return {address, 0x02, true};
 }
@@ -461,7 +452,7 @@ void Cpu::flagActivationC_ovflw(uint16_t value) {
 }
 
 void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
-  if (value_2 > value_1) {
+  if (value_2 < value_1) {
     setFlag(Flag::C);
     return;
   }
@@ -471,9 +462,6 @@ void Cpu::flagActivationC_unflw(uint16_t value_1, uint16_t value_2) {
 // Carry (subtraction)
 // Este flag é definido se não houver empréstimo durante a subtração.
 void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
-  // "\033[33m[INFO]  "]\033[0m\n\n";
-  std::cout << "\033[32m[LOG] flagActivationCMP: " << "[" << std::hex << (int)value_1 << "/" << (int)value_2 << "]\n\n\033[0m";
-  
   if (value_1 == value_2) {
     setFlag(Flag::Z);
   } else {
@@ -1071,9 +1059,9 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
 
-  uint16_t result = AC - value - (1- carry);
+  uint16_t result = AC - value - (1 - carry);
 
-  flagActivationC_unflw(AC, AC - value - (1- carry));
+  flagActivationC_unflw(AC, AC - value - (1 - carry));
 
   flagActivationN(result);
   flagActivationZ(result);
@@ -1081,7 +1069,6 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   AC = result;
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
-  std::cout << "\n\n\n\n";
 }
 
 // STA (STore Accumulator)
