@@ -196,6 +196,8 @@ public:
 
   uint64_t getCount();
 
+  void start();
+
 private:
   // Memoria ram (2Kb)
   Memory &memory;
@@ -203,8 +205,8 @@ private:
   // Endereço inicial do assembler
   uint16_t asmAddress{};
 
-  // Clock interno do processador
-  uint64_t clock{};
+  // Clock interno do processador (em nanosegundos)
+  double clock{};
 
   // Contador de ciclos.
   // Ele começa com o mesmo valor de `clock` e vai sendo incrementado a

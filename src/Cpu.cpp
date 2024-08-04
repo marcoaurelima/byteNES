@@ -1,5 +1,7 @@
 #include "Cpu.hpp"
 #include <bitset>
+#include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -7,6 +9,7 @@
 #include <ios>
 #include <iostream>
 #include <ostream>
+#include <thread>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
@@ -206,7 +209,11 @@ void Cpu::setAsmAddress(uint16_t address) {
 }
 
 void Cpu::setInternalClockValue(uint64_t clock){
-  this->clock = clock;
+  
+  const double NANOSECONDS = 1000000000ULL;
+  this->clock = NANOSECONDS / static_cast<double>(clock);
+
+  std::cout << "clock: " << this->clock << std::endl;
 }
 
 Memory &Cpu::getMemory() { return memory; }
@@ -234,6 +241,13 @@ void Cpu::useCpuCicles(uint8_t qtd) {
       /*std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter... +++++++++\n";*/
       cyclesCounter = 0;
     }
+}
+
+void Cpu::start() {
+  while (true) {
+    next();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
 }
 
 void Cpu::stackPUSH(uint8_t value) {
