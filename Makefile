@@ -8,7 +8,7 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 OBJS =  $(OBJ)/main.o \
 		$(OBJ)/Cpu.o \
-		$(OBJ)/Memory.o \
+		$(OBJ)/Mem.o \
 		$(OBJ)/Gui.o 
 		
 
@@ -22,8 +22,8 @@ $(OBJ)/main.o: main.cpp
 $(OBJ)/Cpu.o: $(SRC)/Cpu.cpp
 	$(CXX) -c $(SRC)/Cpu.cpp -I $(INCLUDE) -o $(OBJ)/Cpu.o
 
-$(OBJ)/Memory.o: $(SRC)/Memory.cpp
-	$(CXX) -c $(SRC)/Memory.cpp -I $(INCLUDE) -o $(OBJ)/Memory.o
+$(OBJ)/Mem.o: $(SRC)/Mem.cpp
+	$(CXX) -c $(SRC)/Mem.cpp -I $(INCLUDE) -o $(OBJ)/Mem.o
 
 $(OBJ)/Gui.o: $(SRC)/Gui.cpp
 	$(CXX) -c $(SRC)/Gui.cpp -I $(INCLUDE) -o $(OBJ)/Gui.o

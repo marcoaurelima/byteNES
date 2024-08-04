@@ -1,7 +1,7 @@
 
 #include "Cpu.hpp"
 #include "Gui.hpp"
-#include "Memory.hpp"
+#include "Mem.hpp"
 
 
 int main() {

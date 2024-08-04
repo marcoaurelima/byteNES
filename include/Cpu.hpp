@@ -7,7 +7,7 @@
 
 #include "constants.hpp"
 
-#include "Memory.hpp"
+#include "Mem.hpp"
 
 enum class Flag {
   N = (0x01 << 7), // Negative
