@@ -19,7 +19,7 @@ public:
   void fillSequencialData();
   void fillZeroData();
 
-  void loadMemoryFromFile(std::string path, uint16_t addrBegin = 0x00);
+  void loadMemoryFromFile(std::string path, uint16_t addrBase = 0x00);
   void saveMemoryStatusToFile();
   std::string getFilePath();
   void reset();
