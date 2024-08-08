@@ -17,188 +17,208 @@ Cpu::~Cpu() {}
 
 void Cpu::fillOpcodeMapping() {
 
-  // ADC (ADd with Carry)
-  opcodeMapping[0x69] = [this]() { this->ADC(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0x65] = [this]() { this->ADC(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x75] = [this]() { this->ADC(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0x6D] = [this]() { this->ADC(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0x7D] = [this]() { this->ADC(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0x79] = [this]() { this->ADC(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0x61] = [this]() { this->ADC(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0x71] = [this]() { this->ADC(&Cpu::indirectY, 5, 1); };
-  // AND (bitwise AND with accumulator)
-  opcodeMapping[0x29] = [this]() { this->AND(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0x25] = [this]() { this->AND(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x35] = [this]() { this->AND(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0x2D] = [this]() { this->AND(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0x3D] = [this]() { this->AND(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0x39] = [this]() { this->AND(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY, 5, 1); };
-  // ASL (Arithmetic Shift Left)
-  opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr, 2, 0); };
-  opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX, 7, 0); };
-  // BIT (test BITs)
-  opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::absolute, 4, 0); };
-  // Branch Instructions
-  opcodeMapping[0x10] = [this]() { this->BPL(&Cpu::relative, 2, 2); };
-  opcodeMapping[0x30] = [this]() { this->BMI(&Cpu::relative, 2, 2); };
-  opcodeMapping[0x50] = [this]() { this->BVC(&Cpu::relative, 2, 2); };
-  opcodeMapping[0x70] = [this]() { this->BVS(&Cpu::relative, 2, 2); };
-  opcodeMapping[0x90] = [this]() { this->BCC(&Cpu::relative, 2, 2); };
-  opcodeMapping[0xB0] = [this]() { this->BCS(&Cpu::relative, 2, 2); };
-  opcodeMapping[0xD0] = [this]() { this->BNE(&Cpu::relative, 2, 2); };
-  opcodeMapping[0xF0] = [this]() { this->BEQ(&Cpu::relative, 2, 2); };
-  // BRK (BReaK)
-  opcodeMapping[0x00] = [this]() { this->BRK(nullptr, 7, 0); };
-  // CMP (CoMPare accumulator)
-  opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xC5] = [this]() { this->CMP(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xD5] = [this]() { this->CMP(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0xCD] = [this]() { this->CMP(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0xDD] = [this]() { this->CMP(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0xD9] = [this]() { this->CMP(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0xC1] = [this]() { this->CMP(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0xD1] = [this]() { this->CMP(&Cpu::indirectY, 5, 1); };
-  // CPX (ComPare X register)
-  opcodeMapping[0xE0] = [this]() { this->CPX(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xE4] = [this]() { this->CPX(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xEC] = [this]() { this->CPX(&Cpu::absolute, 4, 0); };
-  // CPY (ComPare Y register)
-  opcodeMapping[0xC0] = [this]() { this->CPY(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xC4] = [this]() { this->CPY(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute, 4, 0); };
-  // DEC (DECrement memory)
-  opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX, 7, 0); };
-  // EOR (bitwise Exclusive OR)
-  opcodeMapping[0x49] = [this]() { this->EOR(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0x45] = [this]() { this->EOR(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x55] = [this]() { this->EOR(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0x4D] = [this]() { this->EOR(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0x5D] = [this]() { this->EOR(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0x59] = [this]() { this->EOR(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0x41] = [this]() { this->EOR(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0x51] = [this]() { this->EOR(&Cpu::indirectY, 5, 1); };
-  // Flag (Processor Status) Instructions
-  opcodeMapping[0x18] = [this]() { this->CLC(nullptr, 2, 0); };
-  opcodeMapping[0x38] = [this]() { this->SEC(nullptr, 2, 0); };
-  opcodeMapping[0x58] = [this]() { this->CLI(nullptr, 2, 0); };
-  opcodeMapping[0x78] = [this]() { this->SEI(nullptr, 2, 0); };
-  opcodeMapping[0xB8] = [this]() { this->CLV(nullptr, 2, 0); };
-  opcodeMapping[0xD8] = [this]() { this->CLD(nullptr, 2, 0); };
-  opcodeMapping[0xF8] = [this]() { this->SED(nullptr, 2, 0); };
-  // INC (INCrement memory)
-  opcodeMapping[0xE6] = [this]() { this->INC(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0xF6] = [this]() { this->INC(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0xEE] = [this]() { this->INC(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0xFE] = [this]() { this->INC(&Cpu::absoluteX, 7 , 0); };
-  // JMP (JuMP)
-  opcodeMapping[0x4C] = [this]() { this->JMP(&Cpu::absolute, 3, 0); };
-  opcodeMapping[0x6C] = [this]() { this->JMP(&Cpu::indirect, 5, 0); };
-  // JSR (Jump to SubRoutine)
-  opcodeMapping[0x20] = [this]() { this->JSR(&Cpu::absolute, 6, 0); };
+  /*// ADC (ADd with Carry)*/
+  /*opcodeMapping[0x69] = [this]() { this->ADC(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0x65] = [this]() { this->ADC(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x75] = [this]() { this->ADC(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0x6D] = [this]() { this->ADC(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0x7D] = [this]() { this->ADC(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0x79] = [this]() { this->ADC(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0x61] = [this]() { this->ADC(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0x71] = [this]() { this->ADC(&Cpu::indirectY, 5, 1); };*/
+  /*// AND (bitwise AND with accumulator)*/
+  /*opcodeMapping[0x29] = [this]() { this->AND(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0x25] = [this]() { this->AND(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x35] = [this]() { this->AND(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0x2D] = [this]() { this->AND(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0x3D] = [this]() { this->AND(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0x39] = [this]() { this->AND(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY, 5, 1); };*/
+  /*// ASL (Arithmetic Shift Left)*/
+  /*opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX, 7, 0); };*/
+  /*// BIT (test BITs)*/
+  /*opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::absolute, 4, 0); };*/
+  /*// Branch Instructions*/
+  /*opcodeMapping[0x10] = [this]() { this->BPL(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0x30] = [this]() { this->BMI(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0x50] = [this]() { this->BVC(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0x70] = [this]() { this->BVS(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0x90] = [this]() { this->BCC(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0xB0] = [this]() { this->BCS(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0xD0] = [this]() { this->BNE(&Cpu::relative, 2, 2); };*/
+  /*opcodeMapping[0xF0] = [this]() { this->BEQ(&Cpu::relative, 2, 2); };*/
+  /*// BRK (BReaK)*/
+  /*opcodeMapping[0x00] = [this]() { this->BRK(nullptr, 7, 0); };*/
+  /*// CMP (CoMPare accumulator)*/
+  /*opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xC5] = [this]() { this->CMP(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xD5] = [this]() { this->CMP(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0xCD] = [this]() { this->CMP(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0xDD] = [this]() { this->CMP(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0xD9] = [this]() { this->CMP(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0xC1] = [this]() { this->CMP(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0xD1] = [this]() { this->CMP(&Cpu::indirectY, 5, 1); };*/
+  /*// CPX (ComPare X register)*/
+  /*opcodeMapping[0xE0] = [this]() { this->CPX(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xE4] = [this]() { this->CPX(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xEC] = [this]() { this->CPX(&Cpu::absolute, 4, 0); };*/
+  /*// CPY (ComPare Y register)*/
+  /*opcodeMapping[0xC0] = [this]() { this->CPY(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xC4] = [this]() { this->CPY(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute, 4, 0); };*/
+  /*// DEC (DECrement memory)*/
+  /*opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX, 7, 0); };*/
+  /*// EOR (bitwise Exclusive OR)*/
+  /*opcodeMapping[0x49] = [this]() { this->EOR(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0x45] = [this]() { this->EOR(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x55] = [this]() { this->EOR(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0x4D] = [this]() { this->EOR(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0x5D] = [this]() { this->EOR(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0x59] = [this]() { this->EOR(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0x41] = [this]() { this->EOR(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0x51] = [this]() { this->EOR(&Cpu::indirectY, 5, 1); };*/
+  /*// Flag (Processor Status) Instructions*/
+  /*opcodeMapping[0x18] = [this]() { this->CLC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x38] = [this]() { this->SEC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x58] = [this]() { this->CLI(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x78] = [this]() { this->SEI(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xB8] = [this]() { this->CLV(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xD8] = [this]() { this->CLD(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xF8] = [this]() { this->SED(nullptr, 2, 0); };*/
+  /*// INC (INCrement memory)*/
+  /*opcodeMapping[0xE6] = [this]() { this->INC(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0xF6] = [this]() { this->INC(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0xEE] = [this]() { this->INC(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0xFE] = [this]() { this->INC(&Cpu::absoluteX, 7 , 0); };*/
+  /*// JMP (JuMP)*/
+  /*opcodeMapping[0x4C] = [this]() { this->JMP(&Cpu::absolute, 3, 0); };*/
+  /*opcodeMapping[0x6C] = [this]() { this->JMP(&Cpu::indirect, 5, 0); };*/
+  /*// JSR (Jump to SubRoutine)*/
+  /*opcodeMapping[0x20] = [this]() { this->JSR(&Cpu::absolute, 6, 0); };*/
+  /**/
+  /*// LDA (LoaD Accumulator)*/
+  /*opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xA5] = [this]() { this->LDA(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xB5] = [this]() { this->LDA(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0xAD] = [this]() { this->LDA(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0xBD] = [this]() { this->LDA(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0xB9] = [this]() { this->LDA(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0xA1] = [this]() { this->LDA(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY, 5, 1); };*/
   // LDA (LoaD Accumulator)
-  opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xA5] = [this]() { this->LDA(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xB5] = [this]() { this->LDA(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0xAD] = [this]() { this->LDA(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0xBD] = [this]() { this->LDA(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0xB9] = [this]() { this->LDA(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0xA1] = [this]() { this->LDA(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY, 5, 1); };
-  // LDX (LoaD X register)
-  opcodeMapping[0xA2] = [this]() { this->LDX(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xA6] = [this]() { this->LDX(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xB6] = [this]() { this->LDX(&Cpu::zeropageY, 4, 0); };
-  opcodeMapping[0xAE] = [this]() { this->LDX(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY, 4, 1); };
-  // LDY (LoaD Y register)
-  opcodeMapping[0xA0] = [this]() { this->LDY(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xA4] = [this]() { this->LDY(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xB4] = [this]() { this->LDY(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0xAC] = [this]() { this->LDY(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX, 4, 1); };
-  // LSR (Logical Shift Right)
-  opcodeMapping[0x4A] = [this]() { this->LSR_AC(nullptr, 2, 0); };
-  opcodeMapping[0x46] = [this]() { this->LSR(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0x56] = [this]() { this->LSR(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0x4E] = [this]() { this->LSR(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0x5E] = [this]() { this->LSR(&Cpu::absoluteX, 7, 0); };
-  // NOP (No OPeration)
-  opcodeMapping[0xEA] = [this]() { this->NOP(nullptr, 2, 0); };
-  // ORA (bitwise OR with Accumulator)
-  opcodeMapping[0x09] = [this]() { this->ORA(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0x05] = [this]() { this->ORA(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x15] = [this]() { this->ORA(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0x0D] = [this]() { this->ORA(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0x1D] = [this]() { this->ORA(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0x19] = [this]() { this->ORA(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0x01] = [this]() { this->ORA(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0x11] = [this]() { this->ORA(&Cpu::indirectY, 5, 1); };
-  // Register Instructions
-  opcodeMapping[0xAA] = [this]() { this->TAX(nullptr, 2, 0); };
-  opcodeMapping[0x8A] = [this]() { this->TXA(nullptr, 2, 0); };
-  opcodeMapping[0xCA] = [this]() { this->DEX(nullptr, 2, 0); };
-  opcodeMapping[0xE8] = [this]() { this->INX(nullptr, 2, 0); };
-  opcodeMapping[0xA8] = [this]() { this->TAY(nullptr, 2, 0); };
-  opcodeMapping[0x98] = [this]() { this->TYA(nullptr, 2, 0); };
-  opcodeMapping[0x88] = [this]() { this->DEY(nullptr, 2, 0); };
-  opcodeMapping[0xC8] = [this]() { this->INY(nullptr, 2, 0); };
-  // ROL (ROtate Left)
-  opcodeMapping[0x2A] = [this]() { this->ROL_AC(nullptr, 2, 0); };
-  opcodeMapping[0x26] = [this]() { this->ROL(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0x36] = [this]() { this->ROL(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0x2E] = [this]() { this->ROL(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0x3E] = [this]() { this->ROL(&Cpu::absoluteX, 7, 0); };
-  // ROR (ROtate Right)
-  opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr, 2, 0); };
-  opcodeMapping[0x66] = [this]() { this->ROR(&Cpu::zeropage, 5, 0); };
-  opcodeMapping[0x76] = [this]() { this->ROR(&Cpu::zeropageX, 6, 0); };
-  opcodeMapping[0x6E] = [this]() { this->ROR(&Cpu::absolute, 6, 0); };
-  opcodeMapping[0x7E] = [this]() { this->ROR(&Cpu::absoluteX, 7, 0); };
-  // RTI (ReTurn from Interrupt)
-  opcodeMapping[0x40] = [this]() { this->RTI(nullptr, 6, 0); };
+  opcodeMapping[0xA9] = &Cpu::LDA;
+  opcodeMapping[0xA5] = &Cpu::LDA;
+  opcodeMapping[0xB5] = &Cpu::LDA;
+  opcodeMapping[0xAD] = &Cpu::LDA;
+  opcodeMapping[0xBD] = &Cpu::LDA;
+  opcodeMapping[0xB9] = &Cpu::LDA;
+  opcodeMapping[0xA1] = &Cpu::LDA;
+  opcodeMapping[0xB1] = &Cpu::LDA;
+  opcodeInfo[0xA9] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xA5] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xB5] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0xAD] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0xBD] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0xB9] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0xA1] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0xB1] = {ADDR_MODE::INDIRECT_Y, 5, 1};
+  /*// LDX (LoaD X register)*/
+  /*opcodeMapping[0xA2] = [this]() { this->LDX(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xA6] = [this]() { this->LDX(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xB6] = [this]() { this->LDX(&Cpu::zeropageY, 4, 0); };*/
+  /*opcodeMapping[0xAE] = [this]() { this->LDX(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY, 4, 1); };*/
+  /*// LDY (LoaD Y register)*/
+  /*opcodeMapping[0xA0] = [this]() { this->LDY(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xA4] = [this]() { this->LDY(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xB4] = [this]() { this->LDY(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0xAC] = [this]() { this->LDY(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX, 4, 1); };*/
+  /*// LSR (Logical Shift Right)*/
+  /*opcodeMapping[0x4A] = [this]() { this->LSR_AC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x46] = [this]() { this->LSR(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0x56] = [this]() { this->LSR(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0x4E] = [this]() { this->LSR(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0x5E] = [this]() { this->LSR(&Cpu::absoluteX, 7, 0); };*/
+  /*// NOP (No OPeration)*/
+  /*opcodeMapping[0xEA] = [this]() { this->NOP(nullptr, 2, 0); };*/
+  /*// ORA (bitwise OR with Accumulator)*/
+  /*opcodeMapping[0x09] = [this]() { this->ORA(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0x05] = [this]() { this->ORA(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x15] = [this]() { this->ORA(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0x0D] = [this]() { this->ORA(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0x1D] = [this]() { this->ORA(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0x19] = [this]() { this->ORA(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0x01] = [this]() { this->ORA(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0x11] = [this]() { this->ORA(&Cpu::indirectY, 5, 1); };*/
+  /*// Register Instructions*/
+  /*opcodeMapping[0xAA] = [this]() { this->TAX(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x8A] = [this]() { this->TXA(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xCA] = [this]() { this->DEX(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xE8] = [this]() { this->INX(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xA8] = [this]() { this->TAY(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x98] = [this]() { this->TYA(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x88] = [this]() { this->DEY(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xC8] = [this]() { this->INY(nullptr, 2, 0); };*/
+  /*// ROL (ROtate Left)*/
+  /*opcodeMapping[0x2A] = [this]() { this->ROL_AC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x26] = [this]() { this->ROL(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0x36] = [this]() { this->ROL(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0x2E] = [this]() { this->ROL(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0x3E] = [this]() { this->ROL(&Cpu::absoluteX, 7, 0); };*/
+  /*// ROR (ROtate Right)*/
+  /*opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x66] = [this]() { this->ROR(&Cpu::zeropage, 5, 0); };*/
+  /*opcodeMapping[0x76] = [this]() { this->ROR(&Cpu::zeropageX, 6, 0); };*/
+  /*opcodeMapping[0x6E] = [this]() { this->ROR(&Cpu::absolute, 6, 0); };*/
+  /*opcodeMapping[0x7E] = [this]() { this->ROR(&Cpu::absoluteX, 7, 0); };*/
+  /*// RTI (ReTurn from Interrupt)*/
+  /*opcodeMapping[0x40] = [this]() { this->RTI(nullptr, 6, 0); };*/
   // RTS (ReTurn from Subroutine)
-  opcodeMapping[0x60] = [this]() { this->RTS(nullptr, 6, 0); };
+  /*opcodeMapping[0x60] = [this]() { this->RTS(nullptr, 6, 0); };*/
+  opcodeMapping[0x60] = &Cpu::RTS;
+  opcodeInfo[0xB1] = {ADDR_MODE::NONE, 6, 0};
   // SBC (SuBtract with Carry)
-  opcodeMapping[0xE9] = [this]() { this->SBC(&Cpu::immediate, 2, 0); };
-  opcodeMapping[0xE5] = [this]() { this->SBC(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0xF5] = [this]() { this->SBC(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0xED] = [this]() { this->SBC(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0xFD] = [this]() { this->SBC(&Cpu::absoluteX, 4, 1); };
-  opcodeMapping[0xF9] = [this]() { this->SBC(&Cpu::absoluteY, 4, 1); };
-  opcodeMapping[0xE1] = [this]() { this->SBC(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0xF1] = [this]() { this->SBC(&Cpu::indirectY, 5, 1); };
-  // STA (STore Accumulator)
-  opcodeMapping[0x85] = [this]() { this->STA(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x95] = [this]() { this->STA(&Cpu::zeropageX, 4, 0); };
-  opcodeMapping[0x8D] = [this]() { this->STA(&Cpu::absolute, 4, 0); };
-  opcodeMapping[0x9D] = [this]() { this->STA(&Cpu::absoluteX, 5, 0); };
-  opcodeMapping[0x99] = [this]() { this->STA(&Cpu::absoluteY, 5, 0); };
-  opcodeMapping[0x81] = [this]() { this->STA(&Cpu::indirectX, 6, 0); };
-  opcodeMapping[0x91] = [this]() { this->STA(&Cpu::indirectY, 6, 0); };
-  // Stack Instructions
-  opcodeMapping[0x9A] = [this]() { this->TXS(nullptr, 2, 0); };
-  opcodeMapping[0xBA] = [this]() { this->TSX(nullptr, 2, 0); };
-  opcodeMapping[0x48] = [this]() { this->PHA(nullptr, 3, 0); };
-  opcodeMapping[0x68] = [this]() { this->PLA(nullptr, 4, 0); };
-  opcodeMapping[0x08] = [this]() { this->PHP(nullptr, 3, 0); };
-  opcodeMapping[0x28] = [this]() { this->PLP(nullptr, 4, 0); };
-  // STX (STore X register)
-  opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x96] = [this]() { this->STX(&Cpu::zeropageY, 4, 0); };
-  opcodeMapping[0x8E] = [this]() { this->STX(&Cpu::absolute, 4, 0); };
-  // STY (STore Y register)
-  opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage, 3, 0); };
-  opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY, 4, 0); };
-  opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute, 4, 0); };
+  /*opcodeMapping[0xE9] = [this]() { this->SBC(&Cpu::immediate, 2, 0); };*/
+  /*opcodeMapping[0xE5] = [this]() { this->SBC(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0xF5] = [this]() { this->SBC(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0xED] = [this]() { this->SBC(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0xFD] = [this]() { this->SBC(&Cpu::absoluteX, 4, 1); };*/
+  /*opcodeMapping[0xF9] = [this]() { this->SBC(&Cpu::absoluteY, 4, 1); };*/
+  /*opcodeMapping[0xE1] = [this]() { this->SBC(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0xF1] = [this]() { this->SBC(&Cpu::indirectY, 5, 1); };*/
+  /*// STA (STore Accumulator)*/
+  /*opcodeMapping[0x85] = [this]() { this->STA(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x95] = [this]() { this->STA(&Cpu::zeropageX, 4, 0); };*/
+  /*opcodeMapping[0x8D] = [this]() { this->STA(&Cpu::absolute, 4, 0); };*/
+  /*opcodeMapping[0x9D] = [this]() { this->STA(&Cpu::absoluteX, 5, 0); };*/
+  /*opcodeMapping[0x99] = [this]() { this->STA(&Cpu::absoluteY, 5, 0); };*/
+  /*opcodeMapping[0x81] = [this]() { this->STA(&Cpu::indirectX, 6, 0); };*/
+  /*opcodeMapping[0x91] = [this]() { this->STA(&Cpu::indirectY, 6, 0); };*/
+  /*// Stack Instructions*/
+  /*opcodeMapping[0x9A] = [this]() { this->TXS(nullptr, 2, 0); };*/
+  /*opcodeMapping[0xBA] = [this]() { this->TSX(nullptr, 2, 0); };*/
+  /*opcodeMapping[0x48] = [this]() { this->PHA(nullptr, 3, 0); };*/
+  /*opcodeMapping[0x68] = [this]() { this->PLA(nullptr, 4, 0); };*/
+  /*opcodeMapping[0x08] = [this]() { this->PHP(nullptr, 3, 0); };*/
+  /*opcodeMapping[0x28] = [this]() { this->PLP(nullptr, 4, 0); };*/
+  /*// STX (STore X register)*/
+  /*opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x96] = [this]() { this->STX(&Cpu::zeropageY, 4, 0); };*/
+  /*opcodeMapping[0x8E] = [this]() { this->STX(&Cpu::absolute, 4, 0); };*/
+  /*// STY (STore Y register)*/
+  /*opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage, 3, 0); };*/
+  /*opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY, 4, 0); };*/
+  /*opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute, 4, 0); };*/
 
   srand(time(NULL));
 }
@@ -208,8 +228,8 @@ void Cpu::setAsmAddress(uint16_t address) {
   PC = address;
 }
 
-void Cpu::setInternalClockValue(uint64_t clock){
-  
+void Cpu::setInternalClockValue(uint64_t clock) {
+
   const double NANOSECONDS = 1000000000ULL;
   this->clock = NANOSECONDS / static_cast<double>(clock);
 
@@ -237,16 +257,30 @@ void Cpu::useCpuCicles(uint8_t qtd) {
   cyclesCounter += qtd;
 
   // Verificar os ciclos
-    if (cyclesCounter >= clock) {
-      /*std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter... +++++++++\n";*/
-      cyclesCounter = 0;
-    }
+  if (cyclesCounter >= clock) {
+    /*std::cout << "+++++++++ Ciclos esgotados. Atualizando cyclesCounter...
+     * +++++++++\n";*/
+    cyclesCounter = 0;
+  }
 }
 
 void Cpu::start() {
+  int count = 0;
+  auto start = std::chrono::steady_clock::now();
+
   while (true) {
-    next();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    (this->*opcodeMapping[0xA9])(opcodeInfo[0xA9]);
+
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed =
+        std::chrono::duration_cast<std::chrono::seconds>(now - start);
+
+    if (elapsed.count() >= 1) {
+      std::cout << "Count: " << count << std::endl;
+      start = now; // reset start time
+      count = 0;
+    }
+    count++;
   }
 }
 
@@ -283,25 +317,27 @@ void Cpu::showCpuStatus(uint8_t index, bool showOpcodes) {
   if (showOpcodes) {
     std::cout << "| [" << count << "] " << std::dec;
     std::cout << std::hex << "OPCode: " << (int)index << " ("
-                << opcodesNames[index] << ")\n";
-                //| PC: 0619 | SP: 00fb | AC: 0011 | X: 0000 | Y: 0000 | SR: 
+              << opcodesNames[index] << ")\n";
+    //| PC: 0619 | SP: 00fb | AC: 0011 | X: 0000 | Y: 0000 | SR:
   }
   std::cout << "| PC: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)PC << " | SP: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
-              << std::hex << std::setw(4) << (int)AC
-              << " | X: " << std::setfill('0') << std::hex << std::setw(4)
-              << (int)X << " | Y: " << std::setfill('0') << std::hex
-              << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
-              << std::dec << " | CLOCK: [" << cyclesCounter << "/" << clock << "]\n";
-    std::cout << "                                                           NV_BDIZC\n";
+            << (int)PC << " | SP: " << std::setfill('0') << std::hex
+            << std::setw(4) << (int)SP << " | AC: " << std::setfill('0')
+            << std::hex << std::setw(4) << (int)AC
+            << " | X: " << std::setfill('0') << std::hex << std::setw(4)
+            << (int)X << " | Y: " << std::setfill('0') << std::hex
+            << std::setw(4) << (int)Y << " | SR: " << std::bitset<8>(SR)
+            << std::dec << " | CLOCK: [" << cyclesCounter << "/" << clock
+            << "]\n";
+  std::cout << "                                                           "
+               "NV_BDIZC\n";
 }
 
 void Cpu::next() {
   generateRandomIn0xFE();
   uint8_t index = memory.read(PC);
 
-  opcodeMapping[index]();
+  (this->*opcodeMapping[index])(opcodeInfo[index]);
   count++;
 
   showCpuStatus(index, true);
@@ -357,7 +393,7 @@ MemoryAccessResult Cpu::absoluteX() {
   uint16_t address = ((msb << 8) | lsb) + X;
 
   bool pageCrossed = isDifferentPage(((msb << 8) | lsb), address);
-  
+
   return {address, 0x03, pageCrossed};
 }
 
@@ -399,7 +435,7 @@ MemoryAccessResult Cpu::indirectY() {
   uint8_t msb = memory.read(zpAddress + 1);
   uint8_t lsb = memory.read(zpAddress + 0);
   uint16_t address = ((msb << 8) | lsb) + Y;
-  
+
   bool pageCrossed = isDifferentPage(((msb << 8) | lsb), address);
 
   return {address, 0x02, pageCrossed};
@@ -493,7 +529,8 @@ void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
 
 // Implementações das instruções
 // ADC (ADd with Carry)
-void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -507,7 +544,8 @@ void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // AND (bitwise AND with accumulator)
-void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value & AC;
@@ -518,7 +556,8 @@ void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // ASL (Arithmetic Shift Left)
-void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
@@ -532,7 +571,8 @@ void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
-void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+                 uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   uint8_t value = AC;
   uint8_t result = (AC << 0x01);
@@ -546,7 +586,8 @@ void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, ui
   useCpuCicles(cycles + pageChangedCycle);
 }
 // BIT (test BITs)
-void Cpu::BIT(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BIT(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = (AC & value);
@@ -572,7 +613,8 @@ void Cpu::BIT(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
 }
 // Branch Instructions
 // - BPL (Branch on PLus) - Desvio quando FlagN = 0
-void Cpu::BPL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BPL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::N)) {
@@ -584,7 +626,8 @@ void Cpu::BPL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BMI (Branch on MInus) - Desvio quando FlagN = 1
-void Cpu::BMI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BMI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::N)) {
@@ -596,7 +639,8 @@ void Cpu::BMI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
-void Cpu::BVC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BVC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   if (!chkFlag(Flag::V)) {
     PC = response.address + response.size;
@@ -607,7 +651,8 @@ void Cpu::BVC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
-void Cpu::BVS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BVS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::V)) {
@@ -619,7 +664,8 @@ void Cpu::BVS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
-void Cpu::BCC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BCC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::C)) {
@@ -631,7 +677,8 @@ void Cpu::BCC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
-void Cpu::BCS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BCS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::C)) {
@@ -643,7 +690,8 @@ void Cpu::BCS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
-void Cpu::BNE(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BNE(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (!chkFlag(Flag::Z)) {
@@ -655,7 +703,8 @@ void Cpu::BNE(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
-void Cpu::BEQ(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BEQ(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   if (chkFlag(Flag::Z)) {
@@ -667,7 +716,8 @@ void Cpu::BEQ(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // BRK (BReaK)
-void Cpu::BRK(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::BRK(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   incrementPC(0x01);
   uint8_t PC_lsb = static_cast<uint8_t>(PC & 0xFF);
@@ -688,7 +738,8 @@ void Cpu::BRK(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // CMP (CoMPare accumulator)
-void Cpu::CMP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CMP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(AC, value);
@@ -697,7 +748,8 @@ void Cpu::CMP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // CPX (ComPare X register)
-void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(X, value);
@@ -706,7 +758,8 @@ void Cpu::CPX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // CPY (ComPare Y register)
-void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationCMP(Y, value);
@@ -715,7 +768,8 @@ void Cpu::CPY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // DEC (DECrement memory)
-void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value - 0x01;
@@ -726,7 +780,8 @@ void Cpu::DEC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // EOR (bitwise Exclusive OR)
-void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = AC ^ value;
@@ -739,56 +794,64 @@ void Cpu::EOR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
 }
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
-void Cpu::CLC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CLC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::C);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - SEC (SEt Carry)
-void Cpu::SEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::SEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::C);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - CLI (CLear Interrupt)
-void Cpu::CLI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CLI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::I);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - SEI (SEt Interrupt)
-void Cpu::SEI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::SEI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::I);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - CLV (CLear oVerflow)
-void Cpu::CLV(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CLV(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::V);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - CLD (CLear Decimal)
-void Cpu::CLD(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::CLD(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   remFlag(Flag::D);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - SED (SEt Decimal)
-void Cpu::SED(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::SED(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   setFlag(Flag::D);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // INC (INCrement memory)
-void Cpu::INC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::INC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = value + 0x01;
@@ -799,13 +862,15 @@ void Cpu::INC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // JMP (JuMP)  [ok]Teste 1
-void Cpu::JMP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::JMP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   PC = response.address;
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
-void Cpu::JSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::JSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
 
   uint16_t nextOP = PC + response.size;
@@ -819,7 +884,8 @@ void Cpu::JSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // LDA (LoaD Accumulator)
-void Cpu::LDA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::LDA_old(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+                  uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
@@ -828,8 +894,63 @@ void Cpu::LDA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
+
+MemoryAccessResult Cpu::getValueAddrMode(ADDR_MODE mode) {
+  switch (mode) {
+  case ADDR_MODE::IMMEDIATE:
+    return immediate();
+    break;
+  case ADDR_MODE::ZEROPAGE:
+    return zeropage();
+    break;
+  case ADDR_MODE::ZEROPAGE_X:
+    return zeropageX();
+    break;
+  case ADDR_MODE::ZEROPAGE_Y:
+    return zeropageY();
+    break;
+  case ADDR_MODE::ABSOLUTE:
+    return absolute();
+    break;
+  case ADDR_MODE::ABSOLUTE_X:
+    return absoluteX();
+    break;
+  case ADDR_MODE::ABSOLUTE_Y:
+    return absoluteY();
+    break;
+  case ADDR_MODE::INDIRECT:
+    return indirect();
+    break;
+  case ADDR_MODE::INDIRECT_X:
+    return indirectX();
+    break;
+  case ADDR_MODE::INDIRECT_Y:
+    return indirectY();
+    break;
+  case ADDR_MODE::RELATIVE:
+    return relative();
+    break;
+  case ADDR_MODE::NONE:
+    return MemoryAccessResult{};
+  }
+  return MemoryAccessResult{};
+}
+
+// LDA (LoaD Accumulator)
+void Cpu::LDA(opcodeParams params) {
+  MemoryAccessResult response =
+      getValueAddrMode(params.addrMode); // (this->*Addressingmode)();
+  uint8_t value = memory.read(response.address);
+  flagActivationN(value);
+  flagActivationZ(value);
+  AC = value;
+  incrementPC(response.size);
+  useCpuCicles(params.cycles +
+               (response.pageCrossed ? params.cyclesOnPageCross : 0));
+}
 // LDX (LoaD X register)ADC #$0F
-void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
@@ -839,7 +960,8 @@ void Cpu::LDX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // LDY (LoaD Y register)
-void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
@@ -849,7 +971,8 @@ void Cpu::LDY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // LSR (Logical Shift Right)
-void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
@@ -860,7 +983,8 @@ void Cpu::LSR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
-void Cpu::LSR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::LSR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+                 uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (AC >> 0x01);
@@ -871,13 +995,15 @@ void Cpu::LSR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, ui
   useCpuCicles(cycles + pageChangedCycle);
 }
 // NOP (No OPeration)
-void Cpu::NOP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::NOP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // ORA (bitwise OR with Accumulator)
-void Cpu::ORA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ORA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t result = AC | value;
@@ -890,7 +1016,8 @@ void Cpu::ORA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
 }
 // Register Instructions
 // - TAX (Transfer A to X)
-void Cpu::TAX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TAX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   X = AC;
   flagActivationN(AC);
@@ -899,7 +1026,8 @@ void Cpu::TAX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - TXA (Transfer X to A)
-void Cpu::TXA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TXA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   AC = X;
   flagActivationN(X);
@@ -908,7 +1036,8 @@ void Cpu::TXA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - DEX (DEcrement X)
-void Cpu::DEX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::DEX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   X -= 0x01;
   flagActivationN(X);
@@ -917,7 +1046,8 @@ void Cpu::DEX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - INX (INcrement X)
-void Cpu::INX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::INX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   X += 0x01;
   flagActivationN(X);
@@ -926,7 +1056,8 @@ void Cpu::INX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - TAY (Transfer A to Y)
-void Cpu::TAY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TAY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   Y = AC;
   flagActivationN(AC);
@@ -935,7 +1066,8 @@ void Cpu::TAY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - TYA (Transfer Y to A)
-void Cpu::TYA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TYA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   AC = Y;
   flagActivationN(Y);
@@ -944,7 +1076,8 @@ void Cpu::TYA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - DEY (DEcrement Y)
-void Cpu::DEY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::DEY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   Y -= 0x01;
   flagActivationN(Y);
@@ -953,7 +1086,8 @@ void Cpu::DEY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - INY (INcrement Y)
-void Cpu::INY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::INY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(AddressingMode);
   Y += 0x01;
   flagActivationN(Y);
@@ -962,7 +1096,8 @@ void Cpu::INY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // ROL (ROtate Left)
-void Cpu::ROL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ROL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
 
@@ -983,7 +1118,8 @@ void Cpu::ROL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
-void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+                 uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
 
   uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -997,7 +1133,6 @@ void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, ui
     remFlag(Flag::C);
   }
 
-
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
@@ -1005,7 +1140,8 @@ void Cpu::ROL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, ui
   useCpuCicles(cycles + pageChangedCycle);
 }
 // ROR (ROtate Right)
-void Cpu::ROR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ROR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   (value & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
@@ -1027,7 +1163,8 @@ void Cpu::ROR(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
-void Cpu::ROR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::ROR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+                 uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
 
@@ -1049,7 +1186,8 @@ void Cpu::ROR_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, ui
   useCpuCicles(cycles + pageChangedCycle);
 }
 // RTI (ReTurn from Interrupt)
-void Cpu::RTI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::RTI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   uint8_t PC_msb = stackPOP();
   uint8_t PC_lsb = stackPOP();
@@ -1059,16 +1197,17 @@ void Cpu::RTI(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
   useCpuCicles(cycles + pageChangedCycle);
 }
 // RTS (ReTurn from Subroutine)
-void Cpu::RTS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
-  static_cast<void>(Addressingmode);
+void Cpu::RTS(opcodeParams params) {
+  /*static_cast<void>(Addressingmode);*/
   uint8_t address_msb = stackPOP();
   uint8_t address_lsb = stackPOP();
   uint16_t address = (address_msb << 0x08) | address_lsb;
   PC = address;
-  useCpuCicles(cycles + pageChangedCycle);
+  useCpuCicles(params.cycles + params.cyclesOnPageCross);
 }
 // SBC (SuBtract with Carry)
-void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -1086,7 +1225,8 @@ void Cpu::SBC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
 }
 
 // STA (STore Accumulator)
-void Cpu::STA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::STA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, AC);
   incrementPC(response.size);
@@ -1094,56 +1234,64 @@ void Cpu::STA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8
 }
 // Stack Instructions
 // - TXS (Transfer X to Stack ptr)
-void Cpu::TXS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TXS(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   SP = X;
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - TSX (Transfer Stack ptr to X)
-void Cpu::TSX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::TSX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   X = SP;
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - PHA (PusH Accumulator)
-void Cpu::PHA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::PHA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   stackPUSH(AC);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - PLA (PuLl Accumulator)
-void Cpu::PLA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::PLA(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   AC = stackPOP();
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - PHP (PusH Processor status)
-void Cpu::PHP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::PHP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   stackPUSH(SR);
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // - PLP (PuLl Processor status)
-void Cpu::PLP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::PLP(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   static_cast<void>(Addressingmode);
   SR = stackPOP();
   incrementPC(0x01);
   useCpuCicles(cycles + pageChangedCycle);
 }
 // STX (STore X register)
-void Cpu::STX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::STX(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, X);
   incrementPC(response.size);
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 // STY (STore Y register)
-void Cpu::STY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles, uint8_t pageChangedCycle) {
+void Cpu::STY(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
+              uint8_t pageChangedCycle) {
   MemoryAccessResult response = (this->*Addressingmode)();
   memory.write(response.address, Y);
   incrementPC(response.size);
