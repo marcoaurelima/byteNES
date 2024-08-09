@@ -127,8 +127,7 @@ public:
   // uint8_t pageChangedCycle);
 
   // ADC (ADd with Carry)
-  void ADC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void ADC(opcodeParams params);
   // AND (bitwise AND with accumulator)
   void AND(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
            uint8_t pageChangedCycle);

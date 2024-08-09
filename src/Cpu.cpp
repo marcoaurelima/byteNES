@@ -9,7 +9,6 @@
 #include <ios>
 #include <iostream>
 #include <ostream>
-#include <thread>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
@@ -26,6 +25,22 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x79] = [this]() { this->ADC(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0x61] = [this]() { this->ADC(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0x71] = [this]() { this->ADC(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0x69] = &Cpu::ADC;
+  opcodeMapping[0x65] = &Cpu::ADC;
+  opcodeMapping[0x75] = &Cpu::ADC;
+  opcodeMapping[0x6D] = &Cpu::ADC;
+  opcodeMapping[0x7D] = &Cpu::ADC;
+  opcodeMapping[0x79] = &Cpu::ADC;
+  opcodeMapping[0x61] = &Cpu::ADC;
+  opcodeMapping[0x71] = &Cpu::ADC;
+  opcodeInfo[0x69] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0x65] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x75] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0x6D] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0x7D] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0x79] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0x61] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0x71] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// AND (bitwise AND with accumulator)*/
   /*opcodeMapping[0x29] = [this]() { this->AND(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0x25] = [this]() { this->AND(&Cpu::zeropage, 3, 0); };*/
@@ -114,7 +129,6 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xB9] = [this]() { this->LDA(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0xA1] = [this]() { this->LDA(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0xB1] = [this]() { this->LDA(&Cpu::indirectY, 5, 1); };*/
-  // LDA (LoaD Accumulator)
   opcodeMapping[0xA9] = &Cpu::LDA;
   opcodeMapping[0xA5] = &Cpu::LDA;
   opcodeMapping[0xB5] = &Cpu::LDA;
@@ -527,11 +541,51 @@ void Cpu::flagActivationCMP(uint16_t value_1, uint8_t value_2) {
   }
 }
 
+MemoryAccessResult Cpu::getValueAddrMode(ADDR_MODE mode) {
+  switch (mode) {
+  case ADDR_MODE::IMMEDIATE:
+    return immediate();
+    break;
+  case ADDR_MODE::ZEROPAGE:
+    return zeropage();
+    break;
+  case ADDR_MODE::ZEROPAGE_X:
+    return zeropageX();
+    break;
+  case ADDR_MODE::ZEROPAGE_Y:
+    return zeropageY();
+    break;
+  case ADDR_MODE::ABSOLUTE:
+    return absolute();
+    break;
+  case ADDR_MODE::ABSOLUTE_X:
+    return absoluteX();
+    break;
+  case ADDR_MODE::ABSOLUTE_Y:
+    return absoluteY();
+    break;
+  case ADDR_MODE::INDIRECT:
+    return indirect();
+    break;
+  case ADDR_MODE::INDIRECT_X:
+    return indirectX();
+    break;
+  case ADDR_MODE::INDIRECT_Y:
+    return indirectY();
+    break;
+  case ADDR_MODE::RELATIVE:
+    return relative();
+    break;
+  case ADDR_MODE::NONE:
+    return MemoryAccessResult{};
+  }
+  return MemoryAccessResult{};
+}
+
 // Implementações das instruções
 // ADC (ADd with Carry)
-void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
-              uint8_t pageChangedCycle) {
-  MemoryAccessResult response = (this->*Addressingmode)();
+void Cpu::ADC(opcodeParams params) {
+  auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
   uint8_t result = AC + value + carry;
@@ -541,7 +595,8 @@ void Cpu::ADC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
   flagActivationV(AC, result);
   AC = result;
   incrementPC(response.size);
-  useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
+  useCpuCicles(params.cycles +
+               (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // AND (bitwise AND with accumulator)
 void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
@@ -895,51 +950,9 @@ void Cpu::LDA_old(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
   useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
 }
 
-MemoryAccessResult Cpu::getValueAddrMode(ADDR_MODE mode) {
-  switch (mode) {
-  case ADDR_MODE::IMMEDIATE:
-    return immediate();
-    break;
-  case ADDR_MODE::ZEROPAGE:
-    return zeropage();
-    break;
-  case ADDR_MODE::ZEROPAGE_X:
-    return zeropageX();
-    break;
-  case ADDR_MODE::ZEROPAGE_Y:
-    return zeropageY();
-    break;
-  case ADDR_MODE::ABSOLUTE:
-    return absolute();
-    break;
-  case ADDR_MODE::ABSOLUTE_X:
-    return absoluteX();
-    break;
-  case ADDR_MODE::ABSOLUTE_Y:
-    return absoluteY();
-    break;
-  case ADDR_MODE::INDIRECT:
-    return indirect();
-    break;
-  case ADDR_MODE::INDIRECT_X:
-    return indirectX();
-    break;
-  case ADDR_MODE::INDIRECT_Y:
-    return indirectY();
-    break;
-  case ADDR_MODE::RELATIVE:
-    return relative();
-    break;
-  case ADDR_MODE::NONE:
-    return MemoryAccessResult{};
-  }
-  return MemoryAccessResult{};
-}
-
 // LDA (LoaD Accumulator)
 void Cpu::LDA(opcodeParams params) {
-  MemoryAccessResult response =
-      getValueAddrMode(params.addrMode); // (this->*Addressingmode)();
+  auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
   flagActivationZ(value);
