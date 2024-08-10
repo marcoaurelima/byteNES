@@ -285,7 +285,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xAE] = &Cpu::LDX;
   opcodeMapping[0xBE] = &Cpu::LDX;
   opcodeInfo[0xA2] = {ADDR_MODE::IMMEDIATE, 2, 0};
-  opcodeInfo[0xB6] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xA6] = {ADDR_MODE::ZEROPAGE, 3, 0};
   opcodeInfo[0xB6] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
   opcodeInfo[0xAE] = {ADDR_MODE::ABSOLUTE, 4, 0};
   opcodeInfo[0xBE] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
@@ -301,7 +301,7 @@ void Cpu::fillOpcodeMapping() {
   opcodeMapping[0xAC] = &Cpu::LDY;
   opcodeMapping[0xBC] = &Cpu::LDY;
   opcodeInfo[0xA0] = {ADDR_MODE::IMMEDIATE, 2, 0};
-  opcodeInfo[0xB4] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xA4] = {ADDR_MODE::ZEROPAGE, 3, 0};
   opcodeInfo[0xB4] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
   opcodeInfo[0xAC] = {ADDR_MODE::ABSOLUTE, 4, 0};
   opcodeInfo[0xBC] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
@@ -648,7 +648,10 @@ MemoryAccessResult Cpu::immediate() {
 }
 
 MemoryAccessResult Cpu::zeropage() {
+  /*std::cout << "\nZEROPAGE:\n";*/
+  /*std::cout << "   PC+1: " << std::hex << PC + 1 << "\n";*/
   uint8_t address = memory.read(PC + 1);
+  /*std::cout << "ADDRESS: " << std::hex << address << "\n";*/
   return {address, 0x02, true};
 }
 
@@ -1265,6 +1268,7 @@ void Cpu::LDA(opcodeParams params) {
 void Cpu::LDX(opcodeParams params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
+  /*std::cout << "LDX respponseADDR: " << std::hex << response.address << "\n\n";*/
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
   flagActivationZ(value);
