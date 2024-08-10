@@ -1,3 +1,6 @@
+    .ORG $0600
+
+; https://gist.github.com/wkjagt/9043907
 ;  ___           _        __ ___  __ ___
 ; / __|_ _  __ _| |_____ / /| __|/  \_  )
 ; \__ \ ' \/ _` | / / -_) _ \__ \ () / /
@@ -438,7 +441,7 @@ drawSnake:
 
 spinWheels:
   ;slow the game down by wasting cycles
-  ldx #0       ;load zero in the X register
+  ldx #$1       ;load zero in the X register
 spinloop:
   nop          ;no operation, just skip a cycle
   nop          ;no operation, just skip a cycle
@@ -450,3 +453,5 @@ spinloop:
 
 
 gameOver: ;game over is literally the end of the program
+
+
