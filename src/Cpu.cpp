@@ -547,11 +547,11 @@ void Cpu::useCpuCicles(uint8_t qtd) {
 }
 
 void Cpu::start() {
-  int count = 0;
   auto start = std::chrono::steady_clock::now();
 
   while (true) {
-    (this->*opcodeMapping[0xA9])(opcodeInfo[0xA9]);
+    /*(this->*opcodeMapping[0xA9])(opcodeInfo[0xA9]);*/
+    next();
 
     auto now = std::chrono::steady_clock::now();
     auto elapsed =
@@ -562,7 +562,6 @@ void Cpu::start() {
       start = now; // reset start time
       count = 0;
     }
-    count++;
   }
 }
 
@@ -622,7 +621,7 @@ void Cpu::next() {
   (this->*opcodeMapping[index])(opcodeInfo[index]);
   count++;
 
-  showCpuStatus(index, true);
+  /*showCpuStatus(index, true);*/
 
   if (STOP_BRK && index == 0) {
     std::cout << "--- OPCODE BRK foi chamado. Terminando o programa. ---";
