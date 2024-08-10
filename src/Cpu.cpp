@@ -50,15 +50,45 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x39] = [this]() { this->AND(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0x21] = [this]() { this->AND(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0x31] = [this]() { this->AND(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0x29] = &Cpu::AND;
+  opcodeMapping[0x25] = &Cpu::AND;
+  opcodeMapping[0x35] = &Cpu::AND;
+  opcodeMapping[0x2D] = &Cpu::AND;
+  opcodeMapping[0x3D] = &Cpu::AND;
+  opcodeMapping[0x39] = &Cpu::AND;
+  opcodeMapping[0x21] = &Cpu::AND;
+  opcodeMapping[0x31] = &Cpu::AND;
+  opcodeInfo[0x29] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0x25] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x35] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0x2D] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0x3D] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0x39] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0x21] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0x31] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// ASL (Arithmetic Shift Left)*/
   /*opcodeMapping[0x0A] = [this]() { this->ASL_AC(nullptr, 2, 0); };*/
   /*opcodeMapping[0x06] = [this]() { this->ASL(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0x16] = [this]() { this->ASL(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0x0E] = [this]() { this->ASL(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0x1E] = [this]() { this->ASL(&Cpu::absoluteX, 7, 0); };*/
+  opcodeMapping[0x0A] = &Cpu::ASL_AC;
+  opcodeMapping[0x06] = &Cpu::ASL;
+  opcodeMapping[0x16] = &Cpu::ASL;
+  opcodeMapping[0x0E] = &Cpu::ASL;
+  opcodeMapping[0x1E] = &Cpu::ASL;
+  opcodeInfo[0x0A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x06] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0x16] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0x0E] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0x1E] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// BIT (test BITs)*/
   /*opcodeMapping[0x24] = [this]() { this->BIT(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0x2C] = [this]() { this->BIT(&Cpu::absolute, 4, 0); };*/
+  opcodeMapping[0x24] = &Cpu::BIT;
+  opcodeMapping[0x2C] = &Cpu::BIT;
+  opcodeInfo[0x24] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x2C] = {ADDR_MODE::ABSOLUTE, 4, 0};
   /*// Branch Instructions*/
   /*opcodeMapping[0x10] = [this]() { this->BPL(&Cpu::relative, 2, 2); };*/
   /*opcodeMapping[0x30] = [this]() { this->BMI(&Cpu::relative, 2, 2); };*/
@@ -68,8 +98,26 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xB0] = [this]() { this->BCS(&Cpu::relative, 2, 2); };*/
   /*opcodeMapping[0xD0] = [this]() { this->BNE(&Cpu::relative, 2, 2); };*/
   /*opcodeMapping[0xF0] = [this]() { this->BEQ(&Cpu::relative, 2, 2); };*/
+  opcodeMapping[0x10] = &Cpu::BPL;
+  opcodeMapping[0x30] = &Cpu::BMI;
+  opcodeMapping[0x50] = &Cpu::BVC;
+  opcodeMapping[0x70] = &Cpu::BVS;
+  opcodeMapping[0x90] = &Cpu::BCC;
+  opcodeMapping[0xB0] = &Cpu::BCS;
+  opcodeMapping[0xD0] = &Cpu::BNE;
+  opcodeMapping[0xF0] = &Cpu::BEQ;
+  opcodeInfo[0x10] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0x30] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0x50] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0x70] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0x90] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0xB0] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0xD0] = {ADDR_MODE::RELATIVE, 2, 2};
+  opcodeInfo[0xF0] = {ADDR_MODE::RELATIVE, 2, 2};
   /*// BRK (BReaK)*/
   /*opcodeMapping[0x00] = [this]() { this->BRK(nullptr, 7, 0); };*/
+  opcodeMapping[0x00] = &Cpu::BRK;
+  opcodeInfo[0x00] = {ADDR_MODE::NONE, 7, 0};
   /*// CMP (CoMPare accumulator)*/
   /*opcodeMapping[0xC9] = [this]() { this->CMP(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0xC5] = [this]() { this->CMP(&Cpu::zeropage, 3, 0); };*/
@@ -79,19 +127,55 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xD9] = [this]() { this->CMP(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0xC1] = [this]() { this->CMP(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0xD1] = [this]() { this->CMP(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0xC9] = &Cpu::CMP;
+  opcodeMapping[0xC5] = &Cpu::CMP;
+  opcodeMapping[0xD5] = &Cpu::CMP;
+  opcodeMapping[0xCD] = &Cpu::CMP;
+  opcodeMapping[0xDD] = &Cpu::CMP;
+  opcodeMapping[0xD9] = &Cpu::CMP;
+  opcodeMapping[0xC1] = &Cpu::CMP;
+  opcodeMapping[0xD1] = &Cpu::CMP;
+  opcodeInfo[0xC9] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xC5] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xD5] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0xCD] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0xDD] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0xD9] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0xC1] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0xD1] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// CPX (ComPare X register)*/
   /*opcodeMapping[0xE0] = [this]() { this->CPX(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0xE4] = [this]() { this->CPX(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0xEC] = [this]() { this->CPX(&Cpu::absolute, 4, 0); };*/
+  opcodeMapping[0xE0] = &Cpu::CPX;
+  opcodeMapping[0xE4] = &Cpu::CPX;
+  opcodeMapping[0xEC] = &Cpu::CPX;
+  opcodeInfo[0xE0] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xE4] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xEC] = {ADDR_MODE::ABSOLUTE, 4, 0};
   /*// CPY (ComPare Y register)*/
   /*opcodeMapping[0xC0] = [this]() { this->CPY(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0xC4] = [this]() { this->CPY(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0xCC] = [this]() { this->CPY(&Cpu::absolute, 4, 0); };*/
+  opcodeMapping[0xC0] = &Cpu::CPY;
+  opcodeMapping[0xC4] = &Cpu::CPY;
+  opcodeMapping[0xCC] = &Cpu::CPY;
+  opcodeInfo[0xC0] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xC4] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xCC] = {ADDR_MODE::ABSOLUTE, 4, 0};
   /*// DEC (DECrement memory)*/
   /*opcodeMapping[0xC6] = [this]() { this->DEC(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0xD6] = [this]() { this->DEC(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0xCE] = [this]() { this->DEC(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0xDE] = [this]() { this->DEC(&Cpu::absoluteX, 7, 0); };*/
+  opcodeMapping[0xC6] = &Cpu::DEC;
+  opcodeMapping[0xD6] = &Cpu::DEC;
+  opcodeMapping[0xCE] = &Cpu::DEC;
+  opcodeMapping[0xDE] = &Cpu::DEC;
+  opcodeInfo[0xC6] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0xD6] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0xCE] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0xDE] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// EOR (bitwise Exclusive OR)*/
   /*opcodeMapping[0x49] = [this]() { this->EOR(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0x45] = [this]() { this->EOR(&Cpu::zeropage, 3, 0); };*/
@@ -101,6 +185,22 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x59] = [this]() { this->EOR(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0x41] = [this]() { this->EOR(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0x51] = [this]() { this->EOR(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0x49] = &Cpu::EOR;
+  opcodeMapping[0x45] = &Cpu::EOR;
+  opcodeMapping[0x55] = &Cpu::EOR;
+  opcodeMapping[0x4D] = &Cpu::EOR;
+  opcodeMapping[0x5D] = &Cpu::EOR;
+  opcodeMapping[0x59] = &Cpu::EOR;
+  opcodeMapping[0x41] = &Cpu::EOR;
+  opcodeMapping[0x51] = &Cpu::EOR;
+  opcodeInfo[0x49] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0x45] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x55] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0x4D] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0x5D] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0x59] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0x41] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0x51] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// Flag (Processor Status) Instructions*/
   /*opcodeMapping[0x18] = [this]() { this->CLC(nullptr, 2, 0); };*/
   /*opcodeMapping[0x38] = [this]() { this->SEC(nullptr, 2, 0); };*/
@@ -109,16 +209,44 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xB8] = [this]() { this->CLV(nullptr, 2, 0); };*/
   /*opcodeMapping[0xD8] = [this]() { this->CLD(nullptr, 2, 0); };*/
   /*opcodeMapping[0xF8] = [this]() { this->SED(nullptr, 2, 0); };*/
+  opcodeMapping[0x18] = &Cpu::CLC;
+  opcodeMapping[0x38] = &Cpu::SEC;
+  opcodeMapping[0x58] = &Cpu::CLI;
+  opcodeMapping[0x78] = &Cpu::SEI;
+  opcodeMapping[0xB8] = &Cpu::CLV;
+  opcodeMapping[0xD8] = &Cpu::CLD;
+  opcodeMapping[0xF8] = &Cpu::SED;
+  opcodeInfo[0x18] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x38] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x58] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x78] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xB8] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xD8] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xF8] = {ADDR_MODE::NONE, 2, 0};
   /*// INC (INCrement memory)*/
   /*opcodeMapping[0xE6] = [this]() { this->INC(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0xF6] = [this]() { this->INC(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0xEE] = [this]() { this->INC(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0xFE] = [this]() { this->INC(&Cpu::absoluteX, 7 , 0); };*/
+  opcodeMapping[0xE6] = &Cpu::INC;
+  opcodeMapping[0xF6] = &Cpu::INC;
+  opcodeMapping[0xEE] = &Cpu::INC;
+  opcodeMapping[0xFE] = &Cpu::INC;
+  opcodeInfo[0xE6] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0xF6] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0xEE] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0xFE] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// JMP (JuMP)*/
   /*opcodeMapping[0x4C] = [this]() { this->JMP(&Cpu::absolute, 3, 0); };*/
   /*opcodeMapping[0x6C] = [this]() { this->JMP(&Cpu::indirect, 5, 0); };*/
+  opcodeMapping[0x4C] = &Cpu::JMP;
+  opcodeMapping[0x6C] = &Cpu::JMP;
+  opcodeInfo[0x4C] = {ADDR_MODE::ABSOLUTE, 3, 0};
+  opcodeInfo[0x6C] = {ADDR_MODE::INDIRECT, 5, 0};
   /*// JSR (Jump to SubRoutine)*/
   /*opcodeMapping[0x20] = [this]() { this->JSR(&Cpu::absolute, 6, 0); };*/
+  opcodeMapping[0x20] = &Cpu::JSR;
+  opcodeInfo[0x4C] = {ADDR_MODE::ABSOLUTE, 6, 0};
   /**/
   /*// LDA (LoaD Accumulator)*/
   /*opcodeMapping[0xA9] = [this]() { this->LDA(&Cpu::immediate, 2, 0); };*/
@@ -151,20 +279,52 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xB6] = [this]() { this->LDX(&Cpu::zeropageY, 4, 0); };*/
   /*opcodeMapping[0xAE] = [this]() { this->LDX(&Cpu::absolute, 4, 0); };*/
   /*opcodeMapping[0xBE] = [this]() { this->LDX(&Cpu::absoluteY, 4, 1); };*/
+  opcodeMapping[0xA2] = &Cpu::LDX;
+  opcodeMapping[0xA6] = &Cpu::LDX;
+  opcodeMapping[0xB6] = &Cpu::LDX;
+  opcodeMapping[0xAE] = &Cpu::LDX;
+  opcodeMapping[0xBE] = &Cpu::LDX;
+  opcodeInfo[0xA2] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xB6] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xB6] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
+  opcodeInfo[0xAE] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0xBE] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
   /*// LDY (LoaD Y register)*/
   /*opcodeMapping[0xA0] = [this]() { this->LDY(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0xA4] = [this]() { this->LDY(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0xB4] = [this]() { this->LDY(&Cpu::zeropageX, 4, 0); };*/
   /*opcodeMapping[0xAC] = [this]() { this->LDY(&Cpu::absolute, 4, 0); };*/
   /*opcodeMapping[0xBC] = [this]() { this->LDY(&Cpu::absoluteX, 4, 1); };*/
+  opcodeMapping[0xA0] = &Cpu::LDY;
+  opcodeMapping[0xA4] = &Cpu::LDY;
+  opcodeMapping[0xB4] = &Cpu::LDY;
+  opcodeMapping[0xAC] = &Cpu::LDY;
+  opcodeMapping[0xBC] = &Cpu::LDY;
+  opcodeInfo[0xA0] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xB4] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xB4] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
+  opcodeInfo[0xAC] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0xBC] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
   /*// LSR (Logical Shift Right)*/
   /*opcodeMapping[0x4A] = [this]() { this->LSR_AC(nullptr, 2, 0); };*/
   /*opcodeMapping[0x46] = [this]() { this->LSR(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0x56] = [this]() { this->LSR(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0x4E] = [this]() { this->LSR(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0x5E] = [this]() { this->LSR(&Cpu::absoluteX, 7, 0); };*/
+  opcodeMapping[0x4A] = &Cpu::LSR_AC;
+  opcodeMapping[0x46] = &Cpu::LSR;
+  opcodeMapping[0x56] = &Cpu::LSR;
+  opcodeMapping[0x4E] = &Cpu::LSR;
+  opcodeMapping[0x5E] = &Cpu::LSR;
+  opcodeInfo[0x4A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x46] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0x56] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0x4E] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0x5E] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// NOP (No OPeration)*/
   /*opcodeMapping[0xEA] = [this]() { this->NOP(nullptr, 2, 0); };*/
+  opcodeMapping[0xEA] = &Cpu::NOP;
+  opcodeInfo[0xEA] = {ADDR_MODE::NONE, 2, 0};
   /*// ORA (bitwise OR with Accumulator)*/
   /*opcodeMapping[0x09] = [this]() { this->ORA(&Cpu::immediate, 2, 0); };*/
   /*opcodeMapping[0x05] = [this]() { this->ORA(&Cpu::zeropage, 3, 0); };*/
@@ -174,6 +334,22 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x19] = [this]() { this->ORA(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0x01] = [this]() { this->ORA(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0x11] = [this]() { this->ORA(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0x09] = &Cpu::ORA;
+  opcodeMapping[0x05] = &Cpu::ORA;
+  opcodeMapping[0x15] = &Cpu::ORA;
+  opcodeMapping[0x0D] = &Cpu::ORA;
+  opcodeMapping[0x1D] = &Cpu::ORA;
+  opcodeMapping[0x19] = &Cpu::ORA;
+  opcodeMapping[0x01] = &Cpu::ORA;
+  opcodeMapping[0x11] = &Cpu::ORA;
+  opcodeInfo[0x09] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0x05] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x15] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0x0D] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0x1D] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0x19] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0x01] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0x11] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// Register Instructions*/
   /*opcodeMapping[0xAA] = [this]() { this->TAX(nullptr, 2, 0); };*/
   /*opcodeMapping[0x8A] = [this]() { this->TXA(nullptr, 2, 0); };*/
@@ -183,20 +359,58 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x98] = [this]() { this->TYA(nullptr, 2, 0); };*/
   /*opcodeMapping[0x88] = [this]() { this->DEY(nullptr, 2, 0); };*/
   /*opcodeMapping[0xC8] = [this]() { this->INY(nullptr, 2, 0); };*/
+  opcodeMapping[0xAA] = &Cpu::TAX;
+  opcodeMapping[0x8A] = &Cpu::TXA;
+  opcodeMapping[0xCA] = &Cpu::DEX;
+  opcodeMapping[0xE8] = &Cpu::INX;
+  opcodeMapping[0xA8] = &Cpu::TAY;
+  opcodeMapping[0x98] = &Cpu::TYA;
+  opcodeMapping[0x88] = &Cpu::DEY;
+  opcodeMapping[0xC8] = &Cpu::INY;
+  opcodeInfo[0xAA] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x8A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xCA] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xE8] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xA8] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x98] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x88] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xC8] = {ADDR_MODE::NONE, 2, 0};
   /*// ROL (ROtate Left)*/
   /*opcodeMapping[0x2A] = [this]() { this->ROL_AC(nullptr, 2, 0); };*/
   /*opcodeMapping[0x26] = [this]() { this->ROL(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0x36] = [this]() { this->ROL(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0x2E] = [this]() { this->ROL(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0x3E] = [this]() { this->ROL(&Cpu::absoluteX, 7, 0); };*/
+  opcodeMapping[0x2A] = &Cpu::ROL_AC;
+  opcodeMapping[0x26] = &Cpu::ROL;
+  opcodeMapping[0x36] = &Cpu::ROL;
+  opcodeMapping[0x2E] = &Cpu::ROL;
+  opcodeMapping[0x3E] = &Cpu::ROL;
+  opcodeInfo[0x2A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x26] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0x36] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0x2E] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0x3E] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// ROR (ROtate Right)*/
   /*opcodeMapping[0x6A] = [this]() { this->ROR_AC(nullptr, 2, 0); };*/
   /*opcodeMapping[0x66] = [this]() { this->ROR(&Cpu::zeropage, 5, 0); };*/
   /*opcodeMapping[0x76] = [this]() { this->ROR(&Cpu::zeropageX, 6, 0); };*/
   /*opcodeMapping[0x6E] = [this]() { this->ROR(&Cpu::absolute, 6, 0); };*/
   /*opcodeMapping[0x7E] = [this]() { this->ROR(&Cpu::absoluteX, 7, 0); };*/
+  opcodeMapping[0x6A] = &Cpu::ROR_AC;
+  opcodeMapping[0x66] = &Cpu::ROR;
+  opcodeMapping[0x76] = &Cpu::ROR;
+  opcodeMapping[0x6E] = &Cpu::ROR;
+  opcodeMapping[0x7E] = &Cpu::ROR;
+  opcodeInfo[0x6A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x66] = {ADDR_MODE::ZEROPAGE, 5, 0};
+  opcodeInfo[0x76] = {ADDR_MODE::ZEROPAGE_X, 6, 0};
+  opcodeInfo[0x6E] = {ADDR_MODE::ABSOLUTE, 6, 0};
+  opcodeInfo[0x7E] = {ADDR_MODE::ABSOLUTE_X, 7, 0};
   /*// RTI (ReTurn from Interrupt)*/
   /*opcodeMapping[0x40] = [this]() { this->RTI(nullptr, 6, 0); };*/
+  opcodeMapping[0x40] = &Cpu::RTI;
+  opcodeInfo[0x40] = {ADDR_MODE::NONE, 6, 0};
   // RTS (ReTurn from Subroutine)
   /*opcodeMapping[0x60] = [this]() { this->RTS(nullptr, 6, 0); };*/
   opcodeMapping[0x60] = &Cpu::RTS;
@@ -210,6 +424,22 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0xF9] = [this]() { this->SBC(&Cpu::absoluteY, 4, 1); };*/
   /*opcodeMapping[0xE1] = [this]() { this->SBC(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0xF1] = [this]() { this->SBC(&Cpu::indirectY, 5, 1); };*/
+  opcodeMapping[0xE9] = &Cpu::SBC;
+  opcodeMapping[0xE5] = &Cpu::SBC;
+  opcodeMapping[0xF5] = &Cpu::SBC;
+  opcodeMapping[0xED] = &Cpu::SBC;
+  opcodeMapping[0xFD] = &Cpu::SBC;
+  opcodeMapping[0xF9] = &Cpu::SBC;
+  opcodeMapping[0xE1] = &Cpu::SBC;
+  opcodeMapping[0xF1] = &Cpu::SBC;
+  opcodeInfo[0xE9] = {ADDR_MODE::IMMEDIATE, 2, 0};
+  opcodeInfo[0xE5] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0xF5] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0xED] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0xFD] = {ADDR_MODE::ABSOLUTE_X, 4, 1};
+  opcodeInfo[0xF9] = {ADDR_MODE::ABSOLUTE_Y, 4, 1};
+  opcodeInfo[0xE1] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0xF1] = {ADDR_MODE::INDIRECT_Y, 5, 1};
   /*// STA (STore Accumulator)*/
   /*opcodeMapping[0x85] = [this]() { this->STA(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0x95] = [this]() { this->STA(&Cpu::zeropageX, 4, 0); };*/
@@ -218,6 +448,20 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x99] = [this]() { this->STA(&Cpu::absoluteY, 5, 0); };*/
   /*opcodeMapping[0x81] = [this]() { this->STA(&Cpu::indirectX, 6, 0); };*/
   /*opcodeMapping[0x91] = [this]() { this->STA(&Cpu::indirectY, 6, 0); };*/
+  opcodeMapping[0x85] = &Cpu::STA;
+  opcodeMapping[0x95] = &Cpu::STA;
+  opcodeMapping[0x8D] = &Cpu::STA;
+  opcodeMapping[0x9D] = &Cpu::STA;
+  opcodeMapping[0x99] = &Cpu::STA;
+  opcodeMapping[0x81] = &Cpu::STA;
+  opcodeMapping[0x91] = &Cpu::STA;
+  opcodeInfo[0x85] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x95] = {ADDR_MODE::ZEROPAGE_X, 4, 0};
+  opcodeInfo[0x8D] = {ADDR_MODE::ABSOLUTE, 4, 0};
+  opcodeInfo[0x9D] = {ADDR_MODE::ABSOLUTE_X, 5, 0};
+  opcodeInfo[0x99] = {ADDR_MODE::ABSOLUTE_Y, 5, 0};
+  opcodeInfo[0x81] = {ADDR_MODE::INDIRECT_X, 6, 0};
+  opcodeInfo[0x91] = {ADDR_MODE::INDIRECT_Y, 6, 0};
   /*// Stack Instructions*/
   /*opcodeMapping[0x9A] = [this]() { this->TXS(nullptr, 2, 0); };*/
   /*opcodeMapping[0xBA] = [this]() { this->TSX(nullptr, 2, 0); };*/
@@ -225,14 +469,38 @@ void Cpu::fillOpcodeMapping() {
   /*opcodeMapping[0x68] = [this]() { this->PLA(nullptr, 4, 0); };*/
   /*opcodeMapping[0x08] = [this]() { this->PHP(nullptr, 3, 0); };*/
   /*opcodeMapping[0x28] = [this]() { this->PLP(nullptr, 4, 0); };*/
+  opcodeMapping[0x9A] = &Cpu::TXS;
+  opcodeMapping[0xBA] = &Cpu::TSX;
+  opcodeMapping[0x48] = &Cpu::PHA;
+  opcodeMapping[0x68] = &Cpu::PLA;
+  opcodeMapping[0x08] = &Cpu::PHP;
+  opcodeMapping[0x28] = &Cpu::PLP;
+  opcodeInfo[0x9A] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0xBA] = {ADDR_MODE::NONE, 2, 0};
+  opcodeInfo[0x48] = {ADDR_MODE::NONE, 3, 0};
+  opcodeInfo[0x68] = {ADDR_MODE::NONE, 4, 0};
+  opcodeInfo[0x08] = {ADDR_MODE::NONE, 3, 0};
+  opcodeInfo[0x28] = {ADDR_MODE::NONE, 4, 0};
   /*// STX (STore X register)*/
   /*opcodeMapping[0x86] = [this]() { this->STX(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0x96] = [this]() { this->STX(&Cpu::zeropageY, 4, 0); };*/
   /*opcodeMapping[0x8E] = [this]() { this->STX(&Cpu::absolute, 4, 0); };*/
+  opcodeMapping[0x86] = &Cpu::STX;
+  opcodeMapping[0x96] = &Cpu::STX;
+  opcodeMapping[0x8E] = &Cpu::STX;
+  opcodeInfo[0x86] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x96] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
+  opcodeInfo[0x8E] = {ADDR_MODE::ABSOLUTE, 4, 0};
   /*// STY (STore Y register)*/
   /*opcodeMapping[0x84] = [this]() { this->STY(&Cpu::zeropage, 3, 0); };*/
   /*opcodeMapping[0x94] = [this]() { this->STY(&Cpu::zeropageY, 4, 0); };*/
   /*opcodeMapping[0x8C] = [this]() { this->STY(&Cpu::absolute, 4, 0); };*/
+  opcodeMapping[0x84] = &Cpu::STX;
+  opcodeMapping[0x94] = &Cpu::STX;
+  opcodeMapping[0x8C] = &Cpu::STX;
+  opcodeInfo[0x84] = {ADDR_MODE::ZEROPAGE, 3, 0};
+  opcodeInfo[0x94] = {ADDR_MODE::ZEROPAGE_Y, 4, 0};
+  opcodeInfo[0x8C] = {ADDR_MODE::ABSOLUTE, 4, 0};
 
   srand(time(NULL));
 }
@@ -599,21 +867,20 @@ void Cpu::ADC(opcodeParams params) {
                (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // AND (bitwise AND with accumulator)
-void Cpu::AND(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
-              uint8_t pageChangedCycle) {
-  MemoryAccessResult response = (this->*Addressingmode)();
+void Cpu::AND(opcodeParams params) {
+  auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t result = value & AC;
   flagActivationN(result);
   flagActivationZ(result);
   AC = result;
   incrementPC(response.size);
-  useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
+  useCpuCicles(params.cycles +
+               (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // ASL (Arithmetic Shift Left)
-void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
-              uint8_t pageChangedCycle) {
-  MemoryAccessResult response = (this->*Addressingmode)();
+void Cpu::ASL(opcodeParams params) {
+  auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
 
@@ -623,7 +890,8 @@ void Cpu::ASL(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,
   flagActivationZ(result);
   memory.write(PC + 1, result);
   incrementPC(response.size);
-  useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));
+  useCpuCicles(params.cycles +
+               (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
 void Cpu::ASL_AC(MemoryAccessResult (Cpu::*Addressingmode)(), uint8_t cycles,

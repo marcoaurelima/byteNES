@@ -129,154 +129,96 @@ public:
   // ADC (ADd with Carry)
   void ADC(opcodeParams params);
   // AND (bitwise AND with accumulator)
-  void AND(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void AND(opcodeParams params);
   // ASL (Arithmetic Shift Left)
-  void ASL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void ASL_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-              uint8_t pageChangedCycle);
+  void ASL(opcodeParams params);
+  void ASL_AC(opcodeParams params);
   // BIT (test BITs)
-  void BIT(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void BIT(opcodeParams params);
   // Branch Instructions
-  void BPL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BMI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BVC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BVS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BCC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BCS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BNE(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void BEQ(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void BPL(opcodeParams params);
+  void BMI(opcodeParams params);
+  void BVC(opcodeParams params);
+  void BVS(opcodeParams params);
+  void BCC(opcodeParams params);
+  void BCS(opcodeParams params);
+  void BNE(opcodeParams params);
+  void BEQ(opcodeParams params);
   // BRK (BReaK)
-  void BRK(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void BRK(opcodeParams params);
   // CMP (CoMPare accumulator)
-  void CMP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void CMP(opcodeParams params);
   // CPX (ComPare X register)
-  void CPX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void CPX(opcodeParams params);
   // CPY (ComPare Y register)
-  void CPY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void CPY(opcodeParams params);
   // DEC (DECrement memory)
-  void DEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void DEC(opcodeParams params);
   // EOR (bitwise Exclusive OR)
-  void EOR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void EOR(opcodeParams params);
   // Flag (Processor Status) Instructions
-  void CLC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void SEC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void CLI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void SEI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void CLV(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void CLD(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void SED(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void CLC(opcodeParams params);
+  void SEC(opcodeParams params);
+  void CLI(opcodeParams params);
+  void SEI(opcodeParams params);
+  void CLV(opcodeParams params);
+  void CLD(opcodeParams params);
+  void SED(opcodeParams params);
   // INC (INCrement memory)
-  void INC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void INC(opcodeParams params);
   // JMP (JuMP)
-  void JMP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void JMP(opcodeParams params);
   // JSR (Jump to SubRoutine)
-  void JSR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void JSR(opcodeParams params);
   // LDA (LoaD Accumulator)
-  void LDA_old(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-               uint8_t pageChangedCycle);
+  void LDA_old(opcodeParams params);
   // LDA (LoaD Accumulator)
   void LDA(opcodeParams params);
   // LDX (LoaD X register)
-  void LDX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void LDX(opcodeParams params);
   // LDY (LoaD Y register)
-  void LDY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void LDY(opcodeParams params);
   // LSR (Logical Shift Right)
-  void LSR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void LSR_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-              uint8_t pageChangedCycle);
+  void LSR(opcodeParams params);
+  void LSR_AC(opcodeParams params);
   // NOP (No OPeration)
-  void NOP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void NOP(opcodeParams params);
   // ORA (bitwise OR with Accumulator)
-  void ORA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void ORA(opcodeParams params);
   // Register Instructions
-  void TAX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void TXA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void DEX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void INX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void TAY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void TYA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void DEY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void INY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void TAX(opcodeParams params);
+  void TXA(opcodeParams params);
+  void DEX(opcodeParams params);
+  void INX(opcodeParams params);
+  void TAY(opcodeParams params);
+  void TYA(opcodeParams params);
+  void DEY(opcodeParams params);
+  void INY(opcodeParams params);
   // ROL (ROtate Left)
-  void ROL(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void ROL_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-              uint8_t pageChangedCycle);
+  void ROL(opcodeParams params);
+  void ROL_AC(opcodeParams params);
   // ROR (ROtate Right)
-  void ROR(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void ROR_AC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-              uint8_t pageChangedCycle);
+  void ROR(opcodeParams params);
+  void ROR_AC(opcodeParams params);
   // RTI (ReTurn from Interrupt)
-  void RTI(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void RTI(opcodeParams params);
   // RTS (ReTurn from Subroutine)
   void RTS(opcodeParams params);
   // SBC (SuBtract with Carry)
-  void SBC(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void SBC(opcodeParams params);
   // STA (STore Accumulator)
-  void STA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void STA(opcodeParams params);
   // Stack Instructions
-  void TXS(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void TSX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void PHA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void PLA(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void PHP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
-  void PLP(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void TXS(opcodeParams params);
+  void TSX(opcodeParams params);
+  void PHA(opcodeParams params);
+  void PLA(opcodeParams params);
+  void PHP(opcodeParams params);
+  void PLP(opcodeParams params);
   // STX (STore X register)
-  void STX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void STX(opcodeParams params);
   // STY (STore Y register)
-  void STY(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-           uint8_t pageChangedCycle);
+  void STY(opcodeParams params);
 
   void setAsmAddress(uint16_t address);
 
