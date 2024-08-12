@@ -68,7 +68,15 @@ uint8_t Memory::read(uint16_t address) {
   return data[address];
 }
 
+void Memory::enableSaveStatusToFile(bool enable) {
+  saveStatusToFile = enable;  
+}
+
 void Memory::saveMemoryStatusToFile() {
+  if (!saveStatusToFile) {
+    return;
+  }
+
   std::ofstream file("memory_status/memory.bin", std::ios::trunc);
   if (file.is_open()) {
     for (size_t i = 0; i < data.size(); i++) {
