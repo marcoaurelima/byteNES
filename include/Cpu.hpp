@@ -228,7 +228,6 @@ public:
 
   uint64_t getCount();
 
-  void start();
 
 private:
   // Memoria ram (2Kb)

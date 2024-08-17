@@ -15,7 +15,7 @@
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
   window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
-  // window->setVerticalSyncEnabled(true);
+  window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256, 256));
   gameScreen->setPosition(50, 50);
@@ -408,7 +408,9 @@ void Gui::show() {
     // if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
       if (!isDebugMode) {
         // timer.restart();
-        cpu.next();
+        for (int i=0; i<18; i++) {
+          cpu.next();
+        }
       }
     // }
   }
