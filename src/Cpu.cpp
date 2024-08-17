@@ -1,6 +1,5 @@
 #include "Cpu.hpp"
 #include <bitset>
-#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -9,7 +8,6 @@
 #include <ios>
 #include <iostream>
 #include <ostream>
-#include <thread>
 
 Cpu::Cpu(Memory &memory) : memory(memory) { fillOpcodeMapping(); }
 
