@@ -129,98 +129,98 @@ public:
 
   using CPUCicles = uint8_t;
   // ADC (ADd with Carry)
-  CPUCicles ADC(opcodeParams params);
+  CPUCicles ADC(const opcodeParams& params);
   // AND (bitwise AND with accumulator)
-  CPUCicles AND(opcodeParams params);
+  CPUCicles AND(const opcodeParams& params);
   // ASL (Arithmetic Shift Left)
-  CPUCicles ASL(opcodeParams params);
-  CPUCicles ASL_AC(opcodeParams params);
+  CPUCicles ASL(const opcodeParams& params);
+  CPUCicles ASL_AC(const opcodeParams& params);
   // BIT (test BITs)
-  CPUCicles BIT(opcodeParams params);
+  CPUCicles BIT(const opcodeParams& params);
   // Branch Instructions
-  CPUCicles BPL(opcodeParams params);
-  CPUCicles BMI(opcodeParams params);
-  CPUCicles BVC(opcodeParams params);
-  CPUCicles BVS(opcodeParams params);
-  CPUCicles BCC(opcodeParams params);
-  CPUCicles BCS(opcodeParams params);
-  CPUCicles BNE(opcodeParams params);
-  CPUCicles BEQ(opcodeParams params);
+  CPUCicles BPL(const opcodeParams& params);
+  CPUCicles BMI(const opcodeParams& params);
+  CPUCicles BVC(const opcodeParams& params);
+  CPUCicles BVS(const opcodeParams& params);
+  CPUCicles BCC(const opcodeParams& params);
+  CPUCicles BCS(const opcodeParams& params);
+  CPUCicles BNE(const opcodeParams& params);
+  CPUCicles BEQ(const opcodeParams& params);
   // BRK (BReaK)
-  CPUCicles BRK(opcodeParams params);
+  CPUCicles BRK(const opcodeParams& params);
   // CMP (CoMPare accumulator)
-  CPUCicles CMP(opcodeParams params);
+  CPUCicles CMP(const opcodeParams& params);
   // CPX (ComPare X register)
-  CPUCicles CPX(opcodeParams params);
+  CPUCicles CPX(const opcodeParams& params);
   // CPY (ComPare Y register)
-  CPUCicles CPY(opcodeParams params);
+  CPUCicles CPY(const opcodeParams& params);
   // DEC (DECrement memory)
-  CPUCicles DEC(opcodeParams params);
+  CPUCicles DEC(const opcodeParams& params);
   // EOR (bitwise Exclusive OR)
-  CPUCicles EOR(opcodeParams params);
+  CPUCicles EOR(const opcodeParams& params);
   // Flag (Processor Status) Instructions
-  CPUCicles CLC(opcodeParams params);
-  CPUCicles SEC(opcodeParams params);
-  CPUCicles CLI(opcodeParams params);
-  CPUCicles SEI(opcodeParams params);
-  CPUCicles CLV(opcodeParams params);
-  CPUCicles CLD(opcodeParams params);
-  CPUCicles SED(opcodeParams params);
+  CPUCicles CLC(const opcodeParams& params);
+  CPUCicles SEC(const opcodeParams& params);
+  CPUCicles CLI(const opcodeParams& params);
+  CPUCicles SEI(const opcodeParams& params);
+  CPUCicles CLV(const opcodeParams& params);
+  CPUCicles CLD(const opcodeParams& params);
+  CPUCicles SED(const opcodeParams& params);
   // INC (INCrement memory)
-  CPUCicles INC(opcodeParams params);
+  CPUCicles INC(const opcodeParams& params);
   // JMP (JuMP)
-  CPUCicles JMP(opcodeParams params);
+  CPUCicles JMP(const opcodeParams& params);
   // JSR (Jump to SubRoutine)
-  CPUCicles JSR(opcodeParams params);
+  CPUCicles JSR(const opcodeParams& params);
   // LDA (LoaD Accumulator)
-  CPUCicles LDA_old(opcodeParams params);
+  CPUCicles LDA_old(const opcodeParams& params);
   // LDA (LoaD Accumulator)
-  CPUCicles LDA(opcodeParams params);
+  CPUCicles LDA(const opcodeParams& params);
   // LDX (LoaD X register)
-  CPUCicles LDX(opcodeParams params);
+  CPUCicles LDX(const opcodeParams& params);
   // LDY (LoaD Y register)
-  CPUCicles LDY(opcodeParams params);
+  CPUCicles LDY(const opcodeParams& params);
   // LSR (Logical Shift Right)
-  CPUCicles LSR(opcodeParams params);
-  CPUCicles LSR_AC(opcodeParams params);
+  CPUCicles LSR(const opcodeParams& params);
+  CPUCicles LSR_AC(const opcodeParams& params);
   // NOP (No OPeration)
-  CPUCicles NOP(opcodeParams params);
+  CPUCicles NOP(const opcodeParams& params);
   // ORA (bitwise OR with Accumulator)
-  CPUCicles ORA(opcodeParams params);
+  CPUCicles ORA(const opcodeParams& params);
   // Register Instructions
-  CPUCicles TAX(opcodeParams params);
-  CPUCicles TXA(opcodeParams params);
-  CPUCicles DEX(opcodeParams params);
-  CPUCicles INX(opcodeParams params);
-  CPUCicles TAY(opcodeParams params);
-  CPUCicles TYA(opcodeParams params);
-  CPUCicles DEY(opcodeParams params);
-  CPUCicles INY(opcodeParams params);
+  CPUCicles TAX(const opcodeParams& params);
+  CPUCicles TXA(const opcodeParams& params);
+  CPUCicles DEX(const opcodeParams& params);
+  CPUCicles INX(const opcodeParams& params);
+  CPUCicles TAY(const opcodeParams& params);
+  CPUCicles TYA(const opcodeParams& params);
+  CPUCicles DEY(const opcodeParams& params);
+  CPUCicles INY(const opcodeParams& params);
   // ROL (ROtate Left)
-  CPUCicles ROL(opcodeParams params);
-  CPUCicles ROL_AC(opcodeParams params);
+  CPUCicles ROL(const opcodeParams& params);
+  CPUCicles ROL_AC(const opcodeParams& params);
   // ROR (ROtate Right)
-  CPUCicles ROR(opcodeParams params);
-  CPUCicles ROR_AC(opcodeParams params);
+  CPUCicles ROR(const opcodeParams& params);
+  CPUCicles ROR_AC(const opcodeParams& params);
   // RTI (ReTurn from Interrupt)
-  CPUCicles RTI(opcodeParams params);
+  CPUCicles RTI(const opcodeParams& params);
   // RTS (ReTurn from Subroutine)
-  CPUCicles RTS(opcodeParams params);
+  CPUCicles RTS(const opcodeParams& params);
   // SBC (SuBtract with Carry)
-  CPUCicles SBC(opcodeParams params);
+  CPUCicles SBC(const opcodeParams& params);
   // STA (STore Accumulator)
-  CPUCicles STA(opcodeParams params);
+  CPUCicles STA(const opcodeParams& params);
   // Stack Instructions
-  CPUCicles TXS(opcodeParams params);
-  CPUCicles TSX(opcodeParams params);
-  CPUCicles PHA(opcodeParams params);
-  CPUCicles PLA(opcodeParams params);
-  CPUCicles PHP(opcodeParams params);
-  CPUCicles PLP(opcodeParams params);
+  CPUCicles TXS(const opcodeParams& params);
+  CPUCicles TSX(const opcodeParams& params);
+  CPUCicles PHA(const opcodeParams& params);
+  CPUCicles PLA(const opcodeParams& params);
+  CPUCicles PHP(const opcodeParams& params);
+  CPUCicles PLP(const opcodeParams& params);
   // STX (STore X register)
-  CPUCicles STX(opcodeParams params);
+  CPUCicles STX(const opcodeParams& params);
   // STY (STore Y register)
-  CPUCicles STY(opcodeParams params);
+  CPUCicles STY(const opcodeParams& params);
 
   void setAsmAddress(uint16_t address);
 
@@ -268,7 +268,7 @@ private:
   uint8_t stackPOP();
 
   /*using AddrModeHanler = MemoryAccessResult (Cpu::*)();*/
-  using OpcodeHandler = CPUCicles (Cpu::*)(opcodeParams);
+  using OpcodeHandler = CPUCicles (Cpu::*)(const opcodeParams&);
   MemoryAccessResult getValueAddrMode(ADDR_MODE mode);
   // Opcodes Mapping
   // TODO: Usar std::function para OpcodeHandler aumentaria a perfeormance?

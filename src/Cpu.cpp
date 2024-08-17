@@ -613,7 +613,6 @@ void Cpu::start() {
   auto start = std::chrono::steady_clock::now();
   int count = 0;
   while (true) {
-    std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
 
     auto now = std::chrono::steady_clock::now();
     auto elapsed =
@@ -853,7 +852,7 @@ MemoryAccessResult Cpu::getValueAddrMode(ADDR_MODE mode) {
 
 // Implementações das instruções
 // ADC (ADd with Carry)
-Cpu::CPUCicles Cpu::ADC(opcodeParams params) {
+Cpu::CPUCicles Cpu::ADC(const opcodeParams& params) {
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -868,7 +867,7 @@ Cpu::CPUCicles Cpu::ADC(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // AND (bitwise AND with accumulator)
-Cpu::CPUCicles Cpu::AND(opcodeParams params) {
+Cpu::CPUCicles Cpu::AND(const opcodeParams& params) {
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t result = value & AC;
@@ -880,7 +879,7 @@ Cpu::CPUCicles Cpu::AND(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // ASL (Arithmetic Shift Left)
-Cpu::CPUCicles Cpu::ASL(opcodeParams params) {
+Cpu::CPUCicles Cpu::ASL(const opcodeParams& params) {
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   uint8_t result = value << 0x01;
@@ -894,7 +893,7 @@ Cpu::CPUCicles Cpu::ASL(opcodeParams params) {
   return (params.cycles);
 }
 // ASL (Arithmetic Shift Left) - Operações diretas no acumulador
-Cpu::CPUCicles Cpu::ASL_AC(opcodeParams params) {
+Cpu::CPUCicles Cpu::ASL_AC(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   uint8_t value = AC;
@@ -910,7 +909,7 @@ Cpu::CPUCicles Cpu::ASL_AC(opcodeParams params) {
   return (params.cycles);
 }
 // BIT (test BITs)
-Cpu::CPUCicles Cpu::BIT(opcodeParams params) {
+Cpu::CPUCicles Cpu::BIT(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -938,7 +937,7 @@ Cpu::CPUCicles Cpu::BIT(opcodeParams params) {
 }
 // Branch Instructions
 // - BPL (Branch on PLus) - Desvio quando FlagN = 0
-Cpu::CPUCicles Cpu::BPL(opcodeParams params) {
+Cpu::CPUCicles Cpu::BPL(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -952,7 +951,7 @@ Cpu::CPUCicles Cpu::BPL(opcodeParams params) {
   return (params.cycles);
 }
 // - BMI (Branch on MInus) - Desvio quando FlagN = 1
-Cpu::CPUCicles Cpu::BMI(opcodeParams params) {
+Cpu::CPUCicles Cpu::BMI(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -967,7 +966,7 @@ Cpu::CPUCicles Cpu::BMI(opcodeParams params) {
   return (params.cycles);
 }
 // - BVC (Branch on oVerflow Clear) - Desvio quando FlagV = 0
-Cpu::CPUCicles Cpu::BVC(opcodeParams params) {
+Cpu::CPUCicles Cpu::BVC(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   if (!chkFlag(Flag::V)) {
@@ -981,7 +980,7 @@ Cpu::CPUCicles Cpu::BVC(opcodeParams params) {
   return (params.cycles);
 }
 // - BVS (Branch on oVerflow Set) - Desvio quando FlagV = 1
-Cpu::CPUCicles Cpu::BVS(opcodeParams params) {
+Cpu::CPUCicles Cpu::BVS(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -996,7 +995,7 @@ Cpu::CPUCicles Cpu::BVS(opcodeParams params) {
   return (params.cycles);
 }
 // - BCC (Branch on Carry Clear) - Desvio quando FlagC = 0
-Cpu::CPUCicles Cpu::BCC(opcodeParams params) {
+Cpu::CPUCicles Cpu::BCC(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -1011,7 +1010,7 @@ Cpu::CPUCicles Cpu::BCC(opcodeParams params) {
   return (params.cycles);
 }
 // - BCS (Branch on Carry Set) - Desvio quando FlagC = 1
-Cpu::CPUCicles Cpu::BCS(opcodeParams params) {
+Cpu::CPUCicles Cpu::BCS(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -1026,7 +1025,7 @@ Cpu::CPUCicles Cpu::BCS(opcodeParams params) {
   return (params.cycles);
 }
 // - BNE (Branch on Not Equal) - Desvio quando FlagZ = 0
-Cpu::CPUCicles Cpu::BNE(opcodeParams params) {
+Cpu::CPUCicles Cpu::BNE(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -1041,7 +1040,7 @@ Cpu::CPUCicles Cpu::BNE(opcodeParams params) {
   return (params.cycles);
 }
 // - BEQ (Branch on EQual) - Desvio quando FlagZ = 1
-Cpu::CPUCicles Cpu::BEQ(opcodeParams params) {
+Cpu::CPUCicles Cpu::BEQ(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -1056,7 +1055,7 @@ Cpu::CPUCicles Cpu::BEQ(opcodeParams params) {
   return (params.cycles);
 }
 // BRK (BReaK)
-Cpu::CPUCicles Cpu::BRK(opcodeParams params) {
+Cpu::CPUCicles Cpu::BRK(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   incrementPC(0x01);
   uint8_t PC_lsb = static_cast<uint8_t>(PC & 0xFF);
@@ -1078,7 +1077,7 @@ Cpu::CPUCicles Cpu::BRK(opcodeParams params) {
   return (params.cycles);
 }
 // CMP (CoMPare accumulator)
-Cpu::CPUCicles Cpu::CMP(opcodeParams params) {
+Cpu::CPUCicles Cpu::CMP(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1090,7 +1089,7 @@ Cpu::CPUCicles Cpu::CMP(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // CPX (ComPare X register)
-Cpu::CPUCicles Cpu::CPX(opcodeParams params) {
+Cpu::CPUCicles Cpu::CPX(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1102,7 +1101,7 @@ Cpu::CPUCicles Cpu::CPX(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // CPY (ComPare Y register)
-Cpu::CPUCicles Cpu::CPY(opcodeParams params) {
+Cpu::CPUCicles Cpu::CPY(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1114,7 +1113,7 @@ Cpu::CPUCicles Cpu::CPY(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // DEC (DECrement memory)
-Cpu::CPUCicles Cpu::DEC(opcodeParams params) {
+Cpu::CPUCicles Cpu::DEC(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1128,7 +1127,7 @@ Cpu::CPUCicles Cpu::DEC(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // EOR (bitwise Exclusive OR)
-Cpu::CPUCicles Cpu::EOR(opcodeParams params) {
+Cpu::CPUCicles Cpu::EOR(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1144,7 +1143,7 @@ Cpu::CPUCicles Cpu::EOR(opcodeParams params) {
 }
 // Flag (Processor Status) Instructions
 /// - CLC (CLear Carry)
-Cpu::CPUCicles Cpu::CLC(opcodeParams params) {
+Cpu::CPUCicles Cpu::CLC(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   remFlag(Flag::C);
   incrementPC(0x01);
@@ -1152,7 +1151,7 @@ Cpu::CPUCicles Cpu::CLC(opcodeParams params) {
   return (params.cycles);
 }
 // - SEC (SEt Carry)
-Cpu::CPUCicles Cpu::SEC(opcodeParams params) {
+Cpu::CPUCicles Cpu::SEC(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   setFlag(Flag::C);
   incrementPC(0x01);
@@ -1160,7 +1159,7 @@ Cpu::CPUCicles Cpu::SEC(opcodeParams params) {
   return (params.cycles);
 }
 // - CLI (CLear Interrupt)
-Cpu::CPUCicles Cpu::CLI(opcodeParams params) {
+Cpu::CPUCicles Cpu::CLI(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   remFlag(Flag::I);
   incrementPC(0x01);
@@ -1168,7 +1167,7 @@ Cpu::CPUCicles Cpu::CLI(opcodeParams params) {
   return (params.cycles);
 }
 // - SEI (SEt Interrupt)
-Cpu::CPUCicles Cpu::SEI(opcodeParams params) {
+Cpu::CPUCicles Cpu::SEI(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   setFlag(Flag::I);
   incrementPC(0x01);
@@ -1176,7 +1175,7 @@ Cpu::CPUCicles Cpu::SEI(opcodeParams params) {
   return (params.cycles);
 }
 // - CLV (CLear oVerflow)
-Cpu::CPUCicles Cpu::CLV(opcodeParams params) {
+Cpu::CPUCicles Cpu::CLV(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   remFlag(Flag::V);
   incrementPC(0x01);
@@ -1184,7 +1183,7 @@ Cpu::CPUCicles Cpu::CLV(opcodeParams params) {
   return (params.cycles);
 }
 // - CLD (CLear Decimal)
-Cpu::CPUCicles Cpu::CLD(opcodeParams params) {
+Cpu::CPUCicles Cpu::CLD(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   remFlag(Flag::D);
   incrementPC(0x01);
@@ -1192,7 +1191,7 @@ Cpu::CPUCicles Cpu::CLD(opcodeParams params) {
   return (params.cycles);
 }
 // - SED (SEt Decimal)
-Cpu::CPUCicles Cpu::SED(opcodeParams params) {
+Cpu::CPUCicles Cpu::SED(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   setFlag(Flag::D);
   incrementPC(0x01);
@@ -1200,7 +1199,7 @@ Cpu::CPUCicles Cpu::SED(opcodeParams params) {
   return (params.cycles);
 }
 // INC (INCrement memory)
-Cpu::CPUCicles Cpu::INC(opcodeParams params) {
+Cpu::CPUCicles Cpu::INC(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1214,7 +1213,7 @@ Cpu::CPUCicles Cpu::INC(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // JMP (JuMP)  [ok]Teste 1
-Cpu::CPUCicles Cpu::JMP(opcodeParams params) {
+Cpu::CPUCicles Cpu::JMP(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   PC = response.address;
@@ -1223,7 +1222,7 @@ Cpu::CPUCicles Cpu::JMP(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // JSR (Jump to SubRoutine) - Salva o end. de Retorno na pilha
-Cpu::CPUCicles Cpu::JSR(opcodeParams params) {
+Cpu::CPUCicles Cpu::JSR(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
 
@@ -1240,7 +1239,7 @@ Cpu::CPUCicles Cpu::JSR(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // LDA (LoaD Accumulator)
-/*void Cpu::LDA_old(opcodeParams params) {*/
+/*void Cpu::LDA_old(const opcodeParams& params) {*/
 /*MemoryAccessResult response = (this->*Addressingmode)(); */
 /*  auto response = getValueAddrMode(params.addrMode);*/
 /*  uint8_t value = memory.read(response.address);*/
@@ -1252,7 +1251,7 @@ Cpu::CPUCicles Cpu::JSR(opcodeParams params) {
 /*}*/
 
 // LDA (LoaD Accumulator)
-Cpu::CPUCicles Cpu::LDA(opcodeParams params) {
+Cpu::CPUCicles Cpu::LDA(const opcodeParams& params) {
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
   flagActivationN(value);
@@ -1263,7 +1262,7 @@ Cpu::CPUCicles Cpu::LDA(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // LDX (LoaD X register)ADC #$0F
-Cpu::CPUCicles Cpu::LDX(opcodeParams params) {
+Cpu::CPUCicles Cpu::LDX(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   /*std::cout << "LDX respponseADDR: " << std::hex << response.address <<
@@ -1278,7 +1277,7 @@ Cpu::CPUCicles Cpu::LDX(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // LDY (LoaD Y register)
-Cpu::CPUCicles Cpu::LDY(opcodeParams params) {
+Cpu::CPUCicles Cpu::LDY(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1291,7 +1290,7 @@ Cpu::CPUCicles Cpu::LDY(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // LSR (Logical Shift Right)
-Cpu::CPUCicles Cpu::LSR(opcodeParams params) {
+Cpu::CPUCicles Cpu::LSR(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1305,7 +1304,7 @@ Cpu::CPUCicles Cpu::LSR(opcodeParams params) {
   return (params.cycles +
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
-Cpu::CPUCicles Cpu::LSR_AC(opcodeParams params) {
+Cpu::CPUCicles Cpu::LSR_AC(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   (AC & 0x01) ? setFlag(Flag::C) : remFlag(Flag::C);
   uint8_t result = (AC >> 0x01);
@@ -1317,14 +1316,14 @@ Cpu::CPUCicles Cpu::LSR_AC(opcodeParams params) {
   return (params.cycles);
 }
 // NOP (No OPeration)
-Cpu::CPUCicles Cpu::NOP(opcodeParams params) {
+Cpu::CPUCicles Cpu::NOP(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   incrementPC(0x01);
   /*useCpuCicles(cycles + pageChangedCycle);*/
   return (params.cycles);
 }
 // ORA (bitwise OR with Accumulator)
-Cpu::CPUCicles Cpu::ORA(opcodeParams params) {
+Cpu::CPUCicles Cpu::ORA(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1340,7 +1339,7 @@ Cpu::CPUCicles Cpu::ORA(opcodeParams params) {
 }
 // Register Instructions
 // - TAX (Transfer A to X)
-Cpu::CPUCicles Cpu::TAX(opcodeParams params) {
+Cpu::CPUCicles Cpu::TAX(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   X = AC;
   flagActivationN(AC);
@@ -1350,7 +1349,7 @@ Cpu::CPUCicles Cpu::TAX(opcodeParams params) {
   return (params.cycles);
 }
 // - TXA (Transfer X to A)
-Cpu::CPUCicles Cpu::TXA(opcodeParams params) {
+Cpu::CPUCicles Cpu::TXA(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   AC = X;
   flagActivationN(X);
@@ -1360,7 +1359,7 @@ Cpu::CPUCicles Cpu::TXA(opcodeParams params) {
   return (params.cycles);
 }
 // - DEX (DEcrement X)
-Cpu::CPUCicles Cpu::DEX(opcodeParams params) {
+Cpu::CPUCicles Cpu::DEX(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   X -= 0x01;
   flagActivationN(X);
@@ -1370,7 +1369,7 @@ Cpu::CPUCicles Cpu::DEX(opcodeParams params) {
   return (params.cycles);
 }
 // - INX (INcrement X)
-Cpu::CPUCicles Cpu::INX(opcodeParams params) {
+Cpu::CPUCicles Cpu::INX(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   X += 0x01;
   flagActivationN(X);
@@ -1380,7 +1379,7 @@ Cpu::CPUCicles Cpu::INX(opcodeParams params) {
   return (params.cycles);
 }
 // - TAY (Transfer A to Y)
-Cpu::CPUCicles Cpu::TAY(opcodeParams params) {
+Cpu::CPUCicles Cpu::TAY(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   Y = AC;
   flagActivationN(AC);
@@ -1390,7 +1389,7 @@ Cpu::CPUCicles Cpu::TAY(opcodeParams params) {
   return (params.cycles);
 }
 // - TYA (Transfer Y to A)
-Cpu::CPUCicles Cpu::TYA(opcodeParams params) {
+Cpu::CPUCicles Cpu::TYA(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   AC = Y;
   flagActivationN(Y);
@@ -1400,7 +1399,7 @@ Cpu::CPUCicles Cpu::TYA(opcodeParams params) {
   return (params.cycles);
 }
 // - DEY (DEcrement Y)
-Cpu::CPUCicles Cpu::DEY(opcodeParams params) {
+Cpu::CPUCicles Cpu::DEY(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   Y -= 0x01;
   flagActivationN(Y);
@@ -1410,7 +1409,7 @@ Cpu::CPUCicles Cpu::DEY(opcodeParams params) {
   return (params.cycles);
 }
 // - INY (INcrement Y)
-Cpu::CPUCicles Cpu::INY(opcodeParams params) {
+Cpu::CPUCicles Cpu::INY(const opcodeParams& params) {
   /*static_cast<void>(AddressingMode);*/
   Y += 0x01;
   flagActivationN(Y);
@@ -1420,7 +1419,7 @@ Cpu::CPUCicles Cpu::INY(opcodeParams params) {
   return (params.cycles);
 }
 // ROL (ROtate Left)
-Cpu::CPUCicles Cpu::ROL(opcodeParams params) {
+Cpu::CPUCicles Cpu::ROL(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1444,7 +1443,7 @@ Cpu::CPUCicles Cpu::ROL(opcodeParams params) {
   return (params.cycles +
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
-Cpu::CPUCicles Cpu::ROL_AC(opcodeParams params) {
+Cpu::CPUCicles Cpu::ROL_AC(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
 
   uint8_t old_carry = chkFlag(Flag::C) ? 0x01 : 0x00;
@@ -1466,7 +1465,7 @@ Cpu::CPUCicles Cpu::ROL_AC(opcodeParams params) {
   return (params.cycles);
 }
 // ROR (ROtate Right)
-Cpu::CPUCicles Cpu::ROR(opcodeParams params) {
+Cpu::CPUCicles Cpu::ROR(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1490,7 +1489,7 @@ Cpu::CPUCicles Cpu::ROR(opcodeParams params) {
   /*useCpuCicles(cycles + (response.pageCrossed ? pageChangedCycle : 0));*/
   return (params.cycles);
 }
-Cpu::CPUCicles Cpu::ROR_AC(opcodeParams params) {
+Cpu::CPUCicles Cpu::ROR_AC(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   (AC & 0x01) > 0 ? setFlag(Flag::C) : remFlag(Flag::C);
 
@@ -1513,7 +1512,7 @@ Cpu::CPUCicles Cpu::ROR_AC(opcodeParams params) {
   return (params.cycles);
 }
 // RTI (ReTurn from Interrupt)
-Cpu::CPUCicles Cpu::RTI(opcodeParams params) {
+Cpu::CPUCicles Cpu::RTI(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   uint8_t PC_msb = stackPOP();
   uint8_t PC_lsb = stackPOP();
@@ -1524,7 +1523,7 @@ Cpu::CPUCicles Cpu::RTI(opcodeParams params) {
   return (params.cycles);
 }
 // RTS (ReTurn from Subroutine)
-Cpu::CPUCicles Cpu::RTS(opcodeParams params) {
+Cpu::CPUCicles Cpu::RTS(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   uint8_t address_msb = stackPOP();
   uint8_t address_lsb = stackPOP();
@@ -1533,7 +1532,7 @@ Cpu::CPUCicles Cpu::RTS(opcodeParams params) {
   return (params.cycles + params.cyclesOnPageCross);
 }
 // SBC (SuBtract with Carry)
-Cpu::CPUCicles Cpu::SBC(opcodeParams params) {
+Cpu::CPUCicles Cpu::SBC(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   uint8_t value = memory.read(response.address);
@@ -1553,7 +1552,7 @@ Cpu::CPUCicles Cpu::SBC(opcodeParams params) {
 }
 
 // STA (STore Accumulator)
-Cpu::CPUCicles Cpu::STA(opcodeParams params) {
+Cpu::CPUCicles Cpu::STA(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   memory.write(response.address, AC);
@@ -1564,7 +1563,7 @@ Cpu::CPUCicles Cpu::STA(opcodeParams params) {
 }
 // Stack Instructions
 // - TXS (Transfer X to Stack ptr)
-Cpu::CPUCicles Cpu::TXS(opcodeParams params) {
+Cpu::CPUCicles Cpu::TXS(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   SP = X;
@@ -1573,7 +1572,7 @@ Cpu::CPUCicles Cpu::TXS(opcodeParams params) {
   return (params.cycles);
 }
 // - TSX (Transfer Stack ptr to X)
-Cpu::CPUCicles Cpu::TSX(opcodeParams params) {
+Cpu::CPUCicles Cpu::TSX(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   X = SP;
@@ -1582,7 +1581,7 @@ Cpu::CPUCicles Cpu::TSX(opcodeParams params) {
   return (params.cycles);
 }
 // - PHA (PusH Accumulator)
-Cpu::CPUCicles Cpu::PHA(opcodeParams params) {
+Cpu::CPUCicles Cpu::PHA(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   stackPUSH(AC);
@@ -1591,7 +1590,7 @@ Cpu::CPUCicles Cpu::PHA(opcodeParams params) {
   return (params.cycles);
 }
 // - PLA (PuLl Accumulator)
-Cpu::CPUCicles Cpu::PLA(opcodeParams params) {
+Cpu::CPUCicles Cpu::PLA(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   AC = stackPOP();
@@ -1600,7 +1599,7 @@ Cpu::CPUCicles Cpu::PLA(opcodeParams params) {
   return (params.cycles);
 }
 // - PHP (PusH Processor status)
-Cpu::CPUCicles Cpu::PHP(opcodeParams params) {
+Cpu::CPUCicles Cpu::PHP(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   stackPUSH(SR);
@@ -1609,7 +1608,7 @@ Cpu::CPUCicles Cpu::PHP(opcodeParams params) {
   return (params.cycles);
 }
 // - PLP (PuLl Processor status)
-Cpu::CPUCicles Cpu::PLP(opcodeParams params) {
+Cpu::CPUCicles Cpu::PLP(const opcodeParams& params) {
   /*static_cast<void>(Addressingmode);*/
   /*auto response = getValueAddrMode(params.addrMode);*/
   SR = stackPOP();
@@ -1618,7 +1617,7 @@ Cpu::CPUCicles Cpu::PLP(opcodeParams params) {
   return (params.cycles);
 }
 // STX (STore X register)
-Cpu::CPUCicles Cpu::STX(opcodeParams params) {
+Cpu::CPUCicles Cpu::STX(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   memory.write(response.address, X);
@@ -1628,7 +1627,7 @@ Cpu::CPUCicles Cpu::STX(opcodeParams params) {
           (response.pageCrossed ? params.cyclesOnPageCross : 0));
 }
 // STY (STore Y register)
-Cpu::CPUCicles Cpu::STY(opcodeParams params) {
+Cpu::CPUCicles Cpu::STY(const opcodeParams& params) {
   /*MemoryAccessResult response = (this->*Addressingmode)();*/
   auto response = getValueAddrMode(params.addrMode);
   memory.write(response.address, Y);
