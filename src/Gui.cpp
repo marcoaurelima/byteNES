@@ -281,9 +281,6 @@ void Gui::updateCpuCount() {
 
 void Gui::show() {
 
-  // sf::Clock timer;
-  // timer.restart();
-
   while (window->isOpen()) {
     sf::Event event;
     while (window->pollEvent(event)) {
@@ -344,18 +341,17 @@ void Gui::show() {
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-       cpu.getMemory().write(0xFF, 0x77);
+        cpu.getMemory().write(0xFF, 0x77);
       }
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-       cpu.getMemory().write(0xFF, 0x64);
+        cpu.getMemory().write(0xFF, 0x64);
       }
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-       cpu.getMemory().write(0xFF, 0x73);
+        cpu.getMemory().write(0xFF, 0x73);
       }
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-       cpu.getMemory().write(0xFF, 0x61);
+        cpu.getMemory().write(0xFF, 0x61);
       }
-
     }
 
     window->clear();
@@ -405,14 +401,11 @@ void Gui::show() {
     window->display();
     flags++;
 
-    // if (timer.getElapsedTime().asMilliseconds() > (1000 / clock)) {
-      if (!isDebugMode) {
-        // timer.restart();
-        for (int i=0; i<18; i++) {
-          cpu.next();
-        }
+    if (!isDebugMode) {
+      for (int i = 0; i < 18; i++) {
+        cpu.next();
       }
-    // }
+    }
   }
 }
 

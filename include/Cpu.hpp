@@ -3,7 +3,6 @@
 
 #include <array>
 #include <cstdint>
-#include <functional>
 #include <sys/types.h>
 
 #include "constants.hpp"
@@ -29,11 +28,6 @@ const uint16_t STACK_ADDRESS = 0x1000;
 // Parar quando tiver BRK
 const bool STOP_BRK = false;
 
-// Constantes de frequencia de clock
-const uint64_t KHz = 1000;
-const uint64_t MHz = 1000000;
-const uint64_t GHz = 1000000000;
-
 // Tipo de retorno dos Addressing Modes
 // Evento do tipo "page boundary crossed" ocorre quando
 // o endereço calculado pelo modo de endereçamento está
@@ -43,9 +37,6 @@ struct MemoryAccessResult {
   uint8_t size;     // Tamanho da operação
   bool pageCrossed; // indica se houve evento do tipo "page boundary crossed"
 };
-
-/*using AddrModeHanler = MemoryAccessResult (Cpu::*)();*/
-/*using OpcodeHandler = void (Cpu::*)(AddrModeHanler, uint8_t, uint8_t);*/
 
 enum class ADDR_MODE {
   IMMEDIATE,
@@ -116,118 +107,104 @@ public:
   void flagActivationCMP(uint16_t value_1, uint8_t value_2);
 
   // Implementações das instruções
-
-  //           cycles: Quantidade de ciclos de CPU usados por um opcode com
-  //           determinado modo de endereçamento
-  // pageChangedCycle: Alguns opcodes, em determinados modos de endereçamento,
-  // tem um ou dois ciclos de CPU
-  //                   a mais quando o resultado da operação ultrapassa a página
-  //                   atual. Padrão é zero.
-  //                   (+ add 1 cycle if page boundary crossed)
-  // void XXX(MemoryAccessResult (Cpu::*AddressingMode)(), uint8_t cycles,
-  // uint8_t pageChangedCycle);
-
   using CPUCicles = uint8_t;
   // ADC (ADd with Carry)
-  CPUCicles ADC(const opcodeParams& params);
+  CPUCicles ADC(const opcodeParams &params);
   // AND (bitwise AND with accumulator)
-  CPUCicles AND(const opcodeParams& params);
+  CPUCicles AND(const opcodeParams &params);
   // ASL (Arithmetic Shift Left)
-  CPUCicles ASL(const opcodeParams& params);
-  CPUCicles ASL_AC(const opcodeParams& params);
+  CPUCicles ASL(const opcodeParams &params);
+  CPUCicles ASL_AC(const opcodeParams &params);
   // BIT (test BITs)
-  CPUCicles BIT(const opcodeParams& params);
+  CPUCicles BIT(const opcodeParams &params);
   // Branch Instructions
-  CPUCicles BPL(const opcodeParams& params);
-  CPUCicles BMI(const opcodeParams& params);
-  CPUCicles BVC(const opcodeParams& params);
-  CPUCicles BVS(const opcodeParams& params);
-  CPUCicles BCC(const opcodeParams& params);
-  CPUCicles BCS(const opcodeParams& params);
-  CPUCicles BNE(const opcodeParams& params);
-  CPUCicles BEQ(const opcodeParams& params);
+  CPUCicles BPL(const opcodeParams &params);
+  CPUCicles BMI(const opcodeParams &params);
+  CPUCicles BVC(const opcodeParams &params);
+  CPUCicles BVS(const opcodeParams &params);
+  CPUCicles BCC(const opcodeParams &params);
+  CPUCicles BCS(const opcodeParams &params);
+  CPUCicles BNE(const opcodeParams &params);
+  CPUCicles BEQ(const opcodeParams &params);
   // BRK (BReaK)
-  CPUCicles BRK(const opcodeParams& params);
+  CPUCicles BRK(const opcodeParams &params);
   // CMP (CoMPare accumulator)
-  CPUCicles CMP(const opcodeParams& params);
+  CPUCicles CMP(const opcodeParams &params);
   // CPX (ComPare X register)
-  CPUCicles CPX(const opcodeParams& params);
+  CPUCicles CPX(const opcodeParams &params);
   // CPY (ComPare Y register)
-  CPUCicles CPY(const opcodeParams& params);
+  CPUCicles CPY(const opcodeParams &params);
   // DEC (DECrement memory)
-  CPUCicles DEC(const opcodeParams& params);
+  CPUCicles DEC(const opcodeParams &params);
   // EOR (bitwise Exclusive OR)
-  CPUCicles EOR(const opcodeParams& params);
+  CPUCicles EOR(const opcodeParams &params);
   // Flag (Processor Status) Instructions
-  CPUCicles CLC(const opcodeParams& params);
-  CPUCicles SEC(const opcodeParams& params);
-  CPUCicles CLI(const opcodeParams& params);
-  CPUCicles SEI(const opcodeParams& params);
-  CPUCicles CLV(const opcodeParams& params);
-  CPUCicles CLD(const opcodeParams& params);
-  CPUCicles SED(const opcodeParams& params);
+  CPUCicles CLC(const opcodeParams &params);
+  CPUCicles SEC(const opcodeParams &params);
+  CPUCicles CLI(const opcodeParams &params);
+  CPUCicles SEI(const opcodeParams &params);
+  CPUCicles CLV(const opcodeParams &params);
+  CPUCicles CLD(const opcodeParams &params);
+  CPUCicles SED(const opcodeParams &params);
   // INC (INCrement memory)
-  CPUCicles INC(const opcodeParams& params);
+  CPUCicles INC(const opcodeParams &params);
   // JMP (JuMP)
-  CPUCicles JMP(const opcodeParams& params);
+  CPUCicles JMP(const opcodeParams &params);
   // JSR (Jump to SubRoutine)
-  CPUCicles JSR(const opcodeParams& params);
+  CPUCicles JSR(const opcodeParams &params);
   // LDA (LoaD Accumulator)
-  CPUCicles LDA_old(const opcodeParams& params);
+  CPUCicles LDA_old(const opcodeParams &params);
   // LDA (LoaD Accumulator)
-  CPUCicles LDA(const opcodeParams& params);
+  CPUCicles LDA(const opcodeParams &params);
   // LDX (LoaD X register)
-  CPUCicles LDX(const opcodeParams& params);
+  CPUCicles LDX(const opcodeParams &params);
   // LDY (LoaD Y register)
-  CPUCicles LDY(const opcodeParams& params);
+  CPUCicles LDY(const opcodeParams &params);
   // LSR (Logical Shift Right)
-  CPUCicles LSR(const opcodeParams& params);
-  CPUCicles LSR_AC(const opcodeParams& params);
+  CPUCicles LSR(const opcodeParams &params);
+  CPUCicles LSR_AC(const opcodeParams &params);
   // NOP (No OPeration)
-  CPUCicles NOP(const opcodeParams& params);
+  CPUCicles NOP(const opcodeParams &params);
   // ORA (bitwise OR with Accumulator)
-  CPUCicles ORA(const opcodeParams& params);
+  CPUCicles ORA(const opcodeParams &params);
   // Register Instructions
-  CPUCicles TAX(const opcodeParams& params);
-  CPUCicles TXA(const opcodeParams& params);
-  CPUCicles DEX(const opcodeParams& params);
-  CPUCicles INX(const opcodeParams& params);
-  CPUCicles TAY(const opcodeParams& params);
-  CPUCicles TYA(const opcodeParams& params);
-  CPUCicles DEY(const opcodeParams& params);
-  CPUCicles INY(const opcodeParams& params);
+  CPUCicles TAX(const opcodeParams &params);
+  CPUCicles TXA(const opcodeParams &params);
+  CPUCicles DEX(const opcodeParams &params);
+  CPUCicles INX(const opcodeParams &params);
+  CPUCicles TAY(const opcodeParams &params);
+  CPUCicles TYA(const opcodeParams &params);
+  CPUCicles DEY(const opcodeParams &params);
+  CPUCicles INY(const opcodeParams &params);
   // ROL (ROtate Left)
-  CPUCicles ROL(const opcodeParams& params);
-  CPUCicles ROL_AC(const opcodeParams& params);
+  CPUCicles ROL(const opcodeParams &params);
+  CPUCicles ROL_AC(const opcodeParams &params);
   // ROR (ROtate Right)
-  CPUCicles ROR(const opcodeParams& params);
-  CPUCicles ROR_AC(const opcodeParams& params);
+  CPUCicles ROR(const opcodeParams &params);
+  CPUCicles ROR_AC(const opcodeParams &params);
   // RTI (ReTurn from Interrupt)
-  CPUCicles RTI(const opcodeParams& params);
+  CPUCicles RTI(const opcodeParams &params);
   // RTS (ReTurn from Subroutine)
-  CPUCicles RTS(const opcodeParams& params);
+  CPUCicles RTS(const opcodeParams &params);
   // SBC (SuBtract with Carry)
-  CPUCicles SBC(const opcodeParams& params);
+  CPUCicles SBC(const opcodeParams &params);
   // STA (STore Accumulator)
-  CPUCicles STA(const opcodeParams& params);
+  CPUCicles STA(const opcodeParams &params);
   // Stack Instructions
-  CPUCicles TXS(const opcodeParams& params);
-  CPUCicles TSX(const opcodeParams& params);
-  CPUCicles PHA(const opcodeParams& params);
-  CPUCicles PLA(const opcodeParams& params);
-  CPUCicles PHP(const opcodeParams& params);
-  CPUCicles PLP(const opcodeParams& params);
+  CPUCicles TXS(const opcodeParams &params);
+  CPUCicles TSX(const opcodeParams &params);
+  CPUCicles PHA(const opcodeParams &params);
+  CPUCicles PLA(const opcodeParams &params);
+  CPUCicles PHP(const opcodeParams &params);
+  CPUCicles PLP(const opcodeParams &params);
   // STX (STore X register)
-  CPUCicles STX(const opcodeParams& params);
+  CPUCicles STX(const opcodeParams &params);
   // STY (STore Y register)
-  CPUCicles STY(const opcodeParams& params);
+  CPUCicles STY(const opcodeParams &params);
 
   void setAsmAddress(uint16_t address);
 
-  void setInternalClockValue(uint64_t clock);
-
   uint64_t getCount();
-
 
 private:
   // Memoria ram (2Kb)
@@ -235,17 +212,6 @@ private:
 
   // Endereço inicial do assembler
   uint16_t asmAddress{};
-
-  // Clock interno do processador (em nanosegundos)
-  double clock{};
-
-  // Contador de ciclos.
-  // Ele começa com o mesmo valor de `clock` e vai sendo incrementado a
-  // medida que as instruções vão gastando ciclos de CPU, até (cyclesCounter >=
-  // clock). Quando (cyclesCounter >= clock), se passou 1 segundo e o valor de
-  // clock é atribuido novamente a cyclesCounter para reiniciar a contagem de
-  // ciclos novamente.
-  uint64_t cyclesCounter{};
 
   // Registradores
   uint16_t PC{};
@@ -261,13 +227,11 @@ private:
   bool chkFlag(Flag flag);
   void incrementPC(uint16_t value);
   void decrementPC(uint16_t value);
-  void useCpuCicles(uint8_t qtd);
 
   void stackPUSH(uint8_t value);
   uint8_t stackPOP();
 
-  /*using AddrModeHanler = MemoryAccessResult (Cpu::*)();*/
-  using OpcodeHandler = CPUCicles (Cpu::*)(const opcodeParams&);
+  using OpcodeHandler = CPUCicles (Cpu::*)(const opcodeParams &);
   MemoryAccessResult getValueAddrMode(ADDR_MODE mode);
   // Opcodes Mapping
   // TODO: Usar std::function para OpcodeHandler aumentaria a perfeormance?

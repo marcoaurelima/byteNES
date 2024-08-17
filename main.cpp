@@ -13,8 +13,6 @@ int main() {
 
   Cpu cpu(mem);
   cpu.setAsmAddress(0x0600);
-  cpu.setInternalClockValue(2 * MHz);
-  /*cpu.start();*/
 
   Gui gui(cpu);
   gui.show();
