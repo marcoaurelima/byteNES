@@ -14,55 +14,55 @@
 
 Gui::Gui(Cpu &cpu) : cpu(cpu) {
   // Program screen
-  window = new sf::RenderWindow(sf::VideoMode(1170, 660), "byteNES");
+  window = new sf::RenderWindow(sf::VideoMode({1170, 660}), "byteNES");
   window->setVerticalSyncEnabled(true);
 
   gameScreen = new sf::RectangleShape(sf::Vector2f(256, 256));
-  gameScreen->setPosition(50, 50);
+  gameScreen->setPosition(sf::Vector2f(50, 50));
   gameScreen->setFillColor(sf::Color(30, 30, 30));
   gameScreen->setOutlineColor(sf::Color(80, 80, 80));
   gameScreen->setOutlineThickness(1);
   gameScreen->setScale(sf::Vector2f(2, 2));
 
   gameImage = new sf::Image();
-  gameImage->create(32, 32, sf::Color(15, 15, 15));
+  gameImage->resize(sf::Vector2u(32, 32), sf::Color(15, 15, 15));
 
   gameTexture = new sf::Texture();
-  gameTexture->loadFromImage(*gameImage);
+  if(!gameTexture->loadFromImage(*gameImage)) {
+    std::cerr << "Erro ao carregar textura do jogo." << std::endl;
+  }
 
-  gameSprite = new sf::Sprite();
-  gameSprite->setTexture(*gameTexture);
-  gameSprite->setPosition(50, 50);
-  gameSprite->setScale(16, 16);
+  gameSprite = new sf::Sprite(*gameTexture);
+  gameSprite->setPosition(sf::Vector2f(50, 50));
+  gameSprite->setScale(sf::Vector2f(16, 16));
 
   font = new sf::Font();
-  font->loadFromFile("fonts/ProFontWindowsNerdFontMono-Regular.ttf");
+  if(!font->openFromFile("fonts/ProFontWindowsNerdFontMono-Regular.ttf")) {
+    std::cerr << "Erro ao carregar textura do jogo." << std::endl;
+  }
 
   // Game screen
-  gameScreenTitle = new sf::Text();
-  gameScreenTitle->setFont(*font);
+  gameScreenTitle = new sf::Text(*font);
   gameScreenTitle->setFillColor(sf::Color::White);
   gameScreenTitle->setString("NES Emulator");
   gameScreenTitle->setCharacterSize(20);
-  gameScreenTitle->setPosition(50, 15);
+  gameScreenTitle->setPosition(sf::Vector2f(50, 15));
 
   // Game screen
-  gameScreenInfo = new sf::Text();
-  gameScreenInfo->setFont(*font);
+  gameScreenInfo = new sf::Text(*font);
   gameScreenInfo->setFillColor(sf::Color::Yellow);
   std::stringstream ss;
   ss << "CLOCK " << clock << " Hz";
   gameScreenInfo->setString(ss.str());
   gameScreenInfo->setCharacterSize(20);
-  gameScreenInfo->setPosition(230, 15);
+  gameScreenInfo->setPosition(sf::Vector2f(230, 15));
 
   // Game screen
-  gameScreenCount = new sf::Text();
-  gameScreenCount->setFont(*font);
+  gameScreenCount = new sf::Text(*font);
   gameScreenCount->setFillColor(sf::Color::Magenta);
   gameScreenCount->setString("CONT: 1");
   gameScreenCount->setCharacterSize(20);
-  gameScreenCount->setPosition(370, 15);
+  gameScreenCount->setPosition(sf::Vector2f(370, 15));
 
   // Flags monitor
   for (size_t i = 0; i < flagsTiles.size(); i++) {
@@ -70,21 +70,21 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
     flagsTiles[i]->setFillColor(sf::Color(40, 40, 40));
     flagsTiles[i]->setOutlineColor(sf::Color::Black);
     flagsTiles[i]->setOutlineThickness(2);
-    flagsTiles[i]->setPosition(130 + ((flagsTiles.size() - i - 1) * 19.8), 573);
+    flagsTiles[i]->setPosition(sf::Vector2f(130 + ((flagsTiles.size() - i - 1) * 19.8), 573));
   }
 
   flagsBar = new sf::RectangleShape(sf::Vector2f(242, 25));
-  flagsBar->setPosition(50, 570);
+  flagsBar->setPosition(sf::Vector2f(50, 570));
   flagsBar->setFillColor(sf::Color(20, 20, 20));
   flagsBar->setOutlineColor(sf::Color(80, 80, 80));
   flagsBar->setOutlineThickness(1);
 
-  flagsText = new sf::Text();
-  flagsText->setFont(*font);
+  flagsText = new sf::Text(*font);
+  // flagsText->setFont(*font);
   flagsText->setFillColor(sf::Color::White);
   flagsText->setString("FLAG    N V   B D I Z C");
   flagsText->setCharacterSize(20);
-  flagsText->setPosition(55, 568);
+  flagsText->setPosition(sf::Vector2f(55, 568));
 
   // Registers monitor
   for (size_t i = 0; i < registersTiles.size(); i++) {
@@ -98,62 +98,62 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
     registersTiles[i]->setOutlineThickness(2);
     if (i == 0) {
       registersTiles[i]->setPosition(
-          354 + ((registersTiles.size() - i - 1) * 49.8), 544);
+          sf::Vector2f(354 + ((registersTiles.size() - i - 1) * 49.8), 544));
     } else {
       registersTiles[i]->setPosition(
-          354 + ((registersTiles.size() - i - 1) * 29.8), 1544);
+          sf::Vector2f(354 + ((registersTiles.size() - i - 1) * 29.8), 1544));
     }
   }
 
   RegistersBar = new sf::RectangleShape(sf::Vector2f(262, 50));
-  RegistersBar->setPosition(300, 570);
+  RegistersBar->setPosition(sf::Vector2f(300, 570));
   RegistersBar->setFillColor(sf::Color(20, 20, 20));
   RegistersBar->setOutlineColor(sf::Color(80, 80, 80));
   RegistersBar->setOutlineThickness(1);
 
-  registersLabelText = new sf::Text();
-  registersLabelText->setFont(*font);
+  registersLabelText = new sf::Text(*font);
+  // registersLabelText->setFont(*font);
   registersLabelText->setFillColor(sf::Color::White);
   registersLabelText->setString("REG    PC SP AC X  Y  SR");
   registersLabelText->setCharacterSize(20);
-  registersLabelText->setPosition(310, 568);
+  registersLabelText->setPosition(sf::Vector2f(310, 568));
 
-  registersText = new sf::Text();
-  registersText->setFont(*font);
+  registersText = new sf::Text(*font);
+  // registersText->setFont(*font);
   registersText->setFillColor(sf::Color::Green);
   registersText->setString(registerSStr.str());
   registersText->setCharacterSize(20);
-  registersText->setPosition(359, 588);
+  registersText->setPosition(sf::Vector2f(359, 588));
 
   // Zero Page monitor
-  zeroPageScreenTitle = new sf::Text();
-  zeroPageScreenTitle->setFont(*font);
+  zeroPageScreenTitle = new sf::Text(*font);
+  // zeroPageScreenTitle->setFont(*font);
   zeroPageScreenTitle->setFillColor(sf::Color::White);
   zeroPageScreenTitle->setString("ZERO PAGE");
   zeroPageScreenTitle->setCharacterSize(20);
-  zeroPageScreenTitle->setPosition(600, 15);
+  zeroPageScreenTitle->setPosition(sf::Vector2f(600, 15));
 
   zeropageScreen = new sf::RectangleShape(sf::Vector2f(526, 540));
-  zeropageScreen->setPosition(600, 50);
+  zeropageScreen->setPosition(sf::Vector2f(600, 50));
   zeropageScreen->setFillColor(sf::Color(20, 20, 20));
   zeropageScreen->setOutlineColor(sf::Color(80, 80, 80));
   zeropageScreen->setOutlineThickness(1);
 
   zeroPageColumnsLabel = "0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F";
-  zeroPageColumnsLabelText = new sf::Text();
-  zeroPageColumnsLabelText->setFont(*font);
+  zeroPageColumnsLabelText = new sf::Text(*font);
+  // zeroPageColumnsLabelText->setFont(*font);
   zeroPageColumnsLabelText->setFillColor(sf::Color::White);
   zeroPageColumnsLabelText->setString(zeroPageColumnsLabel);
   zeroPageColumnsLabelText->setCharacterSize(20);
-  zeroPageColumnsLabelText->setPosition(635, 65);
+  zeroPageColumnsLabelText->setPosition(sf::Vector2f(635, 65));
 
   zeroPageLinesLabel = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA\nB\nC\nD\nE\nF\n";
-  zeroPageLinesLabelText = new sf::Text();
-  zeroPageLinesLabelText->setFont(*font);
+  zeroPageLinesLabelText = new sf::Text(*font);
+  // zeroPageLinesLabelText->setFont(*font);
   zeroPageLinesLabelText->setFillColor(sf::Color::White);
   zeroPageLinesLabelText->setString(zeroPageLinesLabel);
   zeroPageLinesLabelText->setCharacterSize(20);
-  zeroPageLinesLabelText->setPosition(615, 90);
+  zeroPageLinesLabelText->setPosition(sf::Vector2f(615, 90));
   zeroPageLinesLabelText->setLineSpacing(1.5);
 
   for (int i = 1; i <= 0xFF; i++) {
@@ -163,49 +163,49 @@ Gui::Gui(Cpu &cpu) : cpu(cpu) {
     }
   }
 
-  zeroPageDataText = new sf::Text();
-  zeroPageDataText->setFont(*font);
+  zeroPageDataText = new sf::Text(*font);
+  // zeroPageDataText->setFont(*font);
   zeroPageDataText->setFillColor(sf::Color::Green);
   zeroPageDataText->setString(zeroPageDataStr);
   zeroPageDataText->setCharacterSize(20);
-  zeroPageDataText->setPosition(635, 90);
+  zeroPageDataText->setPosition(sf::Vector2f(635, 90));
   zeroPageDataText->setLineSpacing(1.5);
 
   std::string keyMappingStr = "(R)eset   (N)ext instruction   R(E)sume";
-  keyMappingText = new sf::Text();
-  keyMappingText->setFont(*font);
+  keyMappingText = new sf::Text(*font);
+  // keyMappingText->setFont(*font);
   keyMappingText->setFillColor(sf::Color::White);
   keyMappingText->setString(keyMappingStr);
   keyMappingText->setCharacterSize(20);
-  keyMappingText->setPosition(655, 600);
+  keyMappingText->setPosition(sf::Vector2f(655, 600));
   keyMappingText->setLineSpacing(1.5);
 
   std::string filePathstr = cpu.getMemory().getFilePath();
-  filePathText = new sf::Text();
-  filePathText->setFont(*font);
+  filePathText = new sf::Text(*font);
+  // filePathText->setFont(*font);
   filePathText->setFillColor(sf::Color(190, 190, 190));
   filePathText->setString(filePathstr);
   filePathText->setCharacterSize(20);
-  filePathText->setPosition(55, 600);
+  filePathText->setPosition(sf::Vector2f(55, 600));
   filePathText->setLineSpacing(1.5);
 
   buttonsPress[0] = new sf::RectangleShape(sf::Vector2f(80, 22));
   buttonsPress[0]->setFillColor(sf::Color(0, 0, 120));
   buttonsPress[0]->setOutlineColor(sf::Color::Blue);
   buttonsPress[0]->setOutlineThickness(1);
-  buttonsPress[0]->setPosition(654, 604);
+  buttonsPress[0]->setPosition(sf::Vector2f(654, 604));
 
   buttonsPress[1] = new sf::RectangleShape(sf::Vector2f(190, 22));
   buttonsPress[1]->setFillColor(sf::Color(0, 0, 120));
   buttonsPress[1]->setOutlineColor(sf::Color::Blue);
   buttonsPress[1]->setOutlineThickness(1);
-  buttonsPress[1]->setPosition(754, 604);
+  buttonsPress[1]->setPosition(sf::Vector2f(754, 604));
 
   buttonsPress[2] = new sf::RectangleShape(sf::Vector2f(95, 22));
   buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
   buttonsPress[2]->setOutlineColor(sf::Color::Blue);
   buttonsPress[2]->setOutlineThickness(1);
-  buttonsPress[2]->setPosition(960, 604);
+  buttonsPress[2]->setPosition(sf::Vector2f(960, 604));
 
   colors[0x00] = sf::Color(0, 0, 0);
   colors[0x01] = sf::Color(255, 255, 255);
@@ -282,74 +282,75 @@ void Gui::updateCpuCount() {
 void Gui::show() {
 
   while (window->isOpen()) {
-    sf::Event event;
-    while (window->pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
+    // sf::Event event;
+    while (const std::optional event = window->pollEvent()) {
+      if (event->is<sf::Event::Closed>()) {
         window->close();
-
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !buttonsLock[0]) {
+      }
+        
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::R) && !buttonsLock[0]) {
         buttonsLock[0] = true;
         buttonsPress[0]->setFillColor(sf::Color::Blue);
         cpu.reset();
 
-      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::R) &&
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::R) &&
                  buttonsLock[0]) {
         buttonsLock[0] = false;
         buttonsPress[0]->setFillColor(sf::Color(0, 0, 120));
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) && !buttonsLock[1]) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::N) && !buttonsLock[1]) {
         buttonsLock[1] = true;
         buttonsPress[1]->setFillColor(sf::Color::Blue);
         cpu.next();
-      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::N) &&
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::N) &&
                  buttonsLock[1]) {
         buttonsLock[1] = false;
         buttonsPress[1]->setFillColor(sf::Color(0, 0, 120));
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !buttonsLock[2]) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::E) && !buttonsLock[2]) {
         buttonsLock[2] = true;
         buttonsPress[2]->setFillColor(sf::Color::Blue);
         isDebugMode = !isDebugMode;
-      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::E) &&
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::E) &&
                  buttonsLock[2]) {
         buttonsLock[2] = false;
         buttonsPress[2]->setFillColor(sf::Color(0, 0, 120));
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up)) {
         buttonsLock[3] = true;
         clock += 10;
         std::stringstream ss;
         ss << "CLOCK " << clock << " Hz";
         gameScreenInfo->setString(ss.str());
-      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up) &&
                  buttonsLock[3]) {
         buttonsLock[3] = false;
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down)) {
         buttonsLock[4] = true;
         clock -= 10;
         std::stringstream ss;
         ss << "CLOCK " << clock << " Hz";
         gameScreenInfo->setString(ss.str());
-      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+      } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down) &&
                  buttonsLock[4]) {
         buttonsLock[4] = false;
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W)) {
         cpu.getMemory().write(0xFF, 0x77);
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D)) {
         cpu.getMemory().write(0xFF, 0x64);
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S)) {
         cpu.getMemory().write(0xFF, 0x73);
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A)) {
         cpu.getMemory().write(0xFF, 0x61);
       }
     }
@@ -418,8 +419,10 @@ void Gui::loadFrameInMemory(uint16_t begin) {
 
       uint8_t index = value & 0x0F;
       sf::Color color = colors[index];
-      gameImage->setPixel(x, y, color);
-      gameTexture->loadFromImage(*gameImage);
+      gameImage->setPixel(sf::Vector2u(x, y), color);
+      if(!gameTexture->loadFromImage(*gameImage)){
+        std::cerr << "Erro ao carregar textura do jogo." << std::endl;
+      }
       gameSprite->setTexture(*gameTexture);
     }
   }
